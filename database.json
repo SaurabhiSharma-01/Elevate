@@ -1,0 +1,210 @@
+{
+  "students": [
+    {
+      "id": "GHRCE2024047",
+      "name": "Priya Sharma",
+      "email": "priya.sharma@ghrce.ac.in",
+      "dept": "Engineering",
+      "branch": "Computer Science",
+      "semester": "6th Semester",
+      "cgpa": 8.4,
+      "readiness": 72,
+      "rank": 47,
+      "targetCompany": "TCS / Infosys",
+      "resumeVerified": "Verified",
+      "resumeText": "Priya Sharma. B.Tech Computer Science student. Skills: Java, Python, SQL, DSA. Projects: E-Commerce site optimization.",
+      "coursesCompleted": 8,
+      "todayHours": 2.4,
+      "mockTestsCompleted": 14,
+      "weakSkills": [
+        "Operating Systems",
+        "Computer Networks",
+        "Verbal Communication"
+      ],
+      "appliedJobs": [],
+      "interviewHistory": [
+        {
+          "company": "Microsoft",
+          "type": "HR",
+          "date": "2026-07-10",
+          "score": 80,
+          "reportId": "rep_001",
+          "feedback": "Strong answers, good confidence, needs minor alignment with company cloud strategy."
+        }
+      ]
+    },
+    {
+      "id": "GHRCE2024012",
+      "name": "Rohan Mehta",
+      "email": "rohan.mehta@ghrce.ac.in",
+      "dept": "Engineering",
+      "branch": "Information Technology",
+      "semester": "6th Semester",
+      "cgpa": 7.9,
+      "readiness": 65,
+      "rank": 112,
+      "targetCompany": "Wipro",
+      "resumeVerified": "Pending",
+      "resumeText": "Rohan Mehta. B.Tech IT. Core skills: C++, Web Development, HTML, CSS. Projects: Portfolio page.",
+      "coursesCompleted": 5,
+      "todayHours": 1.5,
+      "mockTestsCompleted": 9,
+      "weakSkills": [
+        "Quantitative Aptitude",
+        "DBMS"
+      ],
+      "appliedJobs": [],
+      "interviewHistory": []
+    },
+    {
+      "id": "GHRCE2024089",
+      "name": "Sneha Patil",
+      "email": "sneha.patil@ghrce.ac.in",
+      "dept": "Engineering",
+      "branch": "Electronics",
+      "semester": "6th Semester",
+      "cgpa": 9.1,
+      "readiness": 85,
+      "rank": 12,
+      "targetCompany": "Amazon / Microsoft",
+      "resumeVerified": "Verified",
+      "resumeText": "Sneha Patil. B.Tech Electronics. Strong programming in Python, C, and Embedded Systems. 3 stars on LeetCode.",
+      "coursesCompleted": 12,
+      "todayHours": 3.2,
+      "mockTestsCompleted": 18,
+      "weakSkills": [
+        "System Design"
+      ],
+      "appliedJobs": [],
+      "interviewHistory": [
+        {
+          "company": "Amazon",
+          "type": "Technical",
+          "date": "2026-07-12",
+          "score": 92,
+          "reportId": "rep_002",
+          "feedback": "Excellent DSA and logical reasoning capabilities. Fast problem-solving."
+        }
+      ]
+    },
+    {
+      "id": "GHRCE24M002",
+      "name": "Aditya Sen",
+      "email": "aditya.sen@ghrce.ac.in",
+      "dept": "Management",
+      "branch": "MBA Finance",
+      "semester": "3rd Semester",
+      "cgpa": 8.2,
+      "readiness": 58,
+      "rank": 35,
+      "targetCompany": "Deloitte",
+      "resumeVerified": "Pending",
+      "resumeText": "Aditya Sen. MBA Finance. Core skills: Financial modeling, valuation, Excel, Accounting.",
+      "coursesCompleted": 4,
+      "todayHours": 1,
+      "mockTestsCompleted": 5,
+      "weakSkills": [
+        "Technical Aptitude",
+        "Logical Reasoning"
+      ],
+      "appliedJobs": [],
+      "interviewHistory": []
+    }
+  ],
+  "jobs": [
+    {
+      "id": "job_001",
+      "company": "Microsoft",
+      "logo": "MSFT",
+      "role": "Software Engineer Intern",
+      "type": "Full Time",
+      "ctc": "₹15 LPA",
+      "location": "Bangalore / Remote",
+      "desc": "Looking for a passionate Software Engineer Intern with strong DSA, OOPs, and problem-solving skills.",
+      "eligibility": {
+        "cgpa": 7.5,
+        "branches": [
+          "Computer Science",
+          "Information Technology"
+        ],
+        "backlogs": 0
+      },
+      "applicants": []
+    },
+    {
+      "id": "job_002",
+      "company": "TCS",
+      "logo": "TCS",
+      "role": "System Engineer (NQT Digital)",
+      "type": "Full Time",
+      "ctc": "₹7.0 LPA",
+      "location": "PAN India",
+      "desc": "Hiring through TCS NQT Digital. Focus on advanced technical aptitude, programming, and system skills.",
+      "eligibility": {
+        "cgpa": 6,
+        "branches": [
+          "Any Engineering Branch"
+        ],
+        "backlogs": 0
+      },
+      "applicants": []
+    },
+    {
+      "id": "job_003",
+      "company": "Infosys",
+      "logo": "INF",
+      "role": "Systems Engineer",
+      "type": "Full Time",
+      "ctc": "₹3.6 LPA",
+      "location": "PAN India",
+      "desc": "Hiring for Systems Engineer role. Logical reasoning, verbal ability, and pseudocode assessment is mandatory.",
+      "eligibility": {
+        "cgpa": 6.5,
+        "branches": [
+          "Any Graduate"
+        ],
+        "backlogs": 1
+      },
+      "applicants": []
+    }
+  ],
+  "drives": [
+    {
+      "id": "drv_001",
+      "company": "TCS",
+      "date": "2026-07-25",
+      "status": "Scheduled",
+      "dept": "Engineering"
+    },
+    {
+      "id": "drv_002",
+      "company": "Infosys",
+      "date": "2026-07-28",
+      "status": "Scheduled",
+      "dept": "Engineering"
+    },
+    {
+      "id": "drv_003",
+      "company": "Microsoft",
+      "date": "2026-08-05",
+      "status": "Proposed",
+      "dept": "Engineering"
+    }
+  ],
+  "assessments": [
+    {
+      "id": "asm_001",
+      "name": "TCS Comprehensive",
+      "questions": 30,
+      "duration": 90,
+      "createdBy": "College T&P"
+    },
+    {
+      "id": "asm_002",
+      "name": "General Aptitude Drill",
+      "questions": 20,
+      "duration": 45,
+      "createdBy": "College T&P"
+    }
+  ]
+}

@@ -1775,7 +1775,6 @@ ul { list-style: none; }
   color: #ff6b6b;
 }
 .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--error); animation: pulse-dot 1.5s ease-in-out infinite; }
-@keyframes pulse-dot { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.8); } }
 .iv-timer { font-family: 'Poppins',sans-serif; font-size: 20px; font-weight: 800; color: #fff; }
 .btn-end-interview {
   padding: 8px 18px;
@@ -2344,7 +2343,7 @@ ul { list-style: none; }
 
 #screen-app.role-company .company-only.nav-item { display: flex !important; }
 #screen-app.role-company .company-only.nav-section-label { display: block !important; }
-#screen-app.role-company .student-only, #screen-app.role-company .college-only { display: none !important; }
+#screen-app.role-company .student-only, #screen-app.role-college .company-only { display: none !important; }
 
 #screen-app.role-college .sidebar-readiness,
 #screen-app.role-company .sidebar-readiness {

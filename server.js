@@ -172,6 +172,30 @@ const DEFAULT_DB = {
   assessments: [
     { id: 'asm_001', name: 'TCS Comprehensive', questions: 30, duration: 90, createdBy: 'College T&P' },
     { id: 'asm_002', name: 'General Aptitude Drill', questions: 20, duration: 45, createdBy: 'College T&P' }
+  ],
+  companies: [
+    { id: 'comp_001', name: 'Synthetix Cloud', industry: 'Enterprise SaaS • Cloud Tech', contact: 'Sarah Jenkins', status: 'Connected', avatar: 'SC', previousVisits: 2, connectionDate: '2026-06-01' },
+    { id: 'comp_002', name: 'Apex Financials', industry: 'Investment Banking • FinTech', contact: 'Michael Chen', status: 'Pending', avatar: 'AF', previousVisits: 0, connectionDate: null },
+    { id: 'comp_003', name: 'Velocity Motors', industry: 'Auto-Tech • EV Systems', contact: 'Robert Walton', status: 'Connected', avatar: 'VM', previousVisits: 1, connectionDate: '2026-05-15' },
+    { id: 'comp_004', name: 'EcoSystemic Ltd', industry: 'Green Tech • Sustainability', contact: 'Anna Sokolov', status: 'Connected', avatar: 'ES', previousVisits: 3, connectionDate: '2026-03-20' },
+    { id: 'comp_005', name: 'Infosys HR', industry: 'IT Services • Consulting', contact: 'Rajesh Gupta', status: 'Requested', avatar: 'IN', previousVisits: 5, connectionDate: '2026-07-10' },
+    { id: 'comp_006', name: 'Cognizant Genc', industry: 'IT Services • Digital', contact: 'Priya Nair', status: 'Requested', avatar: 'CG', previousVisits: 4, connectionDate: '2026-07-12' },
+    { id: 'comp_007', name: 'Amazon AWS', industry: 'Cloud • E-Commerce', contact: 'David Kim', status: 'Connected', avatar: 'AA', previousVisits: 2, connectionDate: '2026-04-10' },
+    { id: 'comp_008', name: 'Deloitte India', industry: 'Consulting • Analytics', contact: 'Meera Shah', status: 'Pending', avatar: 'DI', previousVisits: 1, connectionDate: null }
+  ],
+  startups: [
+    { id: 'st_001', name: 'EcoSync Systems', tagline: 'Smart AI-driven irrigation for institutional vertical gardens.', category: 'Sustainability', problem: 'Traditional irrigation wastes 40% of water in institutional buildings.', solution: 'AI-based sensors with real-time moisture analytics optimize watering schedules.', upvotes: 1200, comments: 48, team: ['JD', 'AS', 'RK'], gradient: 'linear-gradient(135deg, #1a472a 0%, #2d6a4f 50%, #40916c 100%)', trending: true },
+    { id: 'st_002', name: 'EduPulse AI', tagline: 'Personalized learning paths using large language models for STEM students.', category: 'EduTech', problem: 'One-size-fits-all curriculum leaves 60% of students behind.', solution: 'LLM-powered adaptive learning that adjusts content difficulty in real time.', upvotes: 856, comments: 32, team: ['MK', 'RL'], gradient: 'linear-gradient(135deg, #0f3460 0%, #16213e 50%, #533483 100%)', trending: false },
+    { id: 'st_003', name: 'QuantumFlow', tagline: 'Quantum-inspired optimization for logistics supply chains.', category: 'AI & ML', problem: 'Supply chain inefficiencies cost SMEs ₹2.3 crore annually on average.', solution: 'Quantum annealing algorithms reduce route optimization time by 78%.', upvotes: 8200, comments: 124, team: ['SK', 'PB', 'AM', 'VR'], gradient: 'linear-gradient(135deg, #2c0735 0%, #4a0e5e 50%, #7b2d8b 100%)', trending: false },
+    { id: 'st_004', name: 'BioBreeze', tagline: 'Biodegradable air purifiers for low-income urban households.', category: 'Sustainability', problem: 'Air purifiers are expensive and use non-recyclable HEPA filters.', solution: 'Plant-based biochar filters that cost 80% less and last 3x longer.', upvotes: 5400, comments: 89, team: ['NS', 'GK'], gradient: 'linear-gradient(135deg, #1b4332 0%, #2d6a4f 50%, #52b788 100%)', trending: false },
+    { id: 'st_005', name: 'SwiftLift Drones', tagline: 'Last-mile medical supply delivery using autonomous swarm drones.', category: 'AI & ML', problem: 'Rural medical facilities wait 4-6 hours for critical supplies.', solution: 'AI-coordinated drone swarms deliver under 30 minutes within 50km radius.', upvotes: 4900, comments: 67, team: ['AR', 'ST', 'DM'], gradient: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)', trending: false },
+    { id: 'st_006', name: 'PayEase FinTech', tagline: 'UPI-based micro-lending platform for student entrepreneurs.', category: 'FinTech', problem: 'Student entrepreneurs lack collateral for traditional loans.', solution: 'AI credit scoring using academic records enables collateral-free micro-loans.', upvotes: 2100, comments: 41, team: ['PK', 'SS'], gradient: 'linear-gradient(135deg, #614385 0%, #516395 100%)', trending: false }
+  ],
+  meetings: [
+    { id: 'mtg_001', company: 'Google Online Meet', companyId: 'comp_007', type: 'Tech Talk', date: '2026-07-18', time: '10:30', mode: 'online', link: 'https://meet.google.com/abc-def', description: 'Discussing intern hiring process for final year CSE students.' },
+    { id: 'mtg_002', company: 'Deloitte', companyId: 'comp_008', type: 'Campus Visit', date: '2026-07-18', time: '14:00', mode: 'offline', venue: 'Seminar Hall A', description: 'Pre-placement talk for MBA and CSE batch 2026.' },
+    { id: 'mtg_003', company: 'Synthetix Cloud', companyId: 'comp_001', type: 'Follow-up', date: '2026-07-25', time: '11:00', mode: 'online', link: 'https://zoom.us/j/123456', description: 'Follow-up on candidate shortlist submission.' },
+    { id: 'mtg_004', company: 'Amazon AWS', companyId: 'comp_007', type: 'Recruitment Drive', date: '2026-08-05', time: '09:00', mode: 'offline', venue: 'Main Auditorium', description: 'AWS campus recruitment for SDE and cloud engineer roles.' }
   ]
 };
 
@@ -299,6 +323,75 @@ app.post('/api/drives', (req, res) => {
   db.drives.push(drive);
   writeDatabase(db);
   res.json({ success: true, drive });
+});
+
+// College Portal — Companies API
+app.get('/api/companies', (req, res) => {
+  const db = readDatabase();
+  res.json(db.companies || []);
+});
+
+app.post('/api/companies', (req, res) => {
+  const db = readDatabase();
+  const company = req.body;
+  if (!db.companies) db.companies = [];
+  db.companies.push(company);
+  writeDatabase(db);
+  res.json({ success: true, company });
+});
+
+app.put('/api/companies/:id', (req, res) => {
+  const db = readDatabase();
+  const index = (db.companies || []).findIndex(c => c.id === req.params.id);
+  if (index !== -1) {
+    db.companies[index] = { ...db.companies[index], ...req.body };
+    writeDatabase(db);
+    res.json({ success: true, company: db.companies[index] });
+  } else {
+    res.status(404).json({ success: false, message: 'Company not found' });
+  }
+});
+
+// College Portal — Startups API
+app.get('/api/startups', (req, res) => {
+  const db = readDatabase();
+  res.json(db.startups || []);
+});
+
+app.post('/api/startups', (req, res) => {
+  const db = readDatabase();
+  const startup = req.body;
+  if (!db.startups) db.startups = [];
+  db.startups.push(startup);
+  writeDatabase(db);
+  res.json({ success: true, startup });
+});
+
+app.post('/api/startups/:id/upvote', (req, res) => {
+  const db = readDatabase();
+  const index = (db.startups || []).findIndex(s => s.id === req.params.id);
+  if (index !== -1) {
+    db.startups[index].upvotes = (db.startups[index].upvotes || 0) + 1;
+    writeDatabase(db);
+    res.json({ success: true, upvotes: db.startups[index].upvotes });
+  } else {
+    res.status(404).json({ success: false, message: 'Startup not found' });
+  }
+});
+
+// College Portal — Meetings API
+app.get('/api/meetings', (req, res) => {
+  const db = readDatabase();
+  res.json(db.meetings || []);
+});
+
+app.post('/api/meetings', (req, res) => {
+  const db = readDatabase();
+  const meeting = req.body;
+  if (!db.meetings) db.meetings = [];
+  db.meetings.push(meeting);
+  writeDatabase(db);
+  res.json({ success: true, meeting });
 });
 
 // Wildcard route to serve index.html for SPA router on client side

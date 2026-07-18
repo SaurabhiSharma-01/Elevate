@@ -569,6 +569,9 @@ function prevQuestion() {
   if (state.assessment.currentQ > 0) { state.assessment.currentQ--; renderQuestion(); }
 }
 
+// ──────────────────────────────────────────────────────────────
+// BACKEND SYNC AND WIDGETS
+// ──────────────────────────────────────────────────────────────
 function flagQuestion() {
   const { flagged, currentQ } = state.assessment;
   if (flagged.has(currentQ)) flagged.delete(currentQ); else flagged.add(currentQ);
@@ -604,25 +607,18 @@ function submitAssessment() {
   setTimeout(() => { enterApp(); }, 1500);
 }
 
-// ──────────────────────────────────────────────────────────────
-// ENTER APP
-// ──────────────────────────────────────────────────────────────
 function enterApp() {
   showScreen('app');
   const el = document.getElementById('screen-app');
   el.style.display = 'flex';
-  // Set greeting
   const hour = new Date().getHours();
   const greet = hour < 12 ? 'Good morning,' : hour < 17 ? 'Good afternoon,' : 'Good evening,';
   const greetEl = document.getElementById('dashGreeting');
   if (greetEl) greetEl.textContent = greet;
-  // Set readiness animation
   animateReadiness();
-  // Update sidebar
   document.getElementById('sidebarReadiness').style.width = `${state.student.readiness}%`;
   document.getElementById('sidebarReadinessVal').textContent = `${state.student.readiness}%`;
   document.getElementById('headerReadiness').textContent = `${state.student.readiness}%`;
-  // Init heatmap
   setTimeout(initHeatmap, 300);
 }
 
@@ -634,9 +630,6 @@ function animateReadiness() {
   setTimeout(() => { circle.style.strokeDashoffset = offset; }, 400);
 }
 
-// ──────────────────────────────────────────────────────────────
-// HEATMAP
-// ──────────────────────────────────────────────────────────────
 function initHeatmap() {
   const grid = document.getElementById('heatmapGrid');
   if (!grid) return;
@@ -651,9 +644,6 @@ function initHeatmap() {
   }
 }
 
-// ──────────────────────────────────────────────────────────────
-// SKILL REPORT — Charts
-// ──────────────────────────────────────────────────────────────
 function initSkillReport() {
   if (state.charts.radar) { state.charts.radar.destroy(); }
   const ctx = document.getElementById('radarChart');
@@ -700,9 +690,6 @@ function initSkillReport() {
   });
 }
 
-// ──────────────────────────────────────────────────────────────
-// ROADMAP
-// ──────────────────────────────────────────────────────────────
 function initRoadmap() {
   const container = document.getElementById('roadmapTimeline');
   if (!container) return;
@@ -725,9 +712,6 @@ function initRoadmap() {
   `).join('');
 }
 
-// ──────────────────────────────────────────────────────────────
-// LEARNING HUB
-// ──────────────────────────────────────────────────────────────
 function initLearningHub(filter = 'all', search = '') {
   const grid = document.getElementById('coursesGrid');
   if (!grid) return;
@@ -774,9 +758,6 @@ function searchHub(val) {
   initLearningHub(activeFilter, val);
 }
 
-// ──────────────────────────────────────────────────────────────
-// COMPANY PREP
-// ──────────────────────────────────────────────────────────────
 async function initCompanyPrep() {
   const list = document.getElementById('companyList');
   if (!list) return;
@@ -894,10 +875,6 @@ async function applyForJobFromStudentPortal(jobId) {
   }
 }
 
-
-// ──────────────────────────────────────────────────────────────
-// COMPANY PAPERS
-// ──────────────────────────────────────────────────────────────
 function initCompanyPapers() {
   const grid = document.getElementById('papersGrid');
   if (!grid) return;
@@ -941,9 +918,6 @@ function toggleBookmark(btn, idx) {
   btn.querySelector('svg').setAttribute('fill', state.bookmarks.has(idx) ? 'currentColor' : 'none');
 }
 
-// ──────────────────────────────────────────────────────────────
-// MOCK TESTS
-// ──────────────────────────────────────────────────────────────
 function initMockTests() {
   const list = document.getElementById('testsList');
   if (!list) return;
@@ -980,9 +954,6 @@ function startTestFromPaper(company) {
   startMockTest(test.id, test.name, test.duration);
 }
 
-// ──────────────────────────────────────────────────────────────
-// TEST ENGINE
-// ──────────────────────────────────────────────────────────────
 function startMockTest(id, name, duration) {
   state.test.currentQ = 0;
   state.test.answers = {};
@@ -1074,13 +1045,11 @@ function confirmEndTest() {
 function submitTest() {
   clearInterval(state.test.timerInterval);
   closeModal();
-  // Calculate score
   let correct = 0;
   TEST_QUESTIONS.forEach((q, i) => { if (state.test.answers[i] === q.ans) correct++; });
   const score = Math.round((correct / TEST_QUESTIONS.length) * 100);
   const timeTaken = Math.round((state.test.timer > 0 ? (90 * 60 - state.test.timer) : 90 * 60) / 60);
   showScreen('results');
-  // Animate circle
   setTimeout(() => {
     const circle = document.getElementById('resultsFillCircle');
     if (circle) {
@@ -1092,7 +1061,6 @@ function submitTest() {
     document.getElementById('rqCorrect').textContent = `${correct}/${TEST_QUESTIONS.length}`;
     document.getElementById('rqTime').textContent = `${timeTaken} min`;
     document.getElementById('resultsTitle').textContent = `${state.test.testName} — Completed!`;
-    // Comparison chart
     initComparisonChart(score);
   }, 300);
 }
@@ -1133,9 +1101,6 @@ function initComparisonChart(score) {
   });
 }
 
-// ──────────────────────────────────────────────────────────────
-// AI INTERVIEW
-// ──────────────────────────────────────────────────────────────
 function startInterview() {
   const companyEl = document.querySelector('input[name="ivCompany"]:checked');
   const typeEl = document.querySelector('input[name="ivType"]:checked');
@@ -1169,7 +1134,6 @@ function initInterviewChat() {
   state.interview.questions = qBank;
   const transcript = document.getElementById('ivTranscript');
   transcript.innerHTML = '';
-  // Initial greeting
   addChatBubble('ai', `Hello! Welcome to your mock interview for the Software Engineer position at ${company}. I'm Alex, your AI interviewer today. Are you ready to begin?`);
   updateInterviewQuestion(0);
 }
@@ -1195,7 +1159,6 @@ function updateInterviewQuestion(idx) {
   document.getElementById('ivProgFill').style.width = `${((idx + 1) / qs.length) * 100}%`;
   document.getElementById('ivProgLabel').textContent = `Question ${idx + 1} of ${qs.length}`;
   state.interview.currentQ = idx;
-  // Show listening indicator
   setTimeout(() => {
     const transcript = document.getElementById('ivTranscript');
     const listeningDiv = document.createElement('div');
@@ -1210,10 +1173,8 @@ function updateInterviewQuestion(idx) {
 function ivNextQuestion() {
   const next = state.interview.currentQ + 1;
   const qs = state.interview.questions;
-  // Remove listening indicator
   const li = document.getElementById('listeningIndicator');
   if (li) li.remove();
-  // Simulate student response
   const studentResponses = [
     "Yes, I'm ready. Thank you for having me.",
     "That's a great question. In my previous project, I faced a similar challenge where I had to optimize a database query that was running 5x slower than expected. I analyzed the query plan and added proper indexing, which reduced execution time by 60%.",
@@ -1311,9 +1272,6 @@ function initInterviewRadarChart() {
   });
 }
 
-// ──────────────────────────────────────────────────────────────
-// MODAL
-// ──────────────────────────────────────────────────────────────
 let _modalCallback = null;
 function showModal(title, body, onConfirm, confirmText = 'Confirm') {
   document.getElementById('modalTitle').textContent = title;
@@ -1330,9 +1288,6 @@ function showModal(title, body, onConfirm, confirmText = 'Confirm') {
 }
 function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
 
-// ──────────────────────────────────────────────────────────────
-// TOAST
-// ──────────────────────────────────────────────────────────────
 function showToast(msg, type = '') {
   const container = document.getElementById('toastContainer');
   const toast = document.createElement('div');
@@ -1344,9 +1299,6 @@ function showToast(msg, type = '') {
   setTimeout(() => { toast.style.animation = 'toast-in 0.3s ease reverse forwards'; setTimeout(() => toast.remove(), 300); }, 4000);
 }
 
-// ──────────────────────────────────────────────────────────────
-// NOTIFICATIONS
-// ──────────────────────────────────────────────────────────────
 function toggleNotifications() {
   document.getElementById('notifPanel').classList.toggle('open');
 }
@@ -1359,16 +1311,10 @@ document.addEventListener('click', (e) => {
   if (panel && btn && !panel.contains(e.target) && !btn.contains(e.target)) closeNotifications();
 });
 
-// ──────────────────────────────────────────────────────────────
-// SIDEBAR
-// ──────────────────────────────────────────────────────────────
 function toggleSidebar() {
   document.getElementById('mainSidebar').classList.toggle('open');
 }
 
-// ──────────────────────────────────────────────────────────────
-// TASK TOGGLE
-// ──────────────────────────────────────────────────────────────
 function toggleTask(el) {
   el.classList.toggle('done');
   if (el.classList.contains('done')) {
@@ -1381,9 +1327,6 @@ function toggleTask(el) {
   }
 }
 
-// ──────────────────────────────────────────────────────────────
-// LOGOUT
-// ──────────────────────────────────────────────────────────────
 function handleLogout() {
   showModal('Logout?', 'Are you sure you want to logout from Elevate Portal?', () => {
     state.isFirstLogin = true;
@@ -1394,11 +1337,8 @@ function handleLogout() {
   });
 }
 
-// ──────────────────────────────────────────────────────────────
-// ROLE INITIALIZATION & SWITCHER
-// ──────────────────────────────────────────────────────────────
-state.loginRole = 'student';
-state.userRole = 'student';
+state.loginRole = 'company';
+state.userRole = 'company';
 state.companyName = 'Microsoft';
 state.selectedCandidateId = null;
 state.selectedJobId = null;
@@ -1732,7 +1672,7 @@ async function initCompanyDashboard() {
       <td style="padding:10px 4px;font-weight:600">${j.role}</td>
       <td style="padding:10px 4px;font-weight:600">${j.ctc}</td>
       <td style="padding:10px 4px;">CGPA ≥ ${j.eligibility?.cgpa || '6.0'}</td>
-      <td style="padding:10px 4px;font-weight:700;color:var(--primary;cursor:pointer" onclick="navigateTo('company-applicants')">${j.applicants.length} applied</td>
+      <td style="padding:10px 4px;font-weight:700;color:var(--primary);cursor:pointer" onclick="navigateTo('company-applicants')">${j.applicants.length} applied</td>
     </tr>
   `).join('');
 }
@@ -1964,21 +1904,16 @@ async function updateCandidateStage() {
 // INIT
 // ──────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  // Force correct initial display for login screen
   const loginScreen = document.getElementById('screen-login');
   if (loginScreen) loginScreen.style.display = 'flex';
-  // Hide all other screens explicitly
   ['welcome','assessment','app','test','interview','results','interview-report'].forEach(id => {
     const el = document.getElementById(`screen-${id}`);
     if (el) el.style.display = 'none';
   });
-  // Set greeting
   const hour = new Date().getHours();
   const dashGreet = document.getElementById('dashGreeting');
   if (dashGreet) dashGreet.textContent = hour < 12 ? 'Good morning,' : hour < 17 ? 'Good afternoon,' : 'Good evening,';
-  // Pre-select first department
   state.selectedDept = 'Engineering';
-  // Add hover effect on iv radio items
   document.querySelectorAll('.iv-radio-item').forEach(item => {
     item.addEventListener('change', () => {
       document.querySelectorAll('.iv-radio-item').forEach(i => i.style.borderColor = 'var(--border)');
@@ -1986,15 +1921,20 @@ document.addEventListener('DOMContentLoaded', () => {
       item.style.background = 'var(--primary-lighter)';
     });
   });
-  console.log('%cElevate Portal — GH Raisoni College', 'font-size:16px;font-weight:bold;color:#5B2D90');
-  console.log('%cLogin with any Student ID and any password (min 3 chars)', 'font-size:12px;color:#6B7280');
+
+  // ── INDUSTRY PORTAL: hide Student and T&P tabs, lock to Recruiter role ──
+  document.querySelectorAll('.login-tab[data-role="student"], .login-tab[data-role="college"]').forEach(tab => {
+    tab.style.display = 'none';
+  });
+  setLoginRole('company');
+
+  console.log('%cElevate Industry (Recruiter) Portal — GH Raisoni College', 'font-size:16px;font-weight:bold;color:#5B2D90');
+  console.log('%cLogin with recruiter@microsoft.com / microsoft', 'font-size:12px;color:#6B7280');
 });
 
 // ──────────────────────────────────────────────────────────────
 // COLLEGE PORTAL — SECTION 1: DASHBOARD (REBUILT)
 // ──────────────────────────────────────────────────────────────
-
-// College-level mock DB helpers
 const collegeDb = {
   getCompanies: () => fetch('/api/companies').then(r => r.json()).catch(() => []),
   getStartups: () => fetch('/api/startups').then(r => r.json()).catch(() => []),
@@ -2008,7 +1948,6 @@ const collegeDb = {
   }).then(r => r.json())
 };
 
-// dept readiness static data
 const DEPT_READINESS_DATA = [
   { dept: 'Computer Science', readiness: 85, target: 90, color: '#5B2D90' },
   { dept: 'Information Tech', readiness: 78, target: 85, color: '#8B5FBF' },
@@ -2039,7 +1978,6 @@ async function initCollegeDashboard() {
   const rate = total > 0 ? ((placed / total) * 100).toFixed(1) : 0;
   const avgReadiness = total > 0 ? Math.round(students.reduce((a, s) => a + (s.readiness || 50), 0) / total) : 0;
 
-  // KPI Cards
   const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
   set('tpKpiTotal', total);
   set('tpKpiPlaced', placed);
@@ -2054,7 +1992,6 @@ async function initCollegeDashboard() {
   const nextDrive = drives.sort((a, b) => new Date(a.date) - new Date(b.date))[0];
   if (nextDrive) set('tpKpiNextDrive', `Next: ${nextDrive.company} (${nextDrive.date})`);
 
-  // Dept Readiness Bars
   const drl = document.getElementById('deptReadinessList');
   if (drl) {
     drl.innerHTML = DEPT_READINESS_DATA.map(d => `
@@ -2068,7 +2005,6 @@ async function initCollegeDashboard() {
     `).join('');
   }
 
-  // Monthly Progress Line Chart
   setTimeout(() => {
     const ctx = document.getElementById('monthlyProgressChart');
     if (!ctx) return;
@@ -2106,7 +2042,6 @@ async function initCollegeDashboard() {
     });
   }, 300);
 
-  // Upcoming Drives List
   const dc = document.getElementById('upcomingDrivesContainer');
   if (dc) {
     const sorted = drives.sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 5);
@@ -2126,7 +2061,6 @@ async function initCollegeDashboard() {
       `).join('');
   }
 
-  // Company Network Widget
   const cnwList = document.getElementById('cnwList');
   if (cnwList && companies.length > 0) {
     const pending = companies.filter(c => c.status === 'Pending' || c.status === 'Requested').slice(0, 3);
@@ -2158,7 +2092,6 @@ async function initCollegeStudents() {
   const students = await db.getStudents();
   _smAllStudents = students;
 
-  // Cohort stats
   const ready = students.filter(s => s.readiness >= 75).length;
   const improving = students.filter(s => s.readiness >= 55 && s.readiness < 75).length;
   const attention = students.filter(s => s.readiness < 55).length;
@@ -2170,7 +2103,6 @@ async function initCollegeStudents() {
   set('smStatAttention', attention);
   set('smStatAvg', `${avg}%`);
 
-  // Cohort trend chart
   setTimeout(() => {
     const ctx = document.getElementById('cohortTrendChart');
     if (!ctx) return;
@@ -2402,7 +2334,6 @@ async function initCollegeInnovation() {
   renderInnovationFeed('All');
   renderInnovationSidebar();
 
-  // Activity bar chart
   setTimeout(() => {
     const ctx = document.getElementById('innovationActivityChart');
     if (!ctx) return;
@@ -2428,7 +2359,6 @@ function renderInnovationFeed(category) {
   const CATEGORY_ICONS = { 'Sustainability': '🌿', 'EduTech': '📚', 'AI & ML': '🤖', 'FinTech': '💳' };
   let filtered = category === 'All' ? _allStartups : _allStartups.filter(s => s.category === category);
 
-  // Sort: trending first
   filtered = [...filtered].sort((a, b) => b.upvotes - a.upvotes);
 
   if (filtered.length === 0) {
@@ -2557,7 +2487,7 @@ function closeStartupModal(event) {
 }
 
 // ──────────────────────────────────────────────────────────────
-// COLLEGE PORTAL — SECTION 4: COMPANY RELATIONS
+// COLLEGE PORTAL — COMPANY RELATIONS
 // ──────────────────────────────────────────────────────────────
 let _engagementChart = null;
 let _calendarDate = new Date();
@@ -2640,7 +2570,6 @@ function renderCalendar() {
   }
   calDays.innerHTML = html;
 
-  // Show today's meetings
   renderMeetingsList(today.getDate());
 }
 
@@ -2815,7 +2744,6 @@ function sendCrMessageBtn() {
     msgs.appendChild(div);
     msgs.scrollTop = msgs.scrollHeight;
 
-    // Simulate reply after 1.5s
     setTimeout(() => {
       const replies = [
         'Thank you! We will confirm the dates with our HR team.',

@@ -834,20 +834,86 @@ function renderDashWeakSkills() {
 }
 
 function initHeatmap() {
-  const grid = document.getElementById('heatmapGrid');
-  if (!grid) return;
-  grid.innerHTML = '';
-  const levels = ['l0', 'l0', 'l1', 'l1', 'l2', 'l3', 'l4'];
-  for (let i = 0; i < 84; i++) {
-    const day = document.createElement('div');
-    const lvl = Math.random() < 0.3 ? 'l0' : levels[Math.floor(Math.random() * levels.length)];
-    day.className = `hm-day ${lvl}`;
-    day.title = `${Math.floor(Math.random() * 4)}h studied`;
-    grid.appendChild(day);
+  const table = document.getElementById('ghHeatmapTable');
+  if (!table) return;
+
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const DAY_LABELS = ['','Mon','','Wed','','Fri',''];
+  const levels = ['l0','l0','l1','l1','l2','l3','l4'];
+
+  // Generate 1 year of dates ending today
+  const today = new Date();
+  const start = new Date(today);
+  start.setDate(start.getDate() - 365);
+
+  // Align start to the nearest preceding Sunday
+  start.setDate(start.getDate() - start.getDay());
+
+  // Build date grid (columns = weeks, rows = 0-6 Sun-Sat)
+  const weeks = [];
+  const d = new Date(start);
+  while (d <= today) {
+    const week = [];
+    for (let dow = 0; dow < 7; dow++) {
+      const cellDate = new Date(d);
+      cellDate.setDate(d.getDate() + dow);
+      if (cellDate <= today) {
+        const lvl = Math.random() < 0.3 ? 'l0' : levels[Math.floor(Math.random() * levels.length)];
+        const hrs = Math.floor(Math.random() * 5);
+        week.push({ date: new Date(cellDate), lvl, hrs });
+      } else {
+        week.push(null);
+      }
+    }
+    weeks.push(week);
+    d.setDate(d.getDate() + 7);
   }
+
+  // Build month header row
+  let monthRow = '<tr><td class="gh-day-label"></td>';
+  let lastMonth = -1;
+  for (let w = 0; w < weeks.length; w++) {
+    const firstValid = weeks[w].find(c => c !== null);
+    if (firstValid && firstValid.date.getMonth() !== lastMonth) {
+      lastMonth = firstValid.date.getMonth();
+      // Count how many consecutive weeks share this month
+      let span = 0;
+      for (let ww = w; ww < weeks.length; ww++) {
+        const fv = weeks[ww].find(c => c !== null);
+        if (fv && fv.date.getMonth() === lastMonth) span++;
+        else break;
+      }
+      monthRow += `<td class="gh-month-cell" colspan="${span}">${MONTHS[lastMonth]}</td>`;
+      w += span - 1; // skip spanned weeks
+    } else {
+      monthRow += '<td></td>';
+    }
+  }
+  monthRow += '</tr>';
+
+  // Build 7 day-rows
+  let bodyRows = '';
+  for (let dow = 0; dow < 7; dow++) {
+    bodyRows += `<tr><td class="gh-day-label">${DAY_LABELS[dow]}</td>`;
+    for (let w = 0; w < weeks.length; w++) {
+      const cell = weeks[w][dow];
+      if (cell) {
+        const dateStr = `${MONTHS[cell.date.getMonth()]} ${cell.date.getDate()}`;
+        const tooltip = `${cell.hrs}h studied on ${dateStr}`;
+        bodyRows += `<td><div class="gh-cell ${cell.lvl}" data-tooltip="${tooltip}"></div></td>`;
+      } else {
+        bodyRows += '<td></td>';
+      }
+    }
+    bodyRows += '</tr>';
+  }
+
+  table.innerHTML = monthRow + bodyRows;
 }
 
 function initSkillReport() {
+  initHeatmap(); // Initialize the GitHub-style heatmap
+
   if (state.charts.radar) { state.charts.radar.destroy(); }
   const ctx = document.getElementById('radarChart');
   if (!ctx) return;
@@ -894,22 +960,115 @@ function initSkillReport() {
 }
 
 function initRoadmap() {
-  const container = document.getElementById('roadmapTimeline');
+  const container = document.getElementById('roadmapIsoContainer');
   if (!container) return;
-  container.innerHTML = ROADMAP_ITEMS.map(item => `
-    <div class="timeline-item">
-      <div class="timeline-marker">
-        <div class="tl-dot ${item.status}"></div>
-        <div class="tl-week">${item.week}</div>
-      </div>
-      <div class="timeline-card ${item.status}">
-        <div class="tc-top">
-          <div class="tc-title">${item.title}</div>
-          <span class="tc-badge ${item.status}">${item.status === 'done' ? '✓ Completed' : item.status === 'current' ? '▶ In Progress' : item.status === 'locked' ? '🔒 Locked' : '◷ Upcoming'}</span>
+
+  const points = [
+    { x: 150, y: 150, align: 'right' },
+    { x: 400, y: 300, align: 'right' },
+    { x: 650, y: 180, align: 'right' },
+    { x: 900, y: 380, align: 'right' },
+    { x: 1150, y: 220, align: 'left' },
+    { x: 1320, y: 400, align: 'left' }
+  ];
+
+  // Extended smooth winding path going through the points
+  const pathD = `M 50,100 S 150,150 150,150 S 250,250 400,300 S 550,150 650,180 S 750,400 900,380 S 1050,200 1150,220 S 1250,450 1320,400 S 1380,420 1450,400`;
+
+  let nodesHtml = '';
+  ROADMAP_ITEMS.forEach((item, i) => {
+    const pt = points[i] || {x:0, y:0, align:'right'};
+    const isLocked = item.status === 'locked';
+    const isDone = item.status === 'done';
+    
+    let pinColor = '#7c3aed'; // Purple
+    if (isDone) pinColor = '#16a34a'; // Green
+    if (isLocked) pinColor = '#94a3b8'; // Gray
+
+    const cardAlign = pt.align === 'right' ? 'right-side' : 'left-side';
+
+    nodesHtml += `
+      <div class="rm-iso-node ${isLocked ? 'locked' : ''}" style="left: ${pt.x}px; top: ${pt.y}px;">
+        <!-- Default Label -->
+        <div class="rm-iso-label">${item.title}</div>
+        
+        <!-- 3D Base -->
+        <svg class="rm-iso-base" width="50" height="35" viewBox="0 0 50 35" style="position:absolute; transform:translate(-50%, -50%); top:15px; left:0;">
+          <path d="M 5,10 v 15 a 20,10 0 0,0 40,0 v -15 z" fill="#f59e0b"/>
+          <ellipse cx="25" cy="10" rx="20" ry="10" fill="#fcd34d"/>
+          <ellipse cx="25" cy="10" rx="8" ry="4" fill="#fff"/>
+        </svg>
+        <!-- Pin -->
+        <div class="rm-iso-pin" style="position:absolute; transform:translate(-50%, -100%); top:-5px; left:0;">
+          <svg width="32" height="42" viewBox="0 0 24 30" fill="none">
+            <path d="M12 0C5.373 0 0 5.373 0 12c0 8 12 18 12 18s12-10 12-18c0-6.627-5.373-12-12-12z" fill="${pinColor}"/>
+            <circle cx="12" cy="12" r="5" fill="#fff"/>
+            ${isDone ? '<path d="M9 12l2 2 4-4" stroke="'+pinColor+'" stroke-width="2" stroke-linecap="round"/>' : ''}
+            ${isLocked ? '<rect x="9" y="10" width="6" height="4" rx="1" fill="'+pinColor+'"/><path d="M10 10V8a2 2 0 014 0v2" stroke="'+pinColor+'" stroke-width="1.5"/>' : ''}
+          </svg>
         </div>
-        <div class="tc-desc">${item.desc}</div>
-        <div class="tc-topics">${item.topics.map(t => `<span class="tc-topic">${t}</span>`).join('')}</div>
-        ${item.status !== 'locked' ? `<div class="tc-progress"><div class="tc-prog-fill" style="width:${item.progress}%"></div></div>` : ''}
+        
+        <!-- Detailed Content Card -->
+        <div class="rm-iso-card ${cardAlign}">
+          <div class="rm-iso-card-top">
+            <div class="rm-iso-card-title">${item.title}</div>
+            <span class="rm-iso-badge ${item.status}">${item.status === 'done' ? '✓ Completed' : item.status === 'current' ? '▶ In Progress' : item.status === 'locked' ? '🔒 Locked' : '◷ Upcoming'}</span>
+          </div>
+          <div style="font-size:11px; color:var(--primary); font-weight:600; margin-bottom:8px;">${item.week}</div>
+          <div class="rm-iso-card-desc">${item.desc}</div>
+          <div class="rm-iso-topics">
+            ${item.topics.map(t => `<span class="rm-iso-topic">${t}</span>`).join('')}
+          </div>
+          ${!isLocked ? `<div class="rm-iso-progress"><div class="rm-iso-prog-fill" style="width:${item.progress}%"></div></div>` : ''}
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = `
+    <svg class="rm-iso-svg" viewBox="0 0 1500 500" preserveAspectRatio="xMidYMid meet">
+      <!-- 3D Path Shadow/Extrusion -->
+      <path d="${pathD}" fill="none" stroke="#4c1d95" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" transform="translate(0, 15)"/>
+      <!-- Main Path -->
+      <path d="${pathD}" fill="none" stroke="#7c3aed" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Inner Lines -->
+      <path d="${pathD}" fill="none" stroke="#a78bfa" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" transform="translate(10, 0)"/>
+      <path d="${pathD}" fill="none" stroke="#a78bfa" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" transform="translate(-10, 0)"/>
+    </svg>
+    ${nodesHtml}
+  `;
+
+  // Initialize the achievements grid below the roadmap
+  initAchievements();
+}
+
+// ──────────────────────────────────────────────────────────────
+// ACHIEVEMENTS GRID LOGIC
+// ──────────────────────────────────────────────────────────────
+const BADGES = [
+  { id: 1, name: 'First Login', sub: 'Joined the portal', date: 'Oct 12, 2024', locked: false, icon: '🚀', points: '1,500 lifetime points' },
+  { id: 2, name: 'Assessed', sub: 'Completed skill gap test', date: 'Oct 13, 2024', locked: false, icon: '🎯', points: '2,000 lifetime points' },
+  { id: 3, name: 'DSA Beginner', sub: 'Arrays & Strings done', date: 'Oct 20, 2024', locked: false, icon: '🧩', points: '5,000 lifetime points' },
+  { id: 4, name: 'First Test', sub: 'Attempted first mock', date: 'Nov 02, 2024', locked: false, icon: '📝', points: '4,500 lifetime points' },
+  { id: 5, name: 'Interview Ready', sub: 'Score 80%+ in all areas', date: 'Locked', locked: true, icon: '🎙️', points: '10,000 lifetime points' },
+  { id: 6, name: 'Placement Champ', sub: 'Get placed successfully', date: 'Locked', locked: true, icon: '🏆', points: '50,000 lifetime points' },
+  { id: 7, name: 'Consistency', sub: '30 Day Streak', date: 'Locked', locked: true, icon: '🔥', points: '3,000 lifetime points' },
+  { id: 8, name: 'Top 10%', sub: 'Rank in top 10% of batch', date: 'Locked', locked: true, icon: '⭐', points: '8,000 lifetime points' }
+];
+
+function initAchievements() {
+  const container = document.getElementById('achievementsGrid');
+  if (!container) return;
+
+  container.innerHTML = BADGES.map(badge => `
+    <div class="achv-card ${badge.locked ? 'locked' : ''}">
+      <div class="achv-img-wrap">
+        <div class="achv-img-inner">${badge.icon}</div>
+      </div>
+      <div class="achv-info">
+        <div class="achv-title">${badge.name}</div>
+        <div class="achv-points">${badge.points}</div>
+        <div class="achv-date">${badge.locked ? 'Locked' : 'Earned ' + badge.date}</div>
       </div>
     </div>
   `).join('');

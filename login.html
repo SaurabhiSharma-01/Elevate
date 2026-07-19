@@ -13,8 +13,8 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --primary:   #2563eb;
-      --primary-h: #1d4ed8;
+      --primary:   #5B2D90;
+      --primary-h: #4A2476;
       --text-dark: #0d1117;
       --text-mid:  #4a5568;
       --text-soft: #94a3b8;
@@ -27,8 +27,8 @@
 
     html, body {
       height: 100%;
-      /* Unified background — same across both panels, matches reference */
-      background: linear-gradient(145deg, #e8eef8 0%, #edf2fb 40%, #f0f4fb 100%);
+      /* Unified background — lavender tinted */
+      background: linear-gradient(145deg, #f5f2fc 0%, #fdfcff 40%, #ffffff 100%);
       font-family: 'Inter', sans-serif;
       color: var(--text-dark);
       overflow: hidden;
@@ -56,13 +56,6 @@
     }
 
     /* ─── THE CIRCLE — matches reference image exactly ────────── */
-    /*
-      Image shows: one large circle, center-left of left panel,
-      partially clipped by overflow:hidden.
-      Fill: very subtle light-blue interior gradient (not transparent, not filled)
-      Border: visible thin teal-cyan stroke
-      Animation: slow grow + shrink (breathing)
-    */
     .circle-main {
       position: absolute;
       border-radius: 50%;
@@ -74,16 +67,16 @@
       top: 50%;
       left: 0;
       transform: translate(-50%, -50%);
-      /* Subtle teal gradient fill */
+      /* Subtle lavender gradient fill */
       background: radial-gradient(
         circle at center,
-        rgba(172, 218, 238, 0.22) 0%,
-        rgba(172, 218, 238, 0.12) 45%,
-        rgba(172, 218, 238, 0.04) 75%,
+        rgba(91, 45, 144, 0.15) 0%,
+        rgba(91, 45, 144, 0.08) 45%,
+        rgba(91, 45, 144, 0.02) 75%,
         transparent 100%
       );
-      /* Visible teal border */
-      border: 1.5px solid rgba(110, 185, 220, 0.55);
+      /* Visible purple border */
+      border: 1.5px solid rgba(91, 45, 144, 0.35);
       /* Breathe animation that grows outwards */
       animation: breathe 6s ease-in-out infinite;
     }

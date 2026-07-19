@@ -7,6 +7,9 @@
   <title>Prashikshan — AI Training & Placement Portal | GH Raisoni College</title>
   <meta name="description"
     content="AI-powered Training & Placement Cell Portal for GH Raisoni College. Smart career preparation, skill gap analysis, mock interviews, and placement readiness tracking." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
@@ -976,28 +979,23 @@
 </div>
       <!-- ── PAGE: SKILL REPORT ── -->
       <div class="app-page fade-in" id="page-skill-report">
-        <div class="page-header">
-          <h1>Skill Report</h1>
-          <p>Your comprehensive skill analysis based on assessment results and learning progress.</p>
+        <!-- Page Header -->
+        <div class="page-header" style="margin-bottom: 28px;">
+          <h1 class="skill-report-title">Skill Report</h1>
+          <p class="skill-report-subtitle">Your comprehensive skill analysis based on assessment results and learning progress.</p>
         </div>
-        <div class="skill-report-grid">
-          <!-- Radar Chart -->
-          <div class="card chart-card">
-            <h3>Skill Radar</h3>
-            <div class="radar-wrap"><canvas id="radarChart"></canvas></div>
-          </div>
-          <!-- KPI Circles -->
-          <div class="card">
-            <div class="card-header">
-              <h3>Subject Performance</h3>
-            </div>
-            <div class="score-circles">
+
+        <!-- Section 1: Top Overview — Two Columns -->
+        <div class="sr-top-row">
+          <!-- Left Card: Subject Performance -->
+          <div class="card" style="padding: 24px;">
+            <h3 class="sr-section-heading">Subject Performance</h3>
+            <div class="sr-subject-grid">
               <div class="score-circle-item">
                 <div class="circular-chart">
                   <svg width="80" height="80" viewBox="0 0 80 80">
                     <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="7" />
-                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--primary)" stroke-width="7"
-                      stroke-dasharray="201.06" stroke-dashoffset="60.32" stroke-linecap="round" />
+                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--primary)" stroke-width="7" stroke-dasharray="201.06" stroke-dashoffset="60.32" stroke-linecap="round" />
                   </svg>
                   <div class="cc-num">70%</div>
                 </div>
@@ -1007,8 +1005,7 @@
                 <div class="circular-chart">
                   <svg width="80" height="80" viewBox="0 0 80 80">
                     <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="7" />
-                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--success)" stroke-width="7"
-                      stroke-dasharray="201.06" stroke-dashoffset="80.42" stroke-linecap="round" />
+                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--success)" stroke-width="7" stroke-dasharray="201.06" stroke-dashoffset="80.42" stroke-linecap="round" />
                   </svg>
                   <div class="cc-num">60%</div>
                 </div>
@@ -1018,8 +1015,7 @@
                 <div class="circular-chart">
                   <svg width="80" height="80" viewBox="0 0 80 80">
                     <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="7" />
-                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--error)" stroke-width="7"
-                      stroke-dasharray="201.06" stroke-dashoffset="136.72" stroke-linecap="round" />
+                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--error)" stroke-width="7" stroke-dasharray="201.06" stroke-dashoffset="136.72" stroke-linecap="round" />
                   </svg>
                   <div class="cc-num">32%</div>
                 </div>
@@ -1029,8 +1025,7 @@
                 <div class="circular-chart">
                   <svg width="80" height="80" viewBox="0 0 80 80">
                     <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="7" />
-                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--warning)" stroke-width="7"
-                      stroke-dasharray="201.06" stroke-dashoffset="90.48" stroke-linecap="round" />
+                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--warning)" stroke-width="7" stroke-dasharray="201.06" stroke-dashoffset="90.48" stroke-linecap="round" />
                   </svg>
                   <div class="cc-num">55%</div>
                 </div>
@@ -1040,8 +1035,7 @@
                 <div class="circular-chart">
                   <svg width="80" height="80" viewBox="0 0 80 80">
                     <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="7" />
-                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--error)" stroke-width="7"
-                      stroke-dasharray="201.06" stroke-dashoffset="120.64" stroke-linecap="round" />
+                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--error)" stroke-width="7" stroke-dasharray="201.06" stroke-dashoffset="120.64" stroke-linecap="round" />
                   </svg>
                   <div class="cc-num">40%</div>
                 </div>
@@ -1051,8 +1045,7 @@
                 <div class="circular-chart">
                   <svg width="80" height="80" viewBox="0 0 80 80">
                     <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="7" />
-                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--secondary)" stroke-width="7"
-                      stroke-dasharray="201.06" stroke-dashoffset="50.27" stroke-linecap="round" />
+                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--secondary)" stroke-width="7" stroke-dasharray="201.06" stroke-dashoffset="50.27" stroke-linecap="round" />
                   </svg>
                   <div class="cc-num">75%</div>
                 </div>
@@ -1060,145 +1053,118 @@
               </div>
             </div>
           </div>
-          <!-- Detailed Progress Bars -->
-          <div class="card">
-            <div class="card-header">
-              <h3>Detailed Breakdown</h3>
+
+          <!-- Right Card: Skill Radar -->
+          <div class="card sr-radar-card">
+            <h3 class="sr-section-heading">Skill Radar</h3>
+            <div class="radar-wrap"><canvas id="radarChart"></canvas></div>
+          </div>
+        </div>
+
+        <!-- Section 2: Detailed Breakdown — Full Width, 2-Column Grid -->
+        <div class="card" style="padding: 24px; margin-bottom: 24px;">
+          <h3 class="sr-section-heading">Detailed Breakdown</h3>
+          <div class="sr-breakdown-grid">
+            <div class="sp-item">
+              <div class="sp-header"><span class="sp-name">Technical Programming</span><span class="sp-pct">75%</span></div>
+              <div class="sp-bar"><div class="sp-fill" style="width:75%;background:linear-gradient(90deg,var(--primary),var(--secondary))"></div></div>
             </div>
-            <div class="skills-progress-list">
-              <div class="sp-item">
-                <div class="sp-header"><span class="sp-name">Technical Programming</span><span class="sp-pct">75%</span>
-                </div>
-                <div class="sp-bar">
-                  <div class="sp-fill"
-                    style="width:75%;background:linear-gradient(90deg,var(--primary),var(--secondary))"></div>
-                </div>
-              </div>
-              <div class="sp-item">
-                <div class="sp-header"><span class="sp-name">Data Structures</span><span class="sp-pct">70%</span></div>
-                <div class="sp-bar">
-                  <div class="sp-fill"
-                    style="width:70%;background:linear-gradient(90deg,var(--primary),var(--secondary))"></div>
-                </div>
-              </div>
-              <div class="sp-item">
-                <div class="sp-header"><span class="sp-name">Quantitative Aptitude</span><span class="sp-pct">55%</span>
-                </div>
-                <div class="sp-bar">
-                  <div class="sp-fill" style="width:55%;background:linear-gradient(90deg,var(--warning),#fbbf24)"></div>
-                </div>
-              </div>
-              <div class="sp-item">
-                <div class="sp-header"><span class="sp-name">Communication Skills</span><span class="sp-pct">62%</span>
-                </div>
-                <div class="sp-bar">
-                  <div class="sp-fill" style="width:62%;background:linear-gradient(90deg,var(--info),#60a5fa)"></div>
-                </div>
-              </div>
-              <div class="sp-item">
-                <div class="sp-header"><span class="sp-name">Logical Reasoning</span><span class="sp-pct">68%</span>
-                </div>
-                <div class="sp-bar">
-                  <div class="sp-fill" style="width:68%;background:linear-gradient(90deg,var(--success),#4ade80)"></div>
-                </div>
-              </div>
-              <div class="sp-item">
-                <div class="sp-header"><span class="sp-name">Problem Solving</span><span class="sp-pct">73%</span></div>
-                <div class="sp-bar">
-                  <div class="sp-fill"
-                    style="width:73%;background:linear-gradient(90deg,var(--primary),var(--secondary))"></div>
-                </div>
-              </div>
-              <div class="sp-item">
-                <div class="sp-header"><span class="sp-name">Operating Systems</span><span class="sp-pct">32%</span>
-                </div>
-                <div class="sp-bar">
-                  <div class="sp-fill" style="width:32%;background:linear-gradient(90deg,var(--error),#ff8080)"></div>
-                </div>
-              </div>
-              <div class="sp-item">
-                <div class="sp-header"><span class="sp-name">Computer Networks</span><span class="sp-pct">38%</span>
-                </div>
-                <div class="sp-bar">
-                  <div class="sp-fill" style="width:38%;background:linear-gradient(90deg,var(--error),#ff8080)"></div>
-                </div>
-              </div>
+            <div class="sp-item">
+              <div class="sp-header"><span class="sp-name">Data Structures</span><span class="sp-pct">70%</span></div>
+              <div class="sp-bar"><div class="sp-fill" style="width:70%;background:linear-gradient(90deg,var(--primary),var(--secondary))"></div></div>
+            </div>
+            <div class="sp-item">
+              <div class="sp-header"><span class="sp-name">Quantitative Aptitude</span><span class="sp-pct">55%</span></div>
+              <div class="sp-bar"><div class="sp-fill" style="width:55%;background:linear-gradient(90deg,var(--warning),#fbbf24)"></div></div>
+            </div>
+            <div class="sp-item">
+              <div class="sp-header"><span class="sp-name">Communication Skills</span><span class="sp-pct">62%</span></div>
+              <div class="sp-bar"><div class="sp-fill" style="width:62%;background:linear-gradient(90deg,var(--info),#60a5fa)"></div></div>
+            </div>
+            <div class="sp-item">
+              <div class="sp-header"><span class="sp-name">Logical Reasoning</span><span class="sp-pct">68%</span></div>
+              <div class="sp-bar"><div class="sp-fill" style="width:68%;background:linear-gradient(90deg,var(--success),#4ade80)"></div></div>
+            </div>
+            <div class="sp-item">
+              <div class="sp-header"><span class="sp-name">Problem Solving</span><span class="sp-pct">73%</span></div>
+              <div class="sp-bar"><div class="sp-fill" style="width:73%;background:linear-gradient(90deg,var(--primary),var(--secondary))"></div></div>
+            </div>
+            <div class="sp-item">
+              <div class="sp-header"><span class="sp-name">Operating Systems</span><span class="sp-pct">32%</span></div>
+              <div class="sp-bar"><div class="sp-fill" style="width:32%;background:linear-gradient(90deg,var(--error),#ff8080)"></div></div>
+            </div>
+            <div class="sp-item">
+              <div class="sp-header"><span class="sp-name">Computer Networks</span><span class="sp-pct">38%</span></div>
+              <div class="sp-bar"><div class="sp-fill" style="width:38%;background:linear-gradient(90deg,var(--error),#ff8080)"></div></div>
             </div>
           </div>
-          <!-- AI Insights -->
-          <div class="card ai-insight-card">
-            <h3>AI-Powered Insights</h3>
-            <div class="insight-item">
+        </div>
+
+        <!-- Section 3: AI-Powered Insights — Slim Horizontal Banner -->
+        <div class="sr-insights-banner" style="margin-bottom: 24px;">
+          <h3 class="sr-section-heading">AI-Powered Insights</h3>
+          <div class="sr-insights-row">
+            <div class="sr-insight-card">
               <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path
-                  d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
               </svg>
-              <p><strong>Strength:</strong> Your programming and DSA scores are in the top 30% of your batch. You're
-                well-prepared for technical coding rounds.</p>
+              <p><strong>Strength:</strong> Your programming and DSA scores are in the top 30% of your batch. You're well-prepared for technical coding rounds.</p>
             </div>
-            <div class="insight-item">
+            <div class="sr-insight-card">
               <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <circle cx="12" cy="12" r="10" />
                 <line x1="12" y1="8" x2="12" y2="12" />
                 <line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
-              <p><strong>Gap:</strong> Operating Systems (32%) and Computer Networks (38%) are critical weak areas for
-                TCS and Infosys. Prioritize these immediately.</p>
+              <p><strong>Gap:</strong> Operating Systems (32%) and Computer Networks (38%) are critical weak areas for TCS and Infosys. Prioritize these immediately.</p>
             </div>
-            <div class="insight-item">
+            <div class="sr-insight-card">
               <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
               </svg>
-              <p><strong>Action:</strong> At your current learning pace, you'll reach placement readiness (80%) in
-                approximately 6 weeks. Increase daily practice to 3h to achieve this in 4 weeks.</p>
+              <p><strong>Action:</strong> At your current learning pace, you'll reach placement readiness (80%) in approximately 6 weeks. Increase daily practice to 3h to achieve this in 4 weeks.</p>
             </div>
           </div>
-          <!-- Activity Heatmap -->
-          <div class="card full-width">
-            <div class="card-header">
-              <h3>Learning Activity Heatmap (Last 3 Months)</h3>
+        </div>
+
+        <!-- Section 4: GitHub-Style Learning Activity Heatmap -->
+        <div class="card" style="padding: 24px;">
+          <h3 class="sr-section-heading">Learning Activity Heatmap (Last 12 Months)</h3>
+          <div class="gh-heatmap-wrapper">
+            <div class="gh-heatmap-scroll">
+              <table class="gh-heatmap-table" id="ghHeatmapTable">
+                <!-- JS will generate the GitHub-style heatmap here -->
+              </table>
             </div>
-            <div class="heatmap-container">
-              <div class="heatmap-months">
-                <span>May</span>
-                <span>Jun</span>
-                <span>Jul</span>
+
+            <!-- Heatmap Statistics -->
+            <div class="gh-stats-grid">
+              <div class="gh-stat-card">
+                <div class="gh-stat-label">TOTAL TIME</div>
+                <div class="gh-stat-val">142h</div>
               </div>
-              <div class="heatmap-body">
-                <div class="heatmap-days">
-                  <span>Mon</span>
-                  <span>Wed</span>
-                  <span>Fri</span>
-                </div>
-                <div class="heatmap-grid" id="heatmapGrid"></div>
-                <div class="heatmap-insights">
-                  <div class="hi-card">
-                    <div class="hi-label">Total Time</div>
-                    <div class="hi-val">142h</div>
-                  </div>
-                  <div class="hi-card">
-                    <div class="hi-label">Active Days</div>
-                    <div class="hi-val">68 / 90</div>
-                  </div>
-                  <div class="hi-card">
-                    <div class="hi-label">Current Streak</div>
-                    <div class="hi-val" style="color:var(--accent)">12 Days</div>
-                  </div>
-                  <div class="hi-card">
-                    <div class="hi-label">Consistency</div>
-                    <div class="hi-val" style="color:var(--success)">76%</div>
-                  </div>
-                </div>
+              <div class="gh-stat-card">
+                <div class="gh-stat-label">ACTIVE DAYS</div>
+                <div class="gh-stat-val">268 / 365</div>
               </div>
-              <div class="heatmap-legend">
-                <span>Less</span>
-                <div class="legend-square l0"></div>
-                <div class="legend-square l1"></div>
-                <div class="legend-square l2"></div>
-                <div class="legend-square l3"></div>
-                <div class="legend-square l4"></div>
-                <span>More</span>
+              <div class="gh-stat-card">
+                <div class="gh-stat-label">CURRENT STREAK</div>
+                <div class="gh-stat-val">12 Days</div>
               </div>
+              <div class="gh-stat-card">
+                <div class="gh-stat-label">CONSISTENCY</div>
+                <div class="gh-stat-val">76%</div>
+              </div>
+            </div>
+
+            <div class="gh-heatmap-legend">
+              <span>Less</span>
+              <div class="gh-legend-sq l0"></div>
+              <div class="gh-legend-sq l1"></div>
+              <div class="gh-legend-sq l2"></div>
+              <div class="gh-legend-sq l3"></div>
+              <div class="gh-legend-sq l4"></div>
+              <span>More</span>
             </div>
           </div>
         </div>
@@ -1210,73 +1176,43 @@
           <h1>Personalized Roadmap</h1>
           <p>Your AI-generated learning path from assessment to placement readiness.</p>
         </div>
-        <div class="roadmap-stats">
-          <div class="rm-stat">
-            <div class="rs-val">72%</div>
-            <div class="rs-label">Overall Progress</div>
-          </div>
-          <div class="rm-stat">
-            <div class="rs-val">6 wk</div>
-            <div class="rs-label">Est. Completion</div>
-          </div>
-          <div class="rm-stat">
-            <div class="rs-val">14</div>
-            <div class="rs-label">Topics Done</div>
-          </div>
-          <div class="rm-stat">
-            <div class="rs-val">8</div>
-            <div class="rs-label">Remaining</div>
-          </div>
-          <div class="rm-stat">
-            <div class="rs-val">#47</div>
-            <div class="rs-label">Batch Rank</div>
+        <div class="rm-overview-card">
+          <div class="rm-overview-title">Roadmap Overview</div>
+          <div class="rm-stats-row">
+            <div class="rm-stat-tile">
+              <span class="rs-label">Overall Progress</span>
+              <span class="rs-val">72%</span>
+            </div>
+            <div class="rm-stat-tile">
+              <span class="rs-label">Est. Completion</span>
+              <span class="rs-val">6 wk</span>
+            </div>
+            <div class="rm-stat-tile">
+              <span class="rs-label">Topics Done</span>
+              <span class="rs-val">14</span>
+            </div>
+            <div class="rm-stat-tile">
+              <span class="rs-label">Remaining</span>
+              <span class="rs-val">8</span>
+            </div>
+            <div class="rm-stat-tile">
+              <span class="rs-label">Batch Rank</span>
+              <span class="rs-val">#47</span>
+            </div>
           </div>
         </div>
-        <div class="timeline" id="roadmapTimeline"></div>
-        <div class="section-title mt-8">Achievement Badges</div>
-        <div class="badges-row">
-          <div class="badge-item"><span class="badge-icon"
-              style="font-size:13px;font-weight:700;color:var(--primary)">1</span>
-            <div class="badge-info">
-              <div class="bi-name">First Login</div>
-              <div class="bi-sub">Joined the portal</div>
-            </div>
+        
+        <!-- Isometric 3D Roadmap Container -->
+        <div class="rm-scroll-wrapper">
+          <div class="rm-iso-container" id="roadmapIsoContainer">
+            <!-- JS will inject Isometric SVG and floating cards here -->
           </div>
-          <div class="badge-item"><span class="badge-icon"
-              style="font-size:13px;font-weight:700;color:var(--primary)">2</span>
-            <div class="badge-info">
-              <div class="bi-name">Assessed</div>
-              <div class="bi-sub">Completed skill gap test</div>
-            </div>
-          </div>
-          <div class="badge-item"><span class="badge-icon"
-              style="font-size:13px;font-weight:700;color:var(--primary)">3</span>
-            <div class="badge-info">
-              <div class="bi-name">DSA Beginner</div>
-              <div class="bi-sub">Arrays & Strings done</div>
-            </div>
-          </div>
-          <div class="badge-item"><span class="badge-icon"
-              style="font-size:13px;font-weight:700;color:var(--primary)">4</span>
-            <div class="badge-info">
-              <div class="bi-name">First Test</div>
-              <div class="bi-sub">Attempted first mock</div>
-            </div>
-          </div>
-          <div class="badge-item" style="opacity:0.4"><span class="badge-icon"
-              style="font-size:13px;font-weight:700;color:var(--text-3)">5</span>
-            <div class="badge-info">
-              <div class="bi-name">Interview Ready</div>
-              <div class="bi-sub">Score 80%+ in all areas</div>
-            </div>
-          </div>
-          <div class="badge-item" style="opacity:0.4"><span class="badge-icon"
-              style="font-size:13px;font-weight:700;color:var(--text-3)">6</span>
-            <div class="badge-info">
-              <div class="bi-name">Placement Champion</div>
-              <div class="bi-sub">Get placed successfully</div>
-            </div>
-          </div>
+        </div>
+
+        <!-- Grid Achievements -->
+        <h3 class="sr-section-heading" style="margin-top:40px; font-size:24px;">Achievements</h3>
+        <div class="achievements-grid" id="achievementsGrid">
+          <!-- JS will inject achievement cards here -->
         </div>
       </div>
 

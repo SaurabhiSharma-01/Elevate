@@ -3269,8 +3269,6 @@ ul { list-style: none; }
   .student-detail-panel { width: 100%; right: -100%; }
 }
 
-/* ── Toast overrides for college ── */
-.college-toast { }
 
 /* ── Empty states ── */
 .ce-empty { text-align: center; padding: 40px 20px; }

@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elevate — Sign In</title>
+  <meta name="description" content="Sign in to Elevate — AI Career Intelligence Platform connecting students, colleges, and recruiters." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── Reset & Base ───────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary:   #2563eb;
+      --primary-h: #1d4ed8;
+      --text-dark: #0d1117;
+      --text-mid:  #4a5568;
+      --text-soft: #94a3b8;
+      --border:    #e2e8f0;
+      --error:     #ef4444;
+      --success:   #22c55e;
+      --input-bg:  #f8fafc;
+      --shadow:    0 4px 32px rgba(15,23,42,.09);
+    }
+
+    html, body {
+      height: 100%;
+      /* Unified background — same across both panels, matches reference */
+      background: linear-gradient(145deg, #e8eef8 0%, #edf2fb 40%, #f0f4fb 100%);
+      font-family: 'Inter', sans-serif;
+      color: var(--text-dark);
+      overflow: hidden;
+      font-size: 16px;
+    }
+
+    /* ─── Layout ─────────────────────────────────────────────── */
+    .page {
+      display: flex;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* ─── LEFT PANEL ─────────────────────────────────────────── */
+    .left-panel {
+      flex: 1.15;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 60px 68px;
+      overflow: hidden;
+      /* transparent — shows the body gradient directly */
+      background: transparent;
+    }
+
+    /* ─── THE CIRCLE — matches reference image exactly ────────── */
+    /*
+      Image shows: one large circle, center-left of left panel,
+      partially clipped by overflow:hidden.
+      Fill: very subtle light-blue interior gradient (not transparent, not filled)
+      Border: visible thin teal-cyan stroke
+      Animation: slow grow + shrink (breathing)
+    */
+    .circle-main {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      /* Very large so it acts as a massive background sphere */
+      width: 140vh;
+      height: 140vh;
+      /* Center vertically, but pull it halfway off the left edge */
+      top: 50%;
+      left: 0;
+      transform: translate(-50%, -50%);
+      /* Subtle teal gradient fill */
+      background: radial-gradient(
+        circle at center,
+        rgba(172, 218, 238, 0.22) 0%,
+        rgba(172, 218, 238, 0.12) 45%,
+        rgba(172, 218, 238, 0.04) 75%,
+        transparent 100%
+      );
+      /* Visible teal border */
+      border: 1.5px solid rgba(110, 185, 220, 0.55);
+      /* Breathe animation that grows outwards */
+      animation: breathe 6s ease-in-out infinite;
+    }
+
+    @keyframes breathe {
+      0%   { transform: translate(-50%, -50%) scale(0.92); opacity: 0.7; }
+      50%  { transform: translate(-50%, -50%) scale(1.08); opacity: 1.0; }
+      100% { transform: translate(-50%, -50%) scale(0.92); opacity: 0.7; }
+    }
+
+    /* ─── Brand tag top-left ─────────────────────────────────── */
+    .brand-tag {
+      position: absolute;
+      top: 36px;
+      left: 68px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      color: var(--text-soft);
+      text-transform: uppercase;
+    }
+    .brand-tag span { color: #64748b; }
+
+    /* ─── Bottom-left decorative text ───────────────────────── */
+    .bottom-tag {
+      position: absolute;
+      bottom: 36px;
+      left: 68px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      color: var(--text-soft);
+      letter-spacing: 0.5px;
+    }
+
+    /* ─── Hero content ───────────────────────────────────────── */
+    .hero {
+      position: relative;
+      z-index: 2;
+    }
+
+    .elevate-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .elevate-logo-text {
+      font-family: 'Inter', sans-serif;
+      font-size: 76px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      color: var(--text-dark);
+      line-height: 1;
+    }
+    .elevate-logo-text .v-accent { color: var(--primary); }
+
+    .elevate-arrow {
+      display: flex;
+      align-items: center;
+      margin-bottom: 6px; /* align with baseline of text */
+      animation: arrowBounce 2.4s ease-in-out infinite;
+    }
+    .elevate-arrow svg {
+      width: 40px; height: 40px;
+      color: var(--primary);
+      stroke-width: 2.8px;
+    }
+    @keyframes arrowBounce {
+      0%   { transform: translateY(0); }
+      45%  { transform: translateY(-11px); }
+      65%  { transform: translateY(-8px); }
+      100% { transform: translateY(0); }
+    }
+
+    /* Horizontal blue line under ELEVATE */
+    .tagline-line {
+      width: 220px;
+      height: 2px;
+      background: var(--primary);
+      margin: 10px 0 16px;
+      border-radius: 2px;
+    }
+
+    .tagline {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 3.5px;
+      color: var(--text-soft);
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    .hero-desc {
+      font-size: 15.5px;
+      color: var(--text-mid);
+      line-height: 1.78;
+      max-width: 360px;
+    }
+
+    /* ─── RIGHT PANEL ────────────────────────────────────────── */
+    .right-panel {
+      flex: 0.9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 44px;
+      background: transparent;
+    }
+
+    /* Card — white floating card with subtle shadow */
+    .card {
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 42px 44px;
+      width: 100%;
+      max-width: 440px;
+      border: 1px solid rgba(220,228,240,.9);
+      animation: cardIn .45s ease-out forwards;
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Badge */
+    .card-badge {
+      display: inline-block;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 100px;
+      padding: 5px 15px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      color: #64748b;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .card-title {
+      font-size: 30px;
+      font-weight: 800;
+      color: var(--text-dark);
+      margin-bottom: 6px;
+      line-height: 1.15;
+    }
+    .card-subtitle {
+      font-size: 14.5px;
+      color: var(--text-mid);
+      margin-bottom: 26px;
+      line-height: 1.5;
+    }
+
+    /* Role Tabs */
+    .role-tabs {
+      display: flex;
+      background: #f1f5f9;
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 24px;
+      gap: 2px;
+    }
+    .role-tab {
+      flex: 1;
+      text-align: center;
+      padding: 9px 4px;
+      border-radius: 7px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-soft);
+      cursor: pointer;
+      transition: all .2s ease;
+      user-select: none;
+      border: none;
+      background: transparent;
+    }
+    .role-tab.active {
+      background: #ffffff;
+      color: var(--primary);
+      box-shadow: 0 1px 5px rgba(15,23,42,.08);
+    }
+    .role-tab:hover:not(.active) { color: var(--text-dark); }
+
+    /* Form */
+    .form-group { margin-bottom: 16px; }
+    .form-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 7px;
+    }
+    .form-label a {
+      font-size: 13px;
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .form-label a:hover { text-decoration: underline; }
+
+    .input-wrap { position: relative; }
+    .input-icon {
+      position: absolute;
+      left: 13px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-soft);
+      display: flex;
+      pointer-events: none;
+    }
+    .input-icon svg { width: 16px; height: 16px; }
+
+    .form-input {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 42px 12px 42px;
+      font-size: 14.5px;
+      font-family: 'Inter', sans-serif;
+      color: var(--text-dark);
+      outline: none;
+      transition: border-color .18s, box-shadow .18s;
+    }
+    .form-input::placeholder { color: var(--text-soft); }
+    .form-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.09);
+      background: #fff;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 13px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-soft);
+      cursor: pointer;
+      display: flex;
+      background: none; border: none; padding: 0;
+    }
+    .toggle-password svg { width: 16px; height: 16px; }
+    .toggle-password:hover { color: var(--text-dark); }
+
+    /* Message */
+    .form-message {
+      font-size: 13.5px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      display: none;
+      animation: msgIn .2s ease-out;
+    }
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .form-message.error   { background: #fef2f2; color: var(--error);   border: 1px solid #fecaca; display: flex; gap: 8px; align-items: flex-start; }
+    .form-message.success { background: #f0fdf4; color: var(--success); border: 1px solid #bbf7d0; display: flex; gap: 8px; align-items: flex-start; }
+
+    /* Button */
+    .btn-primary {
+      width: 100%;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 15.5px;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: background .18s, transform .12s, box-shadow .18s;
+      margin-top: 2px;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-primary:hover { background: var(--primary-h); box-shadow: 0 4px 16px rgba(37,99,235,.28); }
+    .btn-primary:active { transform: scale(.98); }
+    .btn-primary:disabled { opacity: .65; cursor: not-allowed; transform: none; }
+    .btn-primary .spinner { display: none; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; margin: 0 auto; }
+    .btn-primary.loading .btn-text { display: none; }
+    .btn-primary.loading .spinner  { display: block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Footer */
+    .card-footer {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 13.5px;
+      color: var(--text-mid);
+    }
+    .card-footer a { color: var(--primary); font-weight: 600; text-decoration: none; }
+    .card-footer a:hover { text-decoration: underline; }
+
+    /* Sub-forms */
+    .sub-form { display: none; border-top: 1px solid var(--border); margin-top: 18px; padding-top: 16px; }
+    .sub-form.visible { display: block; }
+    .sub-form-title { font-size: 13.5px; font-weight: 700; color: var(--text-dark); margin-bottom: 14px; }
+    .back-link { display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px; color: var(--text-soft); cursor: pointer; margin-bottom: 14px; background: none; border: none; font-family: 'Inter', sans-serif; }
+    .back-link:hover { color: var(--primary); }
+
+    /* Divider */
+    .divider { display: flex; align-items: center; gap: 10px; margin: 16px 0; color: var(--text-soft); font-size: 12px; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* Responsive */
+    @media (max-width: 820px) {
+      .left-panel { display: none; }
+      .right-panel { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+
+
+<div class="page">
+
+  <!-- ═══ LEFT PANEL ══════════════════════════════════════════════ -->
+  <div class="left-panel">
+    <div class="brand-tag">ELEVATE <span>//</span> LEARNING OS</div>
+
+    <!-- The one circle — matches reference exactly -->
+    <div class="circle-main"></div>
+
+    <!-- Hero -->
+    <div class="hero">
+      <div class="elevate-logo">
+        <span class="elevate-logo-text">ELE<span class="v-accent">V</span>ATE</span>
+        <div class="elevate-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="19" x2="12" y2="5"/>
+            <polyline points="5 12 12 5 19 12"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="tagline-line"></div>
+      <div class="tagline">Learn &nbsp;·&nbsp; Grow &nbsp;·&nbsp; Rise.</div>
+
+      <p class="hero-desc">
+        Courses, mentors, and skill paths that grow with you. One
+        account, every subject, zero limits.
+      </p>
+    </div>
+
+    <!-- Bottom decorative tag -->
+    <div class="bottom-tag">knowledge_uplink: established_</div>
+  </div>
+
+  <!-- ═══ RIGHT PANEL ══════════════════════════════════════════════════ -->
+  <div class="right-panel">
+    <div class="card">
+
+      <div class="card-badge">ELEVATE.IDENTITY</div>
+      <div class="card-title">Welcome back</div>
+      <div class="card-subtitle" id="card-subtitle">Sign in to continue your journey.</div>
+
+      <!-- Role Tabs -->
+      <div class="role-tabs" role="tablist">
+        <button class="role-tab active" id="tab-student"  onclick="switchTab('student')"  role="tab">Student</button>
+        <button class="role-tab"        id="tab-tnp"      onclick="switchTab('tnp')"      role="tab">T&amp;P Officer</button>
+        <button class="role-tab"        id="tab-company"  onclick="switchTab('company')"  role="tab">Company</button>
+      </div>
+
+      <!-- Message -->
+      <div class="form-message" id="form-message"></div>
+
+      <!-- ── STUDENT LOGIN ──────────────────────────────────── -->
+      <div id="panel-student">
+        <div class="form-group">
+          <label class="form-label" for="s-username">Username (PRN)</label>
+          <div class="input-wrap">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </span>
+            <input class="form-input" type="text" id="s-username" placeholder="e.g. GHRCE2024047" autocomplete="username" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="s-password">
+            Password
+            <a href="#" onclick="forgotPassword('student'); return false;">Forgot password?</a>
+          </label>
+          <div class="input-wrap">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </span>
+            <input class="form-input" type="password" id="s-password" placeholder="Enter your password" autocomplete="current-password" />
+            <button class="toggle-password" type="button" onclick="togglePwd('s-password', this)" aria-label="Show/hide password">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="btn-student" onclick="loginStudent()">
+          <span class="btn-text">Sign In to Elevate</span>
+          <div class="spinner"></div>
+        </button>
+
+        <div class="card-footer">
+          No account? Contact your <strong>T&amp;P Office</strong> to get access.
+        </div>
+      </div>
+
+      <!-- ── T&P OFFICER ─────────────────────────────────────── -->
+      <div id="panel-tnp" style="display:none">
+        <!-- Login form -->
+        <div id="tnp-login-form">
+          <div class="form-group">
+            <label class="form-label" for="t-email">Official Email</label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </span>
+              <input class="form-input" type="email" id="t-email" placeholder="you@raisoni.net" autocomplete="email" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="t-password">
+              Password
+              <a href="#" onclick="forgotPassword('tnp'); return false;">Forgot?</a>
+            </label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </span>
+              <input class="form-input" type="password" id="t-password" placeholder="Enter your password" autocomplete="current-password" />
+              <button class="toggle-password" type="button" onclick="togglePwd('t-password', this)" aria-label="Show/hide">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <button class="btn-primary" id="btn-tnp" onclick="loginTnp()">
+            <span class="btn-text">Sign In to T&amp;P Dashboard</span>
+            <div class="spinner"></div>
+          </button>
+
+          <div class="divider">or</div>
+
+          <div class="card-footer" style="margin-top:0">
+            New T&amp;P Officer? <a href="#" onclick="showTnpRegister(); return false;">Create an account</a>
+          </div>
+        </div>
+
+        <!-- Register sub-form -->
+        <div id="tnp-register-form" class="sub-form">
+          <button class="back-link" onclick="showTnpLogin()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            Back to sign in
+          </button>
+          <div class="sub-form-title">Register as T&amp;P Officer</div>
+
+          <div class="form-group">
+            <label class="form-label" for="tr-name">Full Name</label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </span>
+              <input class="form-input" type="text" id="tr-name" placeholder="Your full name" autocomplete="name" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="tr-email">Official Email (@raisoni.net)</label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </span>
+              <input class="form-input" type="email" id="tr-email" placeholder="officer@raisoni.net" autocomplete="email" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="tr-password">Password</label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </span>
+              <input class="form-input" type="password" id="tr-password" placeholder="Create a strong password" autocomplete="new-password" />
+              <button class="toggle-password" type="button" onclick="togglePwd('tr-password', this)" aria-label="Show/hide">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <button class="btn-primary" id="btn-tnp-reg" onclick="registerTnp()">
+            <span class="btn-text">Create T&amp;P Account</span>
+            <div class="spinner"></div>
+          </button>
+        </div>
+      </div>
+
+      <!-- ── COMPANY ─────────────────────────────────────────── -->
+      <div id="panel-company" style="display:none">
+        <!-- Login form -->
+        <div id="comp-login-form">
+          <div class="form-group">
+            <label class="form-label" for="c-email">Company Email</label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </span>
+              <input class="form-input" type="email" id="c-email" placeholder="hr@yourcompany.com" autocomplete="email" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="c-password">
+              Password
+              <a href="#" onclick="forgotPassword('company'); return false;">Forgot?</a>
+            </label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </span>
+              <input class="form-input" type="password" id="c-password" placeholder="Enter your password" autocomplete="current-password" />
+              <button class="toggle-password" type="button" onclick="togglePwd('c-password', this)" aria-label="Show/hide">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <button class="btn-primary" id="btn-company" onclick="loginCompany()">
+            <span class="btn-text">Sign In to Recruiter Portal</span>
+            <div class="spinner"></div>
+          </button>
+
+          <div class="divider">or</div>
+
+          <div class="card-footer" style="margin-top:0">
+            New to Elevate? <a href="#" onclick="showCompanyRegister(); return false;">Create a company account</a>
+          </div>
+        </div>
+
+        <!-- Register sub-form -->
+        <div id="comp-register-form" class="sub-form">
+          <button class="back-link" onclick="showCompanyLogin()">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+            Back to sign in
+          </button>
+          <div class="sub-form-title">Register Your Company</div>
+
+          <div class="form-group">
+            <label class="form-label" for="cr-company">Company Name</label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              </span>
+              <input class="form-input" type="text" id="cr-company" placeholder="Company Pvt. Ltd." />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cr-contact">Contact Person</label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </span>
+              <input class="form-input" type="text" id="cr-contact" placeholder="HR Manager name" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cr-industry">Industry</label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+              </span>
+              <input class="form-input" type="text" id="cr-industry" placeholder="e.g. IT Services, FinTech" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cr-email">Company Email</label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </span>
+              <input class="form-input" type="email" id="cr-email" placeholder="hr@company.com" autocomplete="email" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="cr-password">Password</label>
+            <div class="input-wrap">
+              <span class="input-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </span>
+              <input class="form-input" type="password" id="cr-password" placeholder="Create a password" autocomplete="new-password" />
+              <button class="toggle-password" type="button" onclick="togglePwd('cr-password', this)" aria-label="Show/hide">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <button class="btn-primary" id="btn-company-reg" onclick="registerCompany()">
+            <span class="btn-text">Create Company Account</span>
+            <div class="spinner"></div>
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /card -->
+  </div><!-- /right-panel -->
+</div><!-- /page -->
+
+<script>
+/* ─── State ──────────────────────────────────────────────────── */
+let currentTab = 'student';
+
+/* ─── Tab Switching ─────────────────────────────────────────── */
+function switchTab(tab) {
+  currentTab = tab;
+
+  ['student', 'tnp', 'company'].forEach(t => {
+    document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+    const panel = document.getElementById('panel-' + t);
+    if (panel) panel.style.display = t === tab ? 'block' : 'none';
+  });
+
+  clearMessage();
+
+  const subtitles = {
+    student: 'Sign in to continue your learning journey.',
+    tnp:     'T&P Officer access only — @raisoni.net required.',
+    company: 'Sign in to your recruiter dashboard.',
+  };
+  document.getElementById('card-subtitle').textContent = subtitles[tab];
+
+  // Reset any sub-forms
+  showTnpLogin();
+  showCompanyLogin();
+}
+
+/* ─── Show/hide sub-forms ───────────────────────────────────── */
+function showTnpRegister() {
+  document.getElementById('tnp-login-form').style.display  = 'none';
+  document.getElementById('tnp-register-form').classList.add('visible');
+  clearMessage();
+}
+function showTnpLogin() {
+  document.getElementById('tnp-login-form').style.display  = 'block';
+  document.getElementById('tnp-register-form').classList.remove('visible');
+  clearMessage();
+}
+function showCompanyRegister() {
+  document.getElementById('comp-login-form').style.display  = 'none';
+  document.getElementById('comp-register-form').classList.add('visible');
+  clearMessage();
+}
+function showCompanyLogin() {
+  document.getElementById('comp-login-form').style.display  = 'block';
+  document.getElementById('comp-register-form').classList.remove('visible');
+  clearMessage();
+}
+
+/* ─── Password Toggle ───────────────────────────────────────── */
+function togglePwd(inputId, btn) {
+  const input = document.getElementById(inputId);
+  const isText = input.type === 'text';
+  input.type = isText ? 'password' : 'text';
+  btn.innerHTML = isText
+    ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
+    : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+}
+
+/* ─── Messages ──────────────────────────────────────────────── */
+function showMessage(text, type = 'error') {
+  const el = document.getElementById('form-message');
+  el.className = 'form-message ' + type;
+  el.innerHTML = (type === 'error'
+    ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`
+    : `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
+  ) + `<span>${text}</span>`;
+  el.style.display = 'flex';
+}
+function clearMessage() {
+  const el = document.getElementById('form-message');
+  el.style.display = 'none';
+}
+
+/* ─── Button Loading ─────────────────────────────────────────── */
+function setLoading(btnId, loading) {
+  const btn = document.getElementById(btnId);
+  btn.classList.toggle('loading', loading);
+  btn.disabled = loading;
+}
+
+/* ─── API helper ─────────────────────────────────────────────── */
+async function apiPost(endpoint, body) {
+  const res  = await fetch(endpoint, {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify(body),
+  });
+  const data = await res.json();
+  return { ok: res.ok, status: res.status, data };
+}
+
+/* ─── Save session & redirect ────────────────────────────────── */
+function saveSession(token, user, role, redirect) {
+  sessionStorage.setItem('elevate_token', token);
+  sessionStorage.setItem('elevate_user',  JSON.stringify(user));
+  sessionStorage.setItem('elevate_role',  role);
+  window.location.href = redirect;
+}
+
+/* ─── STUDENT LOGIN ──────────────────────────────────────────── */
+async function loginStudent() {
+  clearMessage();
+  const username = document.getElementById('s-username').value.trim();
+  const password = document.getElementById('s-password').value;
+
+  if (!username || !password) {
+    showMessage('Please enter your PRN and password.');
+    return;
+  }
+
+  setLoading('btn-student', true);
+  try {
+    const { ok, data } = await apiPost('/api/auth/student/login', { username, password });
+    if (ok) {
+      showMessage('Login successful! Redirecting...', 'success');
+      setTimeout(() => saveSession(data.token, data.user, 'student', data.redirect || '/student/'), 600);
+    } else {
+      showMessage(data.message || 'Login failed. Please check your credentials.');
+    }
+  } catch {
+    showMessage('Network error. Is the server running?');
+  } finally {
+    setLoading('btn-student', false);
+  }
+}
+
+/* ─── T&P LOGIN ──────────────────────────────────────────────── */
+async function loginTnp() {
+  clearMessage();
+  const email    = document.getElementById('t-email').value.trim();
+  const password = document.getElementById('t-password').value;
+
+  if (!email || !password) {
+    showMessage('Please enter your email and password.');
+    return;
+  }
+
+  setLoading('btn-tnp', true);
+  try {
+    const { ok, data } = await apiPost('/api/auth/tnp/login', { email, password });
+    if (ok) {
+      showMessage('Login successful! Redirecting...', 'success');
+      setTimeout(() => saveSession(data.token, data.user, 'tnp', data.redirect || '/institute/'), 600);
+    } else {
+      showMessage(data.message || 'Login failed.');
+    }
+  } catch {
+    showMessage('Network error. Is the server running?');
+  } finally {
+    setLoading('btn-tnp', false);
+  }
+}
+
+/* ─── T&P REGISTER ───────────────────────────────────────────── */
+async function registerTnp() {
+  clearMessage();
+  const name     = document.getElementById('tr-name').value.trim();
+  const email    = document.getElementById('tr-email').value.trim();
+  const password = document.getElementById('tr-password').value;
+
+  if (!name || !email || !password) {
+    showMessage('All fields are required.');
+    return;
+  }
+  if (!email.toLowerCase().endsWith('@raisoni.net')) {
+    showMessage('Only @raisoni.net email addresses are allowed.');
+    return;
+  }
+  if (password.length < 6) {
+    showMessage('Password must be at least 6 characters.');
+    return;
+  }
+
+  setLoading('btn-tnp-reg', true);
+  try {
+    const { ok, data } = await apiPost('/api/auth/tnp/register', { name, email, password });
+    if (ok) {
+      showMessage('Account created! Redirecting to dashboard...', 'success');
+      setTimeout(() => saveSession(data.token, data.user, 'tnp', '/institute/'), 700);
+    } else {
+      showMessage(data.message || 'Registration failed.');
+    }
+  } catch {
+    showMessage('Network error. Is the server running?');
+  } finally {
+    setLoading('btn-tnp-reg', false);
+  }
+}
+
+/* ─── COMPANY LOGIN ──────────────────────────────────────────── */
+async function loginCompany() {
+  clearMessage();
+  const email    = document.getElementById('c-email').value.trim();
+  const password = document.getElementById('c-password').value;
+
+  if (!email || !password) {
+    showMessage('Please enter your email and password.');
+    return;
+  }
+
+  setLoading('btn-company', true);
+  try {
+    const { ok, data } = await apiPost('/api/auth/company/login', { email, password });
+    if (ok) {
+      showMessage('Login successful! Redirecting...', 'success');
+      setTimeout(() => saveSession(data.token, data.user, 'company', data.redirect || '/industry/'), 600);
+    } else {
+      showMessage(data.message || 'Login failed.');
+    }
+  } catch {
+    showMessage('Network error. Is the server running?');
+  } finally {
+    setLoading('btn-company', false);
+  }
+}
+
+/* ─── COMPANY REGISTER ───────────────────────────────────────── */
+async function registerCompany() {
+  clearMessage();
+  const companyName   = document.getElementById('cr-company').value.trim();
+  const contactPerson = document.getElementById('cr-contact').value.trim();
+  const industry      = document.getElementById('cr-industry').value.trim();
+  const email         = document.getElementById('cr-email').value.trim();
+  const password      = document.getElementById('cr-password').value;
+
+  if (!companyName || !email || !password) {
+    showMessage('Company name, email, and password are required.');
+    return;
+  }
+  if (password.length < 6) {
+    showMessage('Password must be at least 6 characters.');
+    return;
+  }
+
+  setLoading('btn-company-reg', true);
+  try {
+    const { ok, data } = await apiPost('/api/auth/company/register', { companyName, contactPerson, industry, email, password });
+    if (ok) {
+      showMessage('Account created! Redirecting...', 'success');
+      setTimeout(() => saveSession(data.token, data.user, 'company', '/industry/'), 700);
+    } else {
+      showMessage(data.message || 'Registration failed.');
+    }
+  } catch {
+    showMessage('Network error. Is the server running?');
+  } finally {
+    setLoading('btn-company-reg', false);
+  }
+}
+
+/* ─── Forgot Password ────────────────────────────────────────── */
+function forgotPassword(role) {
+  showMessage('Password reset will be available soon. Please contact your administrator.', 'error');
+}
+
+/* ─── Enter key support ──────────────────────────────────────── */
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  if (currentTab === 'student')  loginStudent();
+  else if (currentTab === 'tnp') {
+    const isReg = document.getElementById('tnp-register-form').classList.contains('visible');
+    isReg ? registerTnp() : loginTnp();
+  } else {
+    const isReg = document.getElementById('comp-register-form').classList.contains('visible');
+    isReg ? registerCompany() : loginCompany();
+  }
+});
+
+/* ─── Check if already logged in ────────────────────────────── */
+(function checkExistingSession() {
+  const token = sessionStorage.getItem('elevate_token');
+  const role  = sessionStorage.getItem('elevate_role');
+  if (!token || !role) return;
+
+  // Verify token is still valid
+  fetch('/api/auth/me', { headers: { Authorization: 'Bearer ' + token } })
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        const redirects = { tnp: '/institute/', student: '/student/', company: '/industry/' };
+        window.location.href = redirects[role] || '/';
+      }
+    })
+    .catch(() => {}); // Ignore errors, let user log in
+})();
+</script>
+
+</body>
+</html>

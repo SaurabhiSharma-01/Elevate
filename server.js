@@ -1,8 +1,13 @@
-const express = require('express');
-const cors = require('cors');
+// Load environment variables
+require('dotenv').config();
+
+const express    = require('express');
+const cors       = require('cors');
 const bodyParser = require('body-parser');
-const fs = require('fs');
-const path = require('path');
+const fs         = require('fs');
+const path       = require('path');
+
+const authRoutes = require('./backend/auth/auth-routes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -10,7 +15,21 @@ const DB_FILE = path.join(__dirname, 'database.json');
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static(__dirname));
+app.use(express.static(__dirname, { index: false })); // never auto-serve any index.html
+
+
+// ─── Auth Routes ──────────────────────────────────────────────────────────────
+app.use('/api/auth', authRoutes);
+
+// ─── Login Page ───────────────────────────────────────────────────────────────
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'login.html'));
+});
+
+// Redirect root to login
+app.get('/', (req, res) => {
+  res.redirect('/login');
+});
 
 // Default Mock Data for the startup database
 const DEFAULT_DB = {
@@ -394,10 +413,11 @@ app.post('/api/meetings', (req, res) => {
   res.json({ success: true, meeting });
 });
 
-// Wildcard route to serve index.html for SPA router on client side
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+// Catch-all: only serve index.html for portal sub-paths (not /login or /api/*)
+app.get(/^\/(index\.html)?$/, (req, res) => {
+  res.redirect('/login');
 });
+
 
 app.listen(PORT, () => {
   console.log(`============================================================`);

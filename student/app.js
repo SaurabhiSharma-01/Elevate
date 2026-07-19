@@ -381,6 +381,7 @@ function navigateTo(page) {
   if (page === 'company-prep') initCompanyPrep();
   if (page === 'company-papers') initCompanyPapers();
   if (page === 'mock-tests') initMockTests();
+  if (page === 'profile') initProfilePage();
 
   // College Portal Pages
   if (page === 'college-dashboard') initCollegeDashboard();
@@ -421,92 +422,39 @@ function handleLogin(e) {
     btn.style.opacity = '1';
     btnText.textContent = 'Sign In to Portal';
     
-    const role = state.loginRole || 'student';
-    
-    if (role === 'student') {
-      const student = await db.getStudentById(id);
-      if (student && pw.length >= 3) {
-        state.student = student;
-        // set app role
-        setAppRole('student');
-        if (state.isFirstLogin && student.readiness === 50) {
-          showScreen('welcome');
-        } else {
-          state.isFirstLogin = false;
-          enterApp();
-        }
-        showToast(`Welcome back, ${student.name}!`, 'success');
+    const student = await db.getStudentById(id);
+    if (student && pw.length >= 3) {
+      state.student = student;
+      setAppRole('student');
+      if (state.isFirstLogin && student.readiness === 50) {
+        showScreen('welcome');
       } else {
-        errEl.classList.add('show');
-        errText.textContent = 'Invalid Student ID or Password. Try ID: GHRCE2024047 and password: 123';
+        state.isFirstLogin = false;
+        enterApp();
       }
-    } else if (role === 'college') {
-      if (id === 'tp@ghrce.ac.in' && pw === 'admin') {
-        setAppRole('college');
-        showScreen('app');
-        navigateTo('college-dashboard');
-        showToast('Logged in as T&P Placement Officer.', 'success');
-      } else {
-        errEl.classList.add('show');
-        errText.textContent = 'Invalid admin credentials. Use tp@ghrce.ac.in / admin';
-      }
-    } else if (role === 'company') {
-      if ((id.startsWith('recruiter@') || id === 'recruiter') && pw === 'microsoft') {
-        let company = 'Microsoft';
-        if (id.includes('@')) {
-          const domain = id.split('@')[1].split('.')[0];
-          company = domain.charAt(0).toUpperCase() + domain.slice(1);
-        }
-        state.companyName = company;
-        setAppRole('company');
-        showScreen('app');
-        navigateTo('company-dashboard');
-        showToast(`Logged in as Recruiter for ${company}.`, 'success');
-      } else {
-        errEl.classList.add('show');
-        errText.textContent = 'Invalid recruiter credentials. Use recruiter@microsoft.com / microsoft';
-      }
+      showToast(`Welcome back, ${student.name}!`, 'success');
+    } else {
+      errEl.classList.add('show');
+      errText.textContent = 'Invalid Student ID or Password. Try ID: GHRCE2024047 and password: 123';
     }
   }, 1200);
 }
 
-function togglePassword() {
-  const pw = document.getElementById('password');
-  pw.type = pw.type === 'password' ? 'text' : 'password';
-}
-
-function showForgotModal() {
-  showModal('Forgot Password?', 'Please contact the Training & Placement Cell:\n\nOffice: Room 204, Academic Block\nEmail: placement@ghrce.ac.in\nPhone: 0712-2249966', null, 'Close');
-}
-
 // ──────────────────────────────────────────────────────────────
-// WELCOME / FIRST LOGIN
+// ONBOARDING & ASSESSMENT LOGIC
 // ──────────────────────────────────────────────────────────────
-function selectDept(btn) {
-  document.querySelectorAll('.dept-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  state.selectedDept = btn.dataset.dept;
-}
-
 function startAssessment() {
-  if (!state.selectedDept) { showToast('Please select your department first.', 'warning'); return; }
-  showScreen('assessment');
-  initAssessment();
-}
-
-// ──────────────────────────────────────────────────────────────
-// ASSESSMENT
-// ──────────────────────────────────────────────────────────────
-function initAssessment() {
-  const dept = state.selectedDept;
-  const questions = ASSESSMENT_QUESTIONS[dept] || ASSESSMENT_QUESTIONS.Engineering;
-  state.assessment.questions = questions;
-  state.assessment.totalQ = questions.length;
+  const dept = state.student?.dept || 'Engineering';
   state.assessment.currentQ = 0;
   state.assessment.answers = {};
   state.assessment.flagged = new Set();
   state.assessment.timer = 45 * 60;
-  document.getElementById('atbDept').textContent = `${dept} Assessment`;
+  state.assessment.totalQ = (ASSESSMENT_QUESTIONS[dept] || ASSESSMENT_QUESTIONS.Engineering).length;
+  
+  const deptEl = document.getElementById('atbDept');
+  if (deptEl) deptEl.textContent = `${dept} Assessment`;
+  
+  showScreen('assessment');
   buildPalette();
   renderQuestion();
   startAssessmentTimer();
@@ -514,59 +462,102 @@ function initAssessment() {
 
 function buildPalette() {
   const palette = document.getElementById('qPalette');
+  if (!palette) return;
   palette.innerHTML = '';
-  state.assessment.questions.forEach((_, i) => {
+  const total = state.assessment.totalQ;
+  for (let i = 0; i < total; i++) {
     const btn = document.createElement('button');
     btn.className = `q-num${i === 0 ? ' current' : ''}`;
     btn.textContent = i + 1;
-    btn.onclick = () => { state.assessment.currentQ = i; renderQuestion(); };
+    btn.onclick = () => {
+      state.assessment.currentQ = i;
+      renderQuestion();
+    };
     palette.appendChild(btn);
-  });
+  }
 }
 
 function updatePalette() {
   const btns = document.querySelectorAll('#qPalette .q-num');
   btns.forEach((btn, i) => {
     btn.className = 'q-num';
-    if (i === state.assessment.currentQ) btn.classList.add('current');
-    else if (state.assessment.answers[i] !== undefined) btn.classList.add('answered');
-    else if (state.assessment.flagged.has(i)) btn.classList.add('flagged');
+    if (i === state.assessment.currentQ) {
+      btn.classList.add('current');
+    } else if (state.assessment.flagged.has(i)) {
+      btn.classList.add('flagged');
+    } else if (state.assessment.answers[i] !== undefined) {
+      btn.classList.add('answered');
+    }
   });
 }
 
 function renderQuestion() {
-  const { questions, currentQ, answers } = state.assessment;
+  const { currentQ, answers } = state.assessment;
+  const dept = state.student?.dept || 'Engineering';
+  const questions = ASSESSMENT_QUESTIONS[dept] || ASSESSMENT_QUESTIONS.Engineering;
   const q = questions[currentQ];
   if (!q) return;
-  document.getElementById('qSectionLabel').textContent = q.section;
-  document.getElementById('qCount').textContent = `Question ${currentQ + 1} of ${questions.length}`;
-  document.getElementById('qText').textContent = q.q;
-  const opts = document.getElementById('qOptions');
-  opts.innerHTML = '';
-  const letters = ['A', 'B', 'C', 'D'];
-  q.opts.forEach((opt, i) => {
-    const div = document.createElement('div');
-    div.className = `q-option${answers[currentQ] === i ? ' selected' : ''}`;
-    div.innerHTML = `<div class="option-letter">${letters[i]}</div><div class="option-text">${opt}</div>`;
-    div.onclick = () => { state.assessment.answers[currentQ] = i; renderQuestion(); updatePalette(); };
-    opts.appendChild(div);
-  });
-  document.getElementById('prevBtn').disabled = currentQ === 0;
-  document.getElementById('nextBtn').textContent = currentQ === questions.length - 1 ? 'Review' : 'Next';
-  document.getElementById('nextBtn').className = `btn-nav ${currentQ === questions.length - 1 ? 'success' : 'primary'}`;
-  const fill = document.getElementById('assessmentProgressFill');
-  fill.style.width = `${((currentQ + 1) / questions.length) * 100}%`;
+
+  const sectionLabel = document.getElementById('qSectionLabel');
+  const countLabel = document.getElementById('qCount');
+  const qText = document.getElementById('qText');
+  const qOptions = document.getElementById('qOptions');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const progressFill = document.getElementById('assessmentProgressFill');
+
+  if (sectionLabel) sectionLabel.textContent = q.section;
+  if (countLabel) countLabel.textContent = `Question ${currentQ + 1} of ${questions.length}`;
+  if (qText) qText.textContent = q.q;
+
+  if (qOptions) {
+    qOptions.innerHTML = '';
+    const letters = ['A', 'B', 'C', 'D'];
+    q.opts.forEach((opt, idx) => {
+      const div = document.createElement('div');
+      div.className = `q-option${answers[currentQ] === idx ? ' selected' : ''}`;
+      div.innerHTML = `<div class="option-letter">${letters[idx]}</div><div class="option-text">${opt}</div>`;
+      div.onclick = () => {
+        state.assessment.answers[currentQ] = idx;
+        renderQuestion();
+        updatePalette();
+      };
+      qOptions.appendChild(div);
+    });
+  }
+
+  if (prevBtn) prevBtn.disabled = currentQ === 0;
+  if (nextBtn) {
+    if (currentQ === questions.length - 1) {
+      nextBtn.innerHTML = `Finish <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6" /></svg>`;
+    } else {
+      nextBtn.innerHTML = `Next <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6" /></svg>`;
+    }
+  }
+
+  if (progressFill) {
+    progressFill.style.width = `${((currentQ + 1) / questions.length) * 100}%`;
+  }
+
   updatePalette();
 }
 
 function nextQuestion() {
-  const { questions, currentQ } = state.assessment;
-  if (currentQ < questions.length - 1) { state.assessment.currentQ++; renderQuestion(); }
-  else confirmSubmitAssessment();
+  const dept = state.student?.dept || 'Engineering';
+  const total = (ASSESSMENT_QUESTIONS[dept] || ASSESSMENT_QUESTIONS.Engineering).length;
+  if (state.assessment.currentQ < total - 1) {
+    state.assessment.currentQ++;
+    renderQuestion();
+  } else {
+    confirmSubmitAssessment();
+  }
 }
 
 function prevQuestion() {
-  if (state.assessment.currentQ > 0) { state.assessment.currentQ--; renderQuestion(); }
+  if (state.assessment.currentQ > 0) {
+    state.assessment.currentQ--;
+    renderQuestion();
+  }
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -599,11 +590,42 @@ function confirmSubmitAssessment() {
   showModal('Submit Assessment?', `You have answered ${answered} of ${total} questions. Unanswered questions will be marked incorrect. Are you sure you want to submit?`, submitAssessment);
 }
 
-function submitAssessment() {
+async function submitAssessment() {
   clearInterval(state.assessment.timerInterval);
   closeModal();
+  
+  // Grade the assessment
+  const dept = state.student.dept || 'Engineering';
+  const questions = ASSESSMENT_QUESTIONS[dept] || ASSESSMENT_QUESTIONS.Engineering;
+  let correct = 0;
+  const answers = state.assessment.answers;
+  const weakSections = new Set();
+  
+  questions.forEach((q, idx) => {
+    if (answers[idx] === q.ans) {
+      correct++;
+    } else {
+      // Add the section to weak areas if they got it wrong or didn't answer
+      weakSections.add(q.section);
+    }
+  });
+  
+  // Calculate readiness score: base 40% + (correct / total) * 60%
+  const score = Math.round(40 + (correct / questions.length) * 60);
+  const weakSkills = Array.from(weakSections);
+  
+  // Save to database
+  const updatedStudent = await db.updateStudent(state.student.id, {
+    readiness: score,
+    weakSkills: weakSkills.length > 0 ? weakSkills : ['None']
+  });
+  
+  if (updatedStudent) {
+    state.student = updatedStudent;
+  }
+  
   state.isFirstLogin = false;
-  showToast('Assessment submitted! Generating your personalized dashboard...', 'success');
+  showToast(`Assessment submitted! Your Placement Readiness is now ${score}%.`, 'success');
   setTimeout(() => { enterApp(); }, 1500);
 }
 
@@ -611,23 +633,204 @@ function enterApp() {
   showScreen('app');
   const el = document.getElementById('screen-app');
   el.style.display = 'flex';
+  
   const hour = new Date().getHours();
   const greet = hour < 12 ? 'Good morning,' : hour < 17 ? 'Good afternoon,' : 'Good evening,';
+  
+  // Set greetings
+  const greetText = document.getElementById('dashGreetingText');
+  if (greetText) greetText.textContent = greet;
   const greetEl = document.getElementById('dashGreeting');
   if (greetEl) greetEl.textContent = greet;
+  
+  // Dynamic names
+  const dashName = document.getElementById('dashStudentName');
+  if (dashName) dashName.textContent = state.student.name.split(' ')[0] + '.';
+  const dashHeroName = document.getElementById('dashReadinessStudentName');
+  if (dashHeroName) dashHeroName.textContent = state.student.name;
+  const dashBranch = document.getElementById('dashStudentBranch');
+  if (dashBranch) dashBranch.textContent = `${state.student.branch} • ${state.student.semester}`;
+  
+  // Dynamic metrics
+  const targetCompany = document.getElementById('dashTargetCompany');
+  if (targetCompany) targetCompany.textContent = state.student.targetCompany || 'TCS / Infosys';
+  const rank = document.getElementById('dashRank');
+  if (rank) rank.textContent = `#${state.student.rank || 47} / 420`;
+  const readinessVal = document.getElementById('dashReadinessVal');
+  if (readinessVal) readinessVal.textContent = state.student.readiness;
+  
+  // Stats
+  const todayHours = document.getElementById('dashTodayHours');
+  if (todayHours) todayHours.innerHTML = `${state.student.todayHours || 2.4}<span class="text-xl text-on-surface-variant font-medium ml-1">h</span>`;
+  const coursesCompleted = document.getElementById('dashCoursesCompleted');
+  if (coursesCompleted) coursesCompleted.textContent = state.student.coursesCompleted || 0;
+  const mockTestsCompleted = document.getElementById('dashMockTestsCompleted');
+  if (mockTestsCompleted) mockTestsCompleted.textContent = state.student.mockTestsCompleted || 0;
+  
+  // Sidebar elements
+  const sidebarReadiness = document.getElementById('sidebarReadiness');
+  if (sidebarReadiness) sidebarReadiness.style.width = `${state.student.readiness}%`;
+  const sidebarReadinessVal = document.getElementById('sidebarReadinessVal');
+  if (sidebarReadinessVal) sidebarReadinessVal.textContent = `${state.student.readiness}%`;
+  const headerReadiness = document.getElementById('headerReadiness');
+  if (headerReadiness) headerReadiness.textContent = `${state.student.readiness}%`;
+  
+  // Initialize tasks in state if not present
+  if (!state.student.tasks) {
+    state.student.tasks = [
+      { id: 1, title: 'Complete Arrays Module', desc: 'DSA • 45 min', priority: 'Done', done: true },
+      { id: 2, title: 'Practice SQL Queries', desc: 'DBMS • 30 min', priority: 'High', done: false },
+      { id: 3, title: 'TCS Mock Test #3', desc: '90 min • 60 questions', priority: 'Medium', done: false },
+      { id: 4, title: 'Review Aptitude Mistakes', desc: '20 questions', priority: 'Low', done: false }
+    ];
+  }
+  
   animateReadiness();
-  document.getElementById('sidebarReadiness').style.width = `${state.student.readiness}%`;
-  document.getElementById('sidebarReadinessVal').textContent = `${state.student.readiness}%`;
-  document.getElementById('headerReadiness').textContent = `${state.student.readiness}%`;
   setTimeout(initHeatmap, 300);
+  renderDashTasks();
+  renderDashWeakSkills();
 }
 
 function animateReadiness() {
   const circle = document.getElementById('readinessFillCircle');
-  if (!circle) return;
-  const r = 38, circ = 2 * Math.PI * r;
-  const offset = circ - (state.student.readiness / 100) * circ;
-  setTimeout(() => { circle.style.strokeDashoffset = offset; }, 400);
+  if (circle) {
+    const r = 38, circ = 2 * Math.PI * r;
+    const offset = circ - (state.student.readiness / 100) * circ;
+    setTimeout(() => { circle.style.strokeDashoffset = offset; }, 400);
+  }
+  
+  const dashCircle = document.getElementById('dashReadinessCircle');
+  if (dashCircle) {
+    const r = 45, circ = 2 * Math.PI * r;
+    const offset = circ - (state.student.readiness / 100) * circ;
+    setTimeout(() => { dashCircle.style.strokeDashoffset = offset; }, 400);
+  }
+}
+
+function renderDashTasks() {
+  const list = document.getElementById('dashTaskList');
+  if (!list) return;
+  const tasks = state.student.tasks || [];
+  
+  list.innerHTML = tasks.map(t => {
+    const doneClass = t.done ? 'line-through opacity-60' : 'font-bold';
+    const tagColor = t.done ? 'bg-surface-variant text-on-surface-variant'
+      : t.priority === 'High' ? 'bg-red-100 text-red-700 border-red-200 shadow-sm'
+      : t.priority === 'Medium' ? 'bg-orange-100 text-orange-700 border-orange-200 shadow-sm'
+      : 'bg-white text-on-surface-variant border border-outline-variant shadow-sm';
+    
+    return `
+      <li class="flex items-start">
+        <div class="mt-0.5 w-5 h-5 rounded-full shrink-0 mr-4 shadow-sm cursor-pointer flex items-center justify-center transition-all ${
+          t.done ? 'bg-primary text-white border border-primary' : 'border-2 border-primary bg-white'
+        }" onclick="toggleDashTask(${t.id})">
+          ${t.done ? '<svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+        </div>
+        <div class="flex-1">
+          <p class="text-sm text-on-surface ${doneClass}">${t.title}</p>
+          <p class="text-xs text-on-surface-variant font-label mt-1 font-medium">${t.desc}</p>
+        </div>
+        <span class="px-2 py-1 rounded-md text-[10px] font-bold font-label uppercase tracking-widest shadow-sm ${tagColor}">${t.priority}</span>
+      </li>
+    `;
+  }).join('') || '<div class="text-xs text-on-surface-variant p-4 text-center">No tasks for today. Add one below!</div>';
+}
+
+async function toggleDashTask(id) {
+  const task = state.student.tasks.find(t => t.id === id);
+  if (task) {
+    task.done = !task.done;
+    task.priority = task.done ? 'Done' : 'High';
+    
+    let bonus = 0;
+    if (task.done) {
+      bonus = 2;
+      showToast('Task completed! Readiness +2%', 'success');
+    } else {
+      bonus = -2;
+      showToast('Task uncompleted.', 'warning');
+    }
+    
+    state.student.readiness = Math.min(100, Math.max(40, state.student.readiness + bonus));
+    
+    await db.updateStudent(state.student.id, {
+      tasks: state.student.tasks,
+      readiness: state.student.readiness
+    });
+    
+    const val = document.getElementById('dashReadinessVal');
+    if (val) val.textContent = state.student.readiness;
+    const sidebarVal = document.getElementById('sidebarReadinessVal');
+    if (sidebarVal) sidebarVal.textContent = `${state.student.readiness}%`;
+    const sidebarFill = document.getElementById('sidebarReadiness');
+    if (sidebarFill) sidebarFill.style.width = `${state.student.readiness}%`;
+    
+    animateReadiness();
+    renderDashTasks();
+  }
+}
+
+async function addNewTask() {
+  const input = document.getElementById('newTaskInput');
+  if (!input || !input.value.trim()) return;
+  const title = input.value.trim();
+  
+  const newTask = {
+    id: Date.now(),
+    title: title,
+    desc: 'Self Study',
+    priority: 'High',
+    done: false
+  };
+  
+  state.student.tasks.push(newTask);
+  input.value = '';
+  
+  await db.updateStudent(state.student.id, {
+    tasks: state.student.tasks
+  });
+  
+  renderDashTasks();
+  showToast('New custom task added.', 'success');
+}
+
+function renderDashWeakSkills() {
+  const container = document.getElementById('dashWeakSkills');
+  if (!container) return;
+  const weakSkills = state.student.weakSkills || [];
+  
+  const mockPercentages = {
+    'Operating Systems': 32,
+    'Computer Networks': 38,
+    'Verbal Communication': 45,
+    'System Design': 48,
+    'Quantitative Aptitude': 58,
+    'DBMS': 50,
+    'Programming': 55,
+    'DSA': 42,
+    'Logical Reasoning': 47,
+    'Technical Aptitude': 40
+  };
+  
+  container.innerHTML = weakSkills.map(skill => {
+    const pct = mockPercentages[skill] || Math.floor(Math.random() * 20 + 35);
+    const colorClass = pct < 40 ? 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.5)]'
+      : pct < 50 ? 'bg-orange-400 shadow-[0_0_5px_rgba(251,146,60,0.5)]'
+      : 'bg-yellow-400 shadow-[0_0_5px_rgba(250,204,21,0.5)]';
+    const textClass = pct < 40 ? 'text-red-600' : pct < 50 ? 'text-orange-500' : 'text-yellow-600';
+    
+    return `
+      <div>
+        <div class="flex justify-between text-sm mb-2 font-label">
+          <span class="font-bold text-on-surface">${skill}</span>
+          <span class="font-extrabold ${textClass}">${pct}%</span>
+        </div>
+        <div class="w-full bg-white rounded-full h-2 shadow-inner border border-outline-variant">
+          <div class="${colorClass} h-2 rounded-full" style="width: ${pct}%"></div>
+        </div>
+      </div>
+    `;
+  }).join('') || '<div class="text-xs text-on-surface-variant p-4 text-center">No weak skills identified. Great job!</div>';
 }
 
 function initHeatmap() {
@@ -739,7 +942,7 @@ function initLearningHub(filter = 'all', search = '') {
           <div class="course-prog-top"><span>${c.progress}% complete</span><span>${c.lessons - Math.floor(c.lessons * c.progress / 100)} left</span></div>
           <div class="course-prog-bar"><div class="course-prog-fill" style="width:${c.progress}%"></div></div>
         </div>
-        <button class="btn-continue" onclick="showToast('Continuing ${c.title}...','success')">
+        <button class="btn-continue" onclick="openCoursePlayer(${c.id})">
           ${c.progress > 0 ? '▶ Continue Learning' : '▶ Start Course'}
         </button>
       </div>
@@ -1042,13 +1245,52 @@ function confirmEndTest() {
   showModal('Submit Test?', `You answered ${answered} of ${TEST_QUESTIONS.length} questions. Submit now?`, submitTest);
 }
 
-function submitTest() {
+async function submitTest() {
   clearInterval(state.test.timerInterval);
   closeModal();
   let correct = 0;
   TEST_QUESTIONS.forEach((q, i) => { if (state.test.answers[i] === q.ans) correct++; });
   const score = Math.round((correct / TEST_QUESTIONS.length) * 100);
   const timeTaken = Math.round((state.test.timer > 0 ? (90 * 60 - state.test.timer) : 90 * 60) / 60);
+  
+  // Increment completed mock tests count
+  state.student.mockTestsCompleted = (state.student.mockTestsCompleted || 0) + 1;
+  
+  // Calculate readiness bonus
+  let bonus = 0;
+  if (score >= 80) bonus = 5;
+  else if (score >= 60) bonus = 3;
+  else if (score >= 40) bonus = 1;
+  
+  state.student.readiness = Math.min(100, state.student.readiness + bonus);
+  
+  if (!state.student.testHistory) state.student.testHistory = [];
+  state.student.testHistory.push({
+    testName: state.test.testName,
+    score: score,
+    date: new Date().toISOString().split('T')[0],
+    correct: correct,
+    total: TEST_QUESTIONS.length,
+    timeTaken: timeTaken
+  });
+  
+  // Save to database
+  const updatedStudent = await db.updateStudent(state.student.id, {
+    mockTestsCompleted: state.student.mockTestsCompleted,
+    readiness: state.student.readiness,
+    testHistory: state.student.testHistory
+  });
+  if (updatedStudent) {
+    state.student = updatedStudent;
+  }
+  
+  // Update dashboard values
+  const mockTestsEl = document.getElementById('dashMockTestsCompleted');
+  if (mockTestsEl) mockTestsEl.textContent = state.student.mockTestsCompleted;
+  const readinessEl = document.getElementById('dashReadinessVal');
+  if (readinessEl) readinessEl.textContent = state.student.readiness;
+  animateReadiness();
+  
   showScreen('results');
   setTimeout(() => {
     const circle = document.getElementById('resultsFillCircle');
@@ -1109,11 +1351,46 @@ function startInterview() {
   state.interview.currentQ = 0;
   state.interview.timer = 0;
   state.interview.chatHistory = [];
-  showScreen('interview');
-  document.getElementById('ihInfo').textContent = `INTERVIEWING FOR SOFTWARE ENGINEER — ${state.interview.company.toUpperCase()}`;
-  document.getElementById('ivProgType').textContent = `${state.interview.type} Round`;
-  startInterviewTimer();
-  initInterviewChat();
+  
+  showToast('Starting AI Interview session...', 'info');
+  
+  fetch('http://localhost:5001/api/ai/interview/start', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      studentId: state.student.id,
+      company: state.interview.company,
+      interviewType: state.interview.type
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      state.interview.sessionId = data.session.sessionId;
+      showScreen('interview');
+      document.getElementById('ihInfo').textContent = `INTERVIEWING FOR SOFTWARE ENGINEER — ${state.interview.company.toUpperCase()}`;
+      document.getElementById('ivProgType').textContent = `${state.interview.type} Round`;
+      
+      const transcript = document.getElementById('ivTranscript');
+      if (transcript) transcript.innerHTML = '';
+      
+      addChatBubble('ai', data.session.firstQuestion);
+      
+      document.getElementById('irQMeta').textContent = `CURRENT QUESTION (1/10)`;
+      document.getElementById('irQText').textContent = `"${data.session.firstQuestion}"`;
+      document.getElementById('irQTags').innerHTML = `<span class="ir-q-tag">${state.interview.type}</span><span class="ir-q-tag">BEHAVIORAL</span>`;
+      document.getElementById('ivProgFill').style.width = '10%';
+      document.getElementById('ivProgLabel').textContent = 'Question 1 of 10';
+      
+      startInterviewTimer();
+    } else {
+      showToast('Failed to start interview: ' + (data.error || 'Unknown error'), 'error');
+    }
+  })
+  .catch(err => {
+    showToast('Failed to connect to AI Server on port 5001. Please run the AI backend.', 'error');
+    console.error(err);
+  });
 }
 
 function startInterviewTimer() {
@@ -1127,17 +1404,6 @@ function startInterviewTimer() {
   }, 1000);
 }
 
-function initInterviewChat() {
-  const company = state.interview.company;
-  const type = state.interview.type;
-  const qBank = INTERVIEW_QUESTIONS[company]?.[type] || INTERVIEW_QUESTIONS.TCS.HR;
-  state.interview.questions = qBank;
-  const transcript = document.getElementById('ivTranscript');
-  transcript.innerHTML = '';
-  addChatBubble('ai', `Hello! Welcome to your mock interview for the Software Engineer position at ${company}. I'm Alex, your AI interviewer today. Are you ready to begin?`);
-  updateInterviewQuestion(0);
-}
-
 function addChatBubble(role, text) {
   const transcript = document.getElementById('ivTranscript');
   if (!transcript) return;
@@ -1149,47 +1415,71 @@ function addChatBubble(role, text) {
   transcript.scrollTop = transcript.scrollHeight;
 }
 
-function updateInterviewQuestion(idx) {
-  const qs = state.interview.questions;
-  if (idx >= qs.length) return;
-  const q = qs[idx];
-  document.getElementById('irQMeta').textContent = `CURRENT QUESTION (${idx + 1}/${qs.length})`;
-  document.getElementById('irQText').textContent = `"${q.q}"`;
-  document.getElementById('irQTags').innerHTML = q.tags.map(t => `<span class="ir-q-tag">${t}</span>`).join('');
-  document.getElementById('ivProgFill').style.width = `${((idx + 1) / qs.length) * 100}%`;
-  document.getElementById('ivProgLabel').textContent = `Question ${idx + 1} of ${qs.length}`;
-  state.interview.currentQ = idx;
-  setTimeout(() => {
-    const transcript = document.getElementById('ivTranscript');
-    const listeningDiv = document.createElement('div');
-    listeningDiv.className = 'listening-indicator';
-    listeningDiv.innerHTML = `<div class="listening-dots"><div class="ld-dot"></div><div class="ld-dot"></div><div class="ld-dot"></div></div> LISTENING TO YOUR RESPONSE...`;
-    listeningDiv.id = 'listeningIndicator';
-    transcript.appendChild(listeningDiv);
-    transcript.scrollTop = transcript.scrollHeight;
-  }, 500);
+function ivNextQuestion() {
+  const inputEl = document.getElementById('ivResponseInput');
+  if (inputEl) inputEl.value = 'Candidate skipped this question.';
+  ivSubmitResponse();
 }
 
-function ivNextQuestion() {
-  const next = state.interview.currentQ + 1;
-  const qs = state.interview.questions;
-  const li = document.getElementById('listeningIndicator');
-  if (li) li.remove();
-  const studentResponses = [
-    "Yes, I'm ready. Thank you for having me.",
-    "That's a great question. In my previous project, I faced a similar challenge where I had to optimize a database query that was running 5x slower than expected. I analyzed the query plan and added proper indexing, which reduced execution time by 60%.",
-    "My greatest strengths are analytical thinking and quick problem-solving. I thrive in challenging technical environments.",
-    "In 5 years, I see myself as a senior software engineer working on distributed systems and cloud infrastructure at Microsoft.",
-    "Yes, I'd love to know what a typical day looks like for a new engineer in this team."
-  ];
-  addChatBubble('student', studentResponses[state.interview.currentQ] || "Thank you for the question. I have thought about this carefully and here is my response...");
-  if (next < qs.length) {
-    setTimeout(() => { addChatBubble('ai', qs[next].q); updateInterviewQuestion(next); }, 1000);
-  } else {
-    setTimeout(() => {
-      addChatBubble('ai', "Thank you for your time today! That concludes our interview. You performed very well. We will now generate your AI performance report.");
-      setTimeout(() => confirmEndInterview(), 2000);
-    }, 1000);
+async function ivSubmitResponse() {
+  const inputEl = document.getElementById('ivResponseInput');
+  if (!inputEl) return;
+  const answer = inputEl.value.trim();
+  if (!answer) {
+    showToast('Please type a response first!', 'warning');
+    return;
+  }
+  
+  inputEl.value = '';
+  addChatBubble('student', answer);
+  
+  const transcript = document.getElementById('ivTranscript');
+  const listeningDiv = document.createElement('div');
+  listeningDiv.className = 'listening-indicator';
+  listeningDiv.id = 'listeningIndicator';
+  listeningDiv.innerHTML = `<div class="listening-dots"><div class="ld-dot"></div><div class="ld-dot"></div><div class="ld-dot"></div></div> GENERATING AI INTERVIEWER FOLLOW-UP...`;
+  transcript.appendChild(listeningDiv);
+  transcript.scrollTop = transcript.scrollHeight;
+  
+  const submitBtn = document.getElementById('ivSubmitBtn');
+  if (submitBtn) submitBtn.disabled = true;
+  
+  try {
+    const res = await fetch('http://localhost:5001/api/ai/interview/respond', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        sessionId: state.interview.sessionId,
+        answer: answer
+      })
+    });
+    const data = await res.json();
+    if (listeningDiv) listeningDiv.remove();
+    if (submitBtn) submitBtn.disabled = false;
+    
+    if (data.success) {
+      const resp = data.response;
+      state.interview.currentQ = resp.questionNumber - 1;
+      
+      if (resp.isComplete) {
+        addChatBubble('ai', "Thank you for your responses today. That concludes our interview! We will now generate your AI performance report.");
+        setTimeout(() => { confirmEndInterview(); }, 2000);
+      } else {
+        addChatBubble('ai', resp.nextQuestion);
+        
+        document.getElementById('irQMeta').textContent = `CURRENT QUESTION (${resp.questionNumber}/10)`;
+        document.getElementById('irQText').textContent = `"${resp.nextQuestion}"`;
+        document.getElementById('ivProgFill').style.width = `${Math.min(100, (resp.questionNumber / 10) * 100)}%`;
+        document.getElementById('ivProgLabel').textContent = `Question ${resp.questionNumber} of 10`;
+      }
+    } else {
+      showToast('Error getting follow-up: ' + (data.error || 'Server error'), 'error');
+    }
+  } catch (err) {
+    if (listeningDiv) listeningDiv.remove();
+    if (submitBtn) submitBtn.disabled = false;
+    showToast('Failed to contact AI server.', 'error');
+    console.error(err);
   }
 }
 
@@ -1197,8 +1487,14 @@ function switchIVTab(btn, tab) {
   document.querySelectorAll('.ir-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
   const transcript = document.getElementById('ivTranscript');
-  if (tab === 'notes') transcript.innerHTML = '<div style="padding:20px;color:var(--text-2);font-size:13px"><textarea style="width:100%;height:200px;border:1px solid var(--border);border-radius:8px;padding:12px;font-size:13px;resize:none;font-family:inherit" placeholder="Take interview notes here..."></textarea></div>';
-  else initInterviewChat();
+  if (tab === 'notes') {
+    transcript.innerHTML = '<div style="padding:20px;color:var(--text-2);font-size:13px"><textarea style="width:100%;height:200px;border:1px solid var(--border);border-radius:8px;padding:12px;font-size:13px;resize:none;font-family:inherit" placeholder="Take interview notes here..."></textarea></div>';
+  } else {
+    // Reload active interview chat transcript
+    transcript.innerHTML = '';
+    // Note: in a fully production app, we would re-render bubbles from state.interview.chatHistory
+    addChatBubble('ai', document.getElementById('irQText').textContent.replace(/"/g, ''));
+  }
 }
 
 function toggleMic() {
@@ -1215,41 +1511,146 @@ function toggleCam() {
   showToast(state.interview.camActive ? 'Camera on' : 'Camera off', state.interview.camActive ? 'success' : 'warning');
 }
 
-function confirmEndInterview() {
+async function confirmEndInterview() {
   clearInterval(state.interview.timerInterval);
   closeModal();
+  
+  showToast('AI Interview ended. Generating Gemini report...', 'info');
   showScreen('interview-report');
-  document.getElementById('reportSubtitle').textContent = `Mock Interview for Software Engineer Role at ${state.interview.company}`;
-  initQAFeedback();
-  setTimeout(initInterviewRadarChart, 400);
+  
+  // Set loading placeholders
+  document.getElementById('reportSubtitle').textContent = `Mock Interview for Software Engineer Role at ${state.interview.company} — Analyzing...`;
+  document.getElementById('irOverallScoreVal').textContent = '--';
+  document.getElementById('irHiringReadinessVal').textContent = '--';
+  document.getElementById('irCompanyFitVal').textContent = 'Analyzing...';
+  document.getElementById('irBatchRankingVal').textContent = '--';
+  
+  const qaFeedback = document.getElementById('qaFeedback');
+  if (qaFeedback) {
+    qaFeedback.innerHTML = `
+      <div style="padding:40px;text-align:center;color:var(--text-2)">
+        <div class="listening-dots" style="display:inline-flex;margin-bottom:12px;">
+          <div class="ld-dot"></div><div class="ld-dot"></div><div class="ld-dot"></div>
+        </div>
+        <br>Analyzing transcript using Gemini 1.5 Flash...
+      </div>
+    `;
+  }
+  
+  try {
+    // 1. Get final transcript
+    const endRes = await fetch('http://localhost:5001/api/ai/interview/end', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sessionId: state.interview.sessionId })
+    });
+    const endData = await endRes.json();
+    const transcriptData = endData.success ? endData.result.transcript : [];
+    
+    // 2. Trigger analysis
+    const analyzeRes = await fetch('http://localhost:5001/api/ai/interview/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        studentId: state.student.id,
+        sessionId: state.interview.sessionId
+      })
+    });
+    const analyzeData = await analyzeRes.json();
+    
+    if (analyzeData.success) {
+      const a = analyzeData.analysis;
+      
+      document.getElementById('reportSubtitle').textContent = `Mock Interview for Software Engineer Role at ${state.interview.company}`;
+      document.getElementById('irOverallScoreVal').textContent = a.overallScore;
+      document.getElementById('irOverallScoreBar').style.width = `${a.overallScore}%`;
+      
+      document.getElementById('irHiringReadinessVal').textContent = `${a.overallScore + 2}%`;
+      document.getElementById('irHiringReadinessBar').style.width = `${a.overallScore + 2}%`;
+      
+      document.getElementById('irCompanyFitVal').textContent = a.hiringRecommendation || 'Recommend';
+      document.getElementById('irCompanyFitBar').style.width = `${a.companyFitScore || 75}%`;
+      
+      document.getElementById('irBatchRankingVal').textContent = `Top ${Math.max(5, 100 - a.overallScore)}%`;
+      document.getElementById('irBatchRankingBar').style.width = `${a.overallScore}%`;
+      
+      initQAFeedback(a, transcriptData);
+      initInterviewRadarChart(a);
+      
+      // Update student in state
+      const freshStudent = await db.getStudentById(state.student.id);
+      if (freshStudent) {
+        state.student = freshStudent;
+        const readinessEl = document.getElementById('dashReadinessVal');
+        if (readinessEl) readinessEl.textContent = state.student.readiness;
+        animateReadiness();
+      }
+      
+      showToast('AI Performance Report generated!', 'success');
+    } else {
+      showToast('Failed to analyze interview: ' + (analyzeData.error || 'Server error'), 'error');
+    }
+  } catch (err) {
+    showToast('Failed to connect to AI server for analysis.', 'error');
+    console.error(err);
+  }
 }
 
-function initQAFeedback() {
+function initQAFeedback(analysis, transcript) {
   const el = document.getElementById('qaFeedback');
   if (!el) return;
-  el.innerHTML = QA_FEEDBACK.map((item, i) => `
+  
+  const qWise = analysis?.questionWiseFeedback || [];
+  const qaItems = [];
+  
+  const interviewerQ = transcript.filter(t => t.role === 'interviewer');
+  const candidateA = transcript.filter(t => t.role === 'candidate');
+  
+  for (let i = 0; i < interviewerQ.length; i++) {
+    const qText = interviewerQ[i]?.content || 'Question';
+    const aText = candidateA[i]?.content || 'Skipped question.';
+    const fb = qWise[i]?.feedback || 'Answer showed adequate understanding.';
+    const quality = qWise[i]?.answerQuality || 'Good';
+    const starClass = quality.toLowerCase().includes('good') || quality.toLowerCase().includes('strong') || quality.toLowerCase().includes('exceptional') ? 'pass' : 'fail';
+    
+    qaItems.push({
+      q: qText,
+      your: aText,
+      feedback: fb,
+      star: starClass,
+      quality: quality
+    });
+  }
+  
+  el.innerHTML = qaItems.map((item, i) => `
     <div class="qa-item">
       <div class="qa-q">
         <div class="qa-q-num">${i + 1}</div>
         ${item.q}
-        <span class="star-badge ${item.star}">${item.star === 'pass' ? '✓ Strong' : item.star === 'partial' ? '~ Partial' : '✗ Needs Work'}</span>
+        <span class="star-badge ${item.star}">${item.quality}</span>
       </div>
       <div class="qa-your"><strong>Your answer:</strong> "${item.your}"</div>
       <div class="qa-feedback">💡 <strong>AI Feedback:</strong> ${item.feedback}</div>
     </div>
-  `).join('');
+  `).join('') || '<div class="text-xs text-on-surface-variant p-4">No QA feedback generated.</div>';
 }
 
-function initInterviewRadarChart() {
+function initInterviewRadarChart(analysis) {
   if (state.charts.ivRadar) state.charts.ivRadar.destroy();
   const ctx = document.getElementById('interviewRadarChart');
   if (!ctx) return;
+  
+  const tech = analysis?.technical?.score || 70;
+  const comm = analysis?.communication?.score || 72;
+  const bhv = analysis?.behavioral?.score || 70;
+  const overall = analysis?.overallScore || 70;
+  
   state.charts.ivRadar = new Chart(ctx, {
     type: 'radar',
     data: {
       labels: ['Technical', 'Communication', 'Confidence', 'Leadership', 'Problem Solving', 'Professionalism'],
       datasets: [{
-        data: [78, 82, 85, 70, 74, 88],
+        data: [tech, comm, overall, bhv, tech, comm],
         fill: true,
         backgroundColor: 'rgba(91,45,144,0.15)',
         borderColor: '#5B2D90',
@@ -1270,6 +1671,185 @@ function initInterviewRadarChart() {
       }
     }
   });
+}
+
+// ──────────────────────────────────────────────────────────────
+// AI RESUME ANALYZER LOGIC
+// ──────────────────────────────────────────────────────────────
+async function analyzeResumeText() {
+  const textEl = document.getElementById('profileResumeText');
+  if (!textEl) return;
+  const resumeText = textEl.value.trim();
+  if (!resumeText) {
+    showToast('Please paste your resume text first!', 'warning');
+    return;
+  }
+  
+  const btn = document.getElementById('btnAnalyzeResume');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Scanning Resume...';
+  }
+  
+  showToast('Analyzing resume using Gemini AI ATS scanning agents...', 'info');
+  
+  try {
+    const res = await fetch('http://localhost:5001/api/ai/resume/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        studentId: state.student.id,
+        resumeText: resumeText
+      })
+    });
+    const data = await res.json();
+    
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Analyze Resume';
+    }
+    
+    if (data.success) {
+      const rep = data.report;
+      
+      document.getElementById('resumeAnalysisResults').style.display = 'block';
+      document.getElementById('resumeOverallScore').textContent = rep.overallResumeScore;
+      
+      const circle = document.getElementById('resumeScoreCircle');
+      if (circle) {
+        const r = 42, circ = 2 * Math.PI * r;
+        circle.style.strokeDashoffset = circ - (rep.overallResumeScore / 100) * circ;
+      }
+      
+      const verdict = document.getElementById('resumeVerdict');
+      verdict.textContent = rep.atsCompatibility?.verdict || 'Partially Compatible';
+      
+      const vStatus = document.getElementById('resumeVerificationStatus');
+      const isVerified = rep.overallResumeScore >= 75;
+      if (vStatus) {
+        vStatus.textContent = isVerified ? 'Verified' : 'Pending Review';
+        vStatus.style.color = isVerified ? 'var(--success)' : 'var(--warning)';
+      }
+      
+      document.getElementById('resumeSummary').textContent = rep.summary;
+      
+      const secContainer = document.getElementById('resumeMissingSections');
+      secContainer.innerHTML = (rep.missingSections || []).map(s => 
+        `<span class="px-2 py-1 bg-red-50 text-red-700 border border-red-100 rounded-md text-[10px] font-bold uppercase tracking-wider">${s}</span>`
+      ).join('') || '<span class="text-xs text-green-600 font-medium">✓ None (All sections present)</span>';
+      
+      const kwContainer = document.getElementById('resumeMissingKeywords');
+      kwContainer.innerHTML = (rep.missingKeywords || []).map(k => 
+        `<span class="px-2 py-1 bg-orange-50 text-orange-700 border border-orange-100 rounded-md text-[10px] font-bold uppercase tracking-wider">${k}</span>`
+      ).join('') || '<span class="text-xs text-green-600 font-medium">✓ None (Keywords aligned)</span>';
+      
+      const sugContainer = document.getElementById('resumeSuggestions');
+      sugContainer.innerHTML = (rep.suggestions || []).map(s => `
+        <div style="font-size: 12px; border-left: 3px solid var(--primary); padding-left: 10px; margin-bottom: 4px; text-align: left;">
+          <strong>${s.section}:</strong> <span style="color: var(--text-2);">${s.issue}</span>
+          <br>
+          <span style="color: var(--primary-dark); font-weight: 500;">👉 Fix: ${s.fix}</span>
+        </div>
+      `).join('') || '<div class="text-xs text-green-600 font-medium">No improvement suggestions required!</div>';
+      
+      const revSummary = document.getElementById('resumeRevisedSummary');
+      if (revSummary) {
+        revSummary.textContent = rep.revisedSummaryExample || '';
+      }
+      
+      const freshStudent = await db.getStudentById(state.student.id);
+      if (freshStudent) {
+        state.student = freshStudent;
+      }
+      
+      showToast('Resume analysis complete!', 'success');
+    } else {
+      showToast('Failed to analyze resume: ' + (data.error || 'Server error'), 'error');
+    }
+  } catch (err) {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'Analyze Resume';
+    }
+    showToast('Failed to connect to AI server.', 'error');
+    console.error(err);
+  }
+}
+
+// ──────────────────────────────────────────────────────────────
+// PROFILE DETAILS & EDITING LOGIC
+// ──────────────────────────────────────────────────────────────
+function initProfilePage() {
+  const s = state.student;
+  if (!s) return;
+  
+  const initials = s.name.split(' ').map(n => n[0]).join('').toUpperCase();
+  document.getElementById('profAvatar').textContent = initials;
+  document.getElementById('profStudentName').textContent = s.name;
+  document.getElementById('profStudentBranch').textContent = `${s.branch} • ${s.semester} • GH Raisoni College`;
+  
+  document.getElementById('profTagCGPA').textContent = `CGPA: ${s.cgpa}`;
+  document.getElementById('profTagRoll').textContent = `Roll: ${s.id}`;
+  document.getElementById('profTagReadiness').textContent = `Readiness: ${s.readiness}%`;
+  
+  document.getElementById('profFullName').textContent = s.name;
+  document.getElementById('profStudentId').textContent = s.id;
+  document.getElementById('profEmail').textContent = s.email;
+  
+  document.getElementById('profDept').textContent = s.dept || 'Engineering';
+  document.getElementById('profSem').textContent = s.semester;
+  document.getElementById('profCGPA').textContent = `${s.cgpa} / 10`;
+  
+  document.getElementById('profTarget').textContent = s.targetCompany || 'TCS / Infosys';
+  document.getElementById('profReadiness').textContent = `${s.readiness}%`;
+  document.getElementById('profRank').textContent = `#${s.rank || 47} / 420`;
+  document.getElementById('profMockTests').textContent = `${s.mockTestsCompleted || 0} Attempted`;
+  
+  const textEl = document.getElementById('profileResumeText');
+  if (textEl && s.resumeText) {
+    textEl.value = s.resumeText;
+    document.getElementById('resumeWordCount').textContent = s.resumeText.split(/\s+/).length + ' words pasted';
+  }
+}
+
+function openEditProfileModal() {
+  document.getElementById('editProfileName').value = state.student.name;
+  document.getElementById('editProfileEmail').value = state.student.email;
+  document.getElementById('editProfileTarget').value = state.student.targetCompany || '';
+  document.getElementById('editProfileModalOverlay').classList.add('open');
+}
+
+function closeEditProfileModal() {
+  document.getElementById('editProfileModalOverlay').classList.remove('open');
+}
+
+async function saveProfileDetails(e) {
+  e.preventDefault();
+  const name = document.getElementById('editProfileName').value.trim();
+  const email = document.getElementById('editProfileEmail').value.trim();
+  const target = document.getElementById('editProfileTarget').value.trim();
+  
+  if (!name || !email) {
+    showToast('Name and email are required!', 'warning');
+    return;
+  }
+  
+  showToast('Saving profile changes...', 'info');
+  
+  const updatedStudent = await db.updateStudent(state.student.id, {
+    name,
+    email,
+    targetCompany: target
+  });
+  
+  if (updatedStudent) {
+    state.student = updatedStudent;
+    initProfilePage();
+    closeEditProfileModal();
+    showToast('Profile updated successfully.', 'success');
+  } else {
+    showToast('Failed to save profile changes.', 'error');
+  }
 }
 
 let _modalCallback = null;
@@ -1313,6 +1893,7 @@ document.addEventListener('click', (e) => {
 
 function toggleSidebar() {
   document.getElementById('mainSidebar').classList.toggle('open');
+  document.getElementById('mainSidebar').classList.toggle('collapsed');
 }
 
 function toggleTask(el) {
@@ -1343,50 +1924,7 @@ state.companyName = 'Microsoft';
 state.selectedCandidateId = null;
 state.selectedJobId = null;
 
-function setLoginRole(role) {
-  state.loginRole = role;
-  document.querySelectorAll('.login-tab').forEach(tab => {
-    if (tab.dataset.role === role) {
-      tab.classList.add('active');
-      tab.style.background = 'white';
-      tab.style.color = 'var(--primary)';
-    } else {
-      tab.classList.remove('active');
-      tab.style.background = 'none';
-      tab.style.color = 'rgba(255,255,255,0.6)';
-    }
-  });
 
-  const title = document.getElementById('loginTitle');
-  const sub = document.getElementById('loginSubtitle');
-  const tip = document.getElementById('loginTip');
-  const label = document.getElementById('loginIdLabel');
-  const input = document.getElementById('studentId');
-  const regLink = document.getElementById('regLinkContainer');
-
-  if (role === 'student') {
-    title.textContent = 'Student Login';
-    sub.textContent = 'Enter your college-provided credentials to continue.';
-    label.textContent = 'Student ID';
-    input.placeholder = 'e.g. GHRCE2024047';
-    tip.innerHTML = '<strong>Demo Login:</strong> ID <span>GHRCE2024047</span> & Pass <span>123</span>';
-    regLink.style.display = 'block';
-  } else if (role === 'college') {
-    title.textContent = 'T&P Officer Login';
-    sub.textContent = 'Enter authorized administrative email and credentials.';
-    label.textContent = 'Officer Email';
-    input.placeholder = 'e.g. tp@ghrce.ac.in';
-    tip.innerHTML = '<strong>Demo Login:</strong> Email <span>tp@ghrce.ac.in</span> & Pass <span>admin</span>';
-    regLink.style.display = 'none';
-  } else if (role === 'company') {
-    title.textContent = 'Recruiter Login';
-    sub.textContent = 'Enter your company recruiter account credentials.';
-    label.textContent = 'Recruiter Email';
-    input.placeholder = 'e.g. recruiter@microsoft.com';
-    tip.innerHTML = '<strong>Demo Login:</strong> Email <span>recruiter@microsoft.com</span> & Pass <span>microsoft</span>';
-    regLink.style.display = 'none';
-  }
-}
 
 function showRegisterModal() {
   document.getElementById('registerModalOverlay').classList.add('open');
@@ -1425,478 +1963,219 @@ async function handleRegister(e) {
 }
 
 function setAppRole(role) {
-  state.userRole = role;
+  state.userRole = 'student';
   const screenApp = document.getElementById('screen-app');
-  screenApp.className = 'screen flex-screen';
-  screenApp.classList.add(`role-${role}`);
+  screenApp.className = 'screen flex-screen role-student';
 
   const sidebarAvatar = document.getElementById('sidebarAvatar');
   const sidebarName = document.getElementById('sidebarName');
   const sidebarDept = document.getElementById('sidebarDept');
 
-  if (role === 'student') {
-    sidebarAvatar.textContent = state.student.initials || 'PS';
-    sidebarName.textContent = state.student.name;
-    sidebarDept.textContent = `${state.student.branch.split(' ')[0]} Senior`;
-  } else if (role === 'college') {
-    sidebarAvatar.textContent = 'TP';
-    sidebarName.textContent = 'T&P Officer';
-    sidebarDept.textContent = 'GH Raisoni Admin';
-  } else if (role === 'company') {
-    sidebarAvatar.textContent = state.companyName.substring(0, 2).toUpperCase();
-    sidebarName.textContent = 'HR Recruiter';
-    sidebarDept.textContent = state.companyName;
+  sidebarAvatar.textContent = state.student.initials || 'PS';
+  sidebarName.textContent = state.student.name;
+  sidebarDept.textContent = `${state.student.branch.split(' ')[0]} Senior`;
+}
+
+function toggleDarkTheme(isDark) {
+  if (isDark) {
+    document.body.classList.add('dark');
+    localStorage.setItem('theme', 'dark');
+  } else {
+    document.body.classList.remove('dark');
+    localStorage.setItem('theme', 'light');
   }
 }
 
 // ──────────────────────────────────────────────────────────────
-// COLLEGE PORTAL CONTROLLERS
+// COURSE LEARNING HUB & PLAYER LOGIC
 // ──────────────────────────────────────────────────────────────
-async function initCollegeDashboard() {
-  const students = await db.getStudents();
-  const drives = await db.getDrives();
-  
-  const total = students.length;
-  const placed = students.filter(s => s.appliedJobs.some(j => j.status === 'Selected' || j.status === 'Offered')).length;
-  const rate = total > 0 ? ((placed / total) * 100).toFixed(1) : 0;
-  
-  document.getElementById('tpTotalStudents').textContent = total;
-  document.getElementById('tpPlacedStudents').textContent = placed;
-  document.getElementById('tpPlacedRate').textContent = `${rate}% Placement Rate`;
-  document.getElementById('tpActiveDrivesCount').textContent = drives.length;
-  
-  const tbody = document.querySelector('#tpDrivesTable tbody');
-  tbody.innerHTML = drives.map(d => `
-    <tr>
-      <td style="padding:10px 6px; font-weight:600">${d.company}</td>
-      <td style="padding:10px 6px;">${d.date}</td>
-      <td style="padding:10px 6px;">${d.dept}</td>
-      <td style="padding:10px 6px;"><span class="badge-status ${d.status.toLowerCase() === 'scheduled' ? 'verified' : 'pending'}">${d.status}</span></td>
-    </tr>
-  `).join('');
+const COURSE_LESSONS = {
+  1: [
+    { title: '1. Introduction to Data Structures', desc: 'Understanding primitive and non-primitive structures.', type: 'video' },
+    { title: '2. Array Representation', desc: 'Contiguous memory layout, addressing formulas.', type: 'video' },
+    { title: '3. Operations on Arrays', desc: 'Insertion, deletion, and traversal algorithms.', type: 'video' },
+    { title: '4. Mini-Quiz: Arrays & Lists', type: 'quiz', questions: [
+      { q: 'What is the time complexity to insert an element at the beginning of an array of size N?', opts: ['O(1)', 'O(log N)', 'O(N)', 'O(N log N)'], ans: 2 },
+      { q: 'Which of the following is contiguous in memory?', opts: ['Linked List', 'Array', 'Binary Tree', 'Graph'], ans: 1 }
+    ]}
+  ],
+  2: [
+    { title: '1. Introduction to Databases & DBMS', desc: 'File systems vs Database Management Systems.', type: 'video' },
+    { title: '2. Relational Model Concepts', desc: 'Schemas, tables, tuples, and attributes.', type: 'video' },
+    { title: '3. SQL Basics: SELECT, WHERE', desc: 'Writing basic SQL queries.', type: 'video' },
+    { title: '4. Mini-Quiz: Relational Database', type: 'quiz', questions: [
+      { q: 'Which key uniquely identifies a record in a table?', opts: ['Foreign Key', 'Candidate Key', 'Primary Key', 'Alternate Key'], ans: 2 },
+      { q: 'Which SQL command deletes table data but keeps structure?', opts: ['DROP', 'TRUNCATE', 'DELETE', 'REMOVE'], ans: 1 }
+    ]}
+  ]
+};
 
-  setTimeout(renderCollegeDeptChart, 300);
+function getCourseLessons(courseId) {
+  if (COURSE_LESSONS[courseId]) return COURSE_LESSONS[courseId];
+  return [
+    { title: '1. Introduction to Topic', desc: 'Foundations and history.', type: 'video' },
+    { title: '2. Core Concepts', desc: 'Key ideas and examples.', type: 'video' },
+    { title: '3. Advanced Applications', desc: 'Case studies and optimizations.', type: 'video' },
+    { title: '4. Mini-Quiz: Assessment', type: 'quiz', questions: [
+      { q: 'What is the primary goal of this topic?', opts: ['Efficiency', 'Accuracy', 'Speed', 'All of the above'], ans: 3 },
+      { q: 'Which approach is recommended?', opts: ['Brute force', 'Structured logic', 'Random choice', 'No approach'], ans: 1 }
+    ]}
+  ];
 }
 
-let _collegeDeptChart = null;
-async function renderCollegeDeptChart() {
-  const ctx = document.getElementById('collegeDeptChart');
-  if (!ctx) return;
-  if (_collegeDeptChart) _collegeDeptChart.destroy();
+let currentCourseId = null;
+let currentLessonIdx = 0;
 
-  const students = await db.getStudents();
-  const depts = {};
+function openCoursePlayer(courseId) {
+  const course = COURSES.find(c => c.id === courseId);
+  if (!course) return;
   
-  students.forEach(s => {
-    const branch = s.branch || 'General';
-    if (!depts[branch]) depts[branch] = { sum: 0, count: 0 };
-    depts[branch].sum += s.readiness || 50;
-    depts[branch].count++;
-  });
-
-  const labels = Object.keys(depts);
-  const data = labels.map(l => Math.round(depts[l].sum / depts[l].count));
-
-  _collegeDeptChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: labels.map(l => l.split(' ')[0]),
-      datasets: [{
-        label: 'Average Readiness Score %',
-        data: data,
-        backgroundColor: '#5B2D90',
-        borderRadius: 6,
-        barThickness: 24
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { min: 0, max: 100, grid: { color: 'rgba(0,0,0,0.05)' } },
-        x: { grid: { display: false } }
-      }
-    }
-  });
+  currentCourseId = courseId;
+  currentLessonIdx = 0;
+  
+  document.getElementById('cpCourseTitle').textContent = course.title;
+  document.getElementById('cpCourseInstructor').textContent = `Instructor: ${course.instructor}`;
+  
+  renderCourseLessons();
+  document.getElementById('coursePlayerOverlay').classList.add('open');
 }
 
-async function initCollegeStudents() {
-  filterStudentsList();
+function closeCoursePlayer() {
+  document.getElementById('coursePlayerOverlay').classList.remove('open');
 }
 
-async function filterStudentsList() {
-  const query = document.getElementById('studentSearch').value.toLowerCase();
-  const branch = document.getElementById('studentBranchFilter').value;
-  const status = document.getElementById('studentResumeFilter').value;
-  const minCgpa = parseFloat(document.getElementById('studentCgpaFilter').value) || 0;
-
-  const students = await db.getStudents();
+function renderCourseLessons() {
+  const lessons = getCourseLessons(currentCourseId);
+  const list = document.getElementById('cpLessonList');
+  if (!list) return;
   
-  const filtered = students.filter(s => {
-    const matchQuery = s.name.toLowerCase().includes(query) || s.id.toLowerCase().includes(query);
-    const matchBranch = branch === 'All' || s.branch === branch;
-    const matchStatus = status === 'All' || s.resumeVerified === status;
-    const matchCgpa = s.cgpa >= minCgpa;
-    return matchQuery && matchBranch && matchStatus && matchCgpa;
-  });
-
-  const tbody = document.querySelector('#studentsTable tbody');
-  tbody.innerHTML = filtered.map(s => `
-    <tr style="border-bottom: 1px solid var(--border-light)">
-      <td style="padding:12px 6px; font-weight:600">${s.id}</td>
-      <td style="padding:12px 6px; font-weight:600">${s.name}</td>
-      <td style="padding:12px 6px;">${s.branch}</td>
-      <td style="padding:12px 6px;">${s.cgpa} / 10</td>
-      <td style="padding:12px 6px;">
-        <div style="display:flex;align-items:center;gap:10px">
-          <div style="background:var(--border);border-radius:99px;width:70px;height:6px;overflow:hidden">
-            <div style="background:var(--primary);width:${s.readiness}%;height:100%"></div>
-          </div>
-          <span>${s.readiness}%</span>
+  list.innerHTML = lessons.map((l, idx) => {
+    const activeClass = idx === currentLessonIdx ? 'border-primary bg-primary-lighter text-primary' : 'border-transparent text-on-surface';
+    const isCompleted = idx < currentLessonIdx || (idx === currentLessonIdx && COURSES.find(c => c.id === currentCourseId).progress >= ((idx+1)/lessons.length)*100);
+    const icon = l.type === 'quiz' ? '📝' : isCompleted ? '✅' : '▶';
+    
+    return `
+      <div class="p-3 mb-2 rounded-xl border cursor-pointer hover:bg-surface-dim transition-all flex items-center gap-3 ${activeClass}" onclick="selectLesson(${idx})">
+        <span style="font-size: 14px;">${icon}</span>
+        <div style="flex: 1;">
+          <div style="font-size: 12px; font-weight: 700;">${l.title}</div>
+          ${l.type === 'video' ? `<div style="font-size: 10px; color: var(--text-2); margin-top: 2px;">${l.desc.substring(0,35)}...</div>` : ''}
         </div>
-      </td>
-      <td style="padding:12px 6px;">
-        <span class="badge-status ${s.resumeVerified.toLowerCase() === 'verified' ? 'verified' : s.resumeVerified.toLowerCase() === 'rejected' ? 'rejected' : 'pending'}">
-          ${s.resumeVerified}
-        </span>
-      </td>
-      <td style="text-align:right;padding:12px 6px;">
-        <button class="btn-solve" onclick="reviewStudentResume('${s.id}')" style="padding:6px 12px;font-size:11px">Verify Resume</button>
-      </td>
-    </tr>
-  `).join('');
-}
-
-async function reviewStudentResume(studentId) {
-  const student = await db.getStudentById(studentId);
-  if (!student) return;
-
-  const content = `Student: ${student.name} (${student.id})\nBranch: ${student.branch} | CGPA: ${student.cgpa}\n\nResume Contents:\n"${student.resumeText || 'No resume uploaded yet.'}"`;
-  
-  showModal(
-    'Verify Student Resume',
-    content,
-    async () => {
-      await db.updateStudent(studentId, { resumeVerified: 'Verified' });
-      showToast(`${student.name}'s resume has been verified successfully.`, 'success');
-      filterStudentsList();
-    },
-    'Approve & Verify'
-  );
-  
-  const overlay = document.getElementById('modalOverlay');
-  const cancelBtn = overlay.querySelector('.btn-outline');
-  cancelBtn.textContent = 'Reject Resume';
-  cancelBtn.onclick = async () => {
-    await db.updateStudent(studentId, { resumeVerified: 'Rejected' });
-    showToast(`${student.name}'s resume has been rejected.`, 'warning');
-    closeModal();
-    filterStudentsList();
-  };
-}
-
-async function initCollegeDrives() {
-  const drives = await db.getDrives();
-  const tbody = document.querySelector('#allDrivesListTable tbody');
-  tbody.innerHTML = drives.map(d => `
-    <tr style="border-bottom: 1px solid var(--border-light)">
-      <td style="padding:10px 4px;font-weight:600">${d.company}</td>
-      <td style="padding:10px 4px;">${d.date}</td>
-      <td style="padding:10px 4px;font-weight:600;color:var(--primary)">${d.ctc || '₹3.6 LPA'}</td>
-      <td style="padding:10px 4px;">CGPA ≥ ${d.minCgpa || '6.0'}</td>
-      <td style="padding:10px 4px;">${d.dept}</td>
-    </tr>
-  `).join('');
-}
-
-async function handleScheduleDrive(e) {
-  e.preventDefault();
-  const company = document.getElementById('drvCompany').value.trim();
-  const date = document.getElementById('drvDate').value;
-  const dept = document.getElementById('drvDept').value;
-  const ctc = document.getElementById('drvCtc').value.trim();
-  const minCgpa = parseFloat(document.getElementById('drvCgpa').value);
-
-  await db.scheduleDrive({ company, date, dept, ctc, minCgpa });
-  e.target.reset();
-  showToast(`Successfully scheduled drive for ${company}!`, 'success');
-  initCollegeDrives();
-}
-
-async function initCollegeAssessments() {
-  const asms = await db.getAssessments();
-  const tbody = document.querySelector('#allAssessmentsTable tbody');
-  tbody.innerHTML = asms.map(a => `
-    <tr style="border-bottom: 1px solid var(--border-light)">
-      <td style="padding:10px 4px;font-weight:600">${a.name}</td>
-      <td style="padding:10px 4px;">${a.questions}</td>
-      <td style="padding:10px 4px;">${a.duration} mins</td>
-      <td style="padding:10px 4px;color:var(--text-2)">${a.createdBy}</td>
-    </tr>
-  `).join('');
-}
-
-async function handleCreateAssessment(e) {
-  e.preventDefault();
-  const name = document.getElementById('asmName').value.trim();
-  const duration = parseInt(document.getElementById('asmDuration').value);
-  const questions = parseInt(document.getElementById('asmQuestions').value);
-  const category = document.getElementById('asmCategory').value;
-
-  await db.createAssessment({ name, duration, questions, category });
-  e.target.reset();
-  showToast(`Published ${name} Assessment!`, 'success');
-  initCollegeAssessments();
-}
-
-// ──────────────────────────────────────────────────────────────
-// COMPANY RECRUITER CONTROLLERS
-// ──────────────────────────────────────────────────────────────
-async function initCompanyDashboard() {
-  const company = state.companyName || 'Microsoft';
-  document.getElementById('comDashHeader').textContent = `Recruiter Dashboard — ${company}`;
-
-  const allJobs = await db.getJobs();
-  const companyJobs = allJobs.filter(j => j.company.toLowerCase() === company.toLowerCase());
-  
-  let applicantCount = 0;
-  companyJobs.forEach(j => applicantCount += j.applicants.length);
-
-  document.getElementById('comTotalJobs').textContent = companyJobs.length;
-  document.getElementById('comTotalApplicants').textContent = applicantCount;
-
-  const tbody = document.querySelector('#comActiveJobsList tbody');
-  tbody.innerHTML = companyJobs.map(j => `
-    <tr style="border-bottom:1px solid var(--border-light)">
-      <td style="padding:10px 4px;font-weight:600">${j.role}</td>
-      <td style="padding:10px 4px;font-weight:600">${j.ctc}</td>
-      <td style="padding:10px 4px;">CGPA ≥ ${j.eligibility?.cgpa || '6.0'}</td>
-      <td style="padding:10px 4px;font-weight:700;color:var(--primary);cursor:pointer" onclick="navigateTo('company-applicants')">${j.applicants.length} applied</td>
-    </tr>
-  `).join('');
-}
-
-async function initCompanyJobs() {
-  const company = state.companyName || 'Microsoft';
-  const allJobs = await db.getJobs();
-  const companyJobs = allJobs.filter(j => j.company.toLowerCase() === company.toLowerCase());
-
-  const tbody = document.querySelector('#allJobsListTable tbody');
-  tbody.innerHTML = companyJobs.map(j => `
-    <tr style="border-bottom:1px solid var(--border-light)">
-      <td style="padding:10px 4px;font-weight:600">${j.role}</td>
-      <td style="padding:10px 4px;">${j.ctc}</td>
-      <td style="padding:10px 4px;">CGPA ≥ ${j.eligibility?.cgpa || '6.0'}</td>
-      <td style="padding:10px 4px;color:var(--text-2)">${j.location}</td>
-    </tr>
-  `).join('');
-}
-
-async function handlePostJob(e) {
-  e.preventDefault();
-  const company = state.companyName || 'Microsoft';
-  const role = document.getElementById('jobRole').value.trim();
-  const type = document.getElementById('jobType').value;
-  const ctc = document.getElementById('jobCtc').value.trim();
-  const location = document.getElementById('jobLocation').value.trim();
-  const cgpa = parseFloat(document.getElementById('jobCgpa').value);
-  const desc = document.getElementById('jobDesc').value.trim();
-
-  await db.postJob({
-    company,
-    role,
-    type,
-    ctc,
-    location,
-    desc,
-    eligibility: { cgpa, branches: ['Computer Science', 'Information Technology'], backlogs: 0 }
-  });
-
-  e.target.reset();
-  showToast(`Successfully posted job opening for ${role}!`, 'success');
-  initCompanyJobs();
-}
-
-async function initCompanyApplicants() {
-  const company = state.companyName || 'Microsoft';
-  const allJobs = await db.getJobs();
-  const companyJobs = allJobs.filter(j => j.company.toLowerCase() === company.toLowerCase());
-
-  const filter = document.getElementById('applicantJobFilter');
-  const currentVal = filter.value;
-  filter.innerHTML = '<option value="All">All Jobs</option>' + companyJobs.map(j => `<option value="${j.id}">${j.role}</option>`).join('');
-  filter.value = currentVal || 'All';
-
-  filterApplicantsList();
-}
-
-async function filterApplicantsList() {
-  const company = state.companyName || 'Microsoft';
-  const jobId = document.getElementById('applicantJobFilter').value;
-  const branch = document.getElementById('applicantBranchFilter').value;
-  const minCgpa = parseFloat(document.getElementById('applicantCgpaFilter').value) || 0;
-
-  const allJobs = await db.getJobs();
-  const companyJobs = allJobs.filter(j => j.company.toLowerCase() === company.toLowerCase() && (jobId === 'All' || j.id === jobId));
-  
-  const students = await db.getStudents();
-  const rowsData = [];
-
-  companyJobs.forEach(job => {
-    job.applicants.forEach(studentId => {
-      const student = students.find(s => s.id === studentId);
-      if (student) {
-        const matchBranch = branch === 'All' || student.branch === branch;
-        const matchCgpa = student.cgpa >= minCgpa;
-
-        if (matchBranch && matchCgpa) {
-          const appliedObj = student.appliedJobs.find(a => a.jobId === job.id) || { status: 'Applied' };
-          rowsData.push({
-            student,
-            job,
-            stage: appliedObj.status
-          });
-        }
-      }
-    });
-  });
-
-  const tbody = document.querySelector('#applicantsTable tbody');
-  tbody.innerHTML = rowsData.map(r => `
-    <tr style="border-bottom:1px solid var(--border-light)">
-      <td style="padding:12px 6px;font-weight:600">${r.student.name}</td>
-      <td style="padding:12px 6px;">${r.job.role}</td>
-      <td style="padding:12px 6px;">${r.student.cgpa}</td>
-      <td style="padding:12px 6px;">
-        <div style="display:flex;align-items:center;gap:10px">
-          <div style="background:var(--border);border-radius:99px;width:60px;height:5px;overflow:hidden">
-            <div style="background:var(--primary);width:${r.student.readiness}%;height:100%"></div>
-          </div>
-          <span>${r.student.readiness}%</span>
-        </div>
-      </td>
-      <td style="padding:12px 6px;font-weight:600;color:var(--success)">${r.student.readiness >= (r.job.eligibility?.cgpa * 10) ? 'High Match' : 'Medium Match'}</td>
-      <td style="padding:12px 6px;"><span class="badge-status ${r.stage.toLowerCase()}">${r.stage}</span></td>
-      <td style="text-align:right;padding:12px 6px;">
-        <button class="btn-solve" onclick="evaluateCandidate('${r.student.id}', '${r.job.id}')" style="padding:6px 12px;font-size:11px">AI Insights</button>
-      </td>
-    </tr>
-  `).join('');
-}
-
-function evaluateCandidate(studentId, jobId) {
-  state.selectedCandidateId = studentId;
-  state.selectedJobId = jobId;
-  navigateTo('company-candidates');
-}
-
-async function initCompanyCandidate(studentId) {
-  if (!studentId) {
-    navigateTo('company-applicants');
-    return;
-  }
-  const student = await db.getStudentById(studentId);
-  const jobs = await db.getJobs();
-  const job = jobs.find(j => j.id === state.selectedJobId);
-  if (!student || !job) return;
-
-  const appliedObj = student.appliedJobs.find(a => a.jobId === job.id) || { status: 'Applied' };
-
-  document.getElementById('candAvatar').textContent = student.name.split(' ').map(n=>n[0]).join('');
-  document.getElementById('candName').textContent = student.name;
-  document.getElementById('candBranchSem').textContent = `${student.branch} • ${student.semester} • GH Raisoni College`;
-  document.getElementById('candCgpa').textContent = `CGPA: ${student.cgpa}`;
-  
-  const verifiedEl = document.getElementById('candVerified');
-  verifiedEl.textContent = student.resumeVerified === 'Verified' ? 'Verified Resume' : 'Pending Verification';
-  verifiedEl.style.background = student.resumeVerified === 'Verified' ? 'rgba(34,197,94,0.25)' : 'rgba(245,158,11,0.25)';
-  verifiedEl.style.color = student.resumeVerified === 'Verified' ? '#4ade80' : '#f59e0b';
-  
-  document.getElementById('candReadiness').textContent = `Readiness: ${student.readiness}%`;
-  document.getElementById('candResumeSummary').textContent = student.resumeText || 'No resume text uploaded yet.';
-  
-  const weakDiv = document.getElementById('candWeakSkills');
-  weakDiv.innerHTML = student.weakSkills.map(s => `<span class="tc-topic" style="background:var(--error-light);color:var(--error);border:1px solid rgba(239,68,68,0.2)">${s}</span>`).join('');
-
-  document.getElementById('candStatusSelect').value = appliedObj.status;
-
-  setTimeout(() => { renderCandRadarChart(student); }, 300);
-
-  const transcriptDiv = document.getElementById('candInterviewTranscript');
-  if (student.interviewHistory && student.interviewHistory.length > 0) {
-    transcriptDiv.innerHTML = `
-      <div style="background:rgba(91,45,144,0.06);padding:8px;border-radius:6px;border-left:3px solid var(--primary);margin-bottom:6px">
-        <strong>HR Mock Interview with Alex (AI Interviewer)</strong><br>
-        Score: ${student.interviewHistory[0].score}/100 | Date: ${student.interviewHistory[0].date}
-      </div>
-      <div style="color:var(--text-2);margin-top:6px;line-height:1.4">
-        <strong>Q: Tell me about yourself.</strong><br>
-        <em>"I am Priya Sharma, a B.Tech CSE student at GH Raisoni College..."</em><br>
-        <strong style="color:var(--primary)">Feedback:</strong> Good structured answer. Try to connect your skills directly to the job role.
-      </div>
-      <div style="color:var(--text-2);margin-top:6px;line-height:1.4">
-        <strong>Q: Why do you want to work at Microsoft?</strong><br>
-        <em>"Microsoft is a great company with amazing culture..."</em><br>
-        <strong style="color:var(--primary)">Feedback:</strong> Too generic. Research Microsoft's specific cloud initiatives.
       </div>
     `;
+  }).join('');
+  
+  const activeLesson = lessons[currentLessonIdx];
+  if (activeLesson.type === 'video') {
+    document.getElementById('cpVideoSection').style.display = 'flex';
+    document.getElementById('cpQuizSection').style.display = 'none';
+    
+    document.getElementById('cpLessonTitle').textContent = activeLesson.title;
+    document.getElementById('cpLessonDetailTitle').textContent = activeLesson.title;
+    document.getElementById('cpLessonDetailTitle').nextElementSibling.textContent = activeLesson.desc;
+    
+    document.getElementById('cpCompleteLessonBtn').textContent = currentLessonIdx === lessons.length - 1 ? 'Finish Course' : 'Complete & Next';
   } else {
-    transcriptDiv.innerHTML = '<div style="color:var(--text-3);text-align:center;padding:20px 0;">No interview history recorded for this student.</div>';
+    document.getElementById('cpVideoSection').style.display = 'none';
+    document.getElementById('cpQuizSection').style.display = 'flex';
+    renderCourseQuiz(activeLesson);
   }
 }
 
-let _candRadarChart = null;
-function renderCandRadarChart(student) {
-  const ctx = document.getElementById('candRadarChart');
-  if (!ctx) return;
-  if (_candRadarChart) _candRadarChart.destroy();
-
-  _candRadarChart = new Chart(ctx, {
-    type: 'radar',
-    data: {
-      labels: ['Technical', 'Coding', 'Comms', 'Logical', 'System', 'OS/Net'],
-      datasets: [{
-        label: 'Candidate Score',
-        data: [75, 70, 82, 78, 60, 50],
-        fill: true,
-        backgroundColor: 'rgba(91,45,144,0.15)',
-        borderColor: '#5B2D90',
-        pointBackgroundColor: '#5B2D90',
-        borderWidth: 2
-      }, {
-        label: 'Industry Benchmark',
-        data: [80, 80, 75, 75, 75, 75],
-        fill: true,
-        backgroundColor: 'rgba(212,175,55,0.06)',
-        borderColor: 'rgba(212,175,55,0.5)',
-        borderDash: [4, 4],
-        borderWidth: 1.5
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: true,
-      plugins: { legend: { display: false } },
-      scales: {
-        r: {
-          min: 0, max: 100,
-          ticks: { display: false },
-          grid: { color: 'rgba(0,0,0,0.06)' },
-          pointLabels: { font: { size: 9, family: 'Inter', weight: '600' } }
-        }
-      }
-    }
-  });
+function selectLesson(idx) {
+  currentLessonIdx = idx;
+  renderCourseLessons();
 }
 
-async function updateCandidateStage() {
-  const status = document.getElementById('candStatusSelect').value;
-  const success = await db.updateApplicantStatus(state.selectedJobId, state.selectedCandidateId, status);
-  if (success) {
-    showToast(`Hiring pipeline stage updated to: ${status}`, 'success');
+async function completeCurrentLesson() {
+  const lessons = getCourseLessons(currentCourseId);
+  const course = COURSES.find(c => c.id === currentCourseId);
+  if (!course) return;
+  
+  const nextIdx = currentLessonIdx + 1;
+  const newProgress = Math.min(100, Math.round((nextIdx / lessons.length) * 100));
+  
+  if (newProgress > course.progress) {
+    course.progress = newProgress;
+    initLearningHub();
+    
+    if (newProgress === 100) {
+      state.student.coursesCompleted = (state.student.coursesCompleted || 0) + 1;
+      state.student.readiness = Math.min(100, state.student.readiness + 3);
+      
+      await db.updateStudent(state.student.id, {
+        coursesCompleted: state.student.coursesCompleted,
+        readiness: state.student.readiness
+      });
+      
+      const coursesEl = document.getElementById('dashCoursesCompleted');
+      if (coursesEl) coursesEl.textContent = state.student.coursesCompleted;
+      const readinessEl = document.getElementById('dashReadinessVal');
+      if (readinessEl) readinessEl.textContent = state.student.readiness;
+      
+      animateReadiness();
+      showToast(`Congratulations! You completed ${course.title}! Readiness +3%`, 'success');
+      closeCoursePlayer();
+      return;
+    }
+  }
+  
+  if (nextIdx < lessons.length) {
+    currentLessonIdx = nextIdx;
+    renderCourseLessons();
   } else {
-    showToast('Failed to update pipeline stage.', 'error');
+    closeCoursePlayer();
+  }
+}
+
+function renderCourseQuiz(lesson) {
+  const container = document.getElementById('cpQuizQuestions');
+  if (!container) return;
+  
+  container.innerHTML = lesson.questions.map((q, qIdx) => `
+    <div style="padding: 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); text-align: left;">
+      <div style="font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 12px;">Q${qIdx + 1}: ${q.q}</div>
+      <div style="display: flex; flex-direction: column; gap: 8px;">
+        ${q.opts.map((opt, optIdx) => `
+          <label style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: white; border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 12px; color: var(--text);">
+            <input type="radio" name="cp_quiz_q_${qIdx}" value="${optIdx}" style="accent-color: var(--primary);">
+            <span>${opt}</span>
+          </label>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+async function submitCourseQuiz() {
+  const lessons = getCourseLessons(currentCourseId);
+  const quizLesson = lessons[currentLessonIdx];
+  let correct = 0;
+  
+  for (let i = 0; i < quizLesson.questions.length; i++) {
+    const selected = document.querySelector(`input[name="cp_quiz_q_${i}"]:checked`);
+    if (!selected) {
+      showToast('Please answer all questions before submitting!', 'warning');
+      return;
+    }
+    if (parseInt(selected.value) === quizLesson.questions[i].ans) {
+      correct++;
+    }
+  }
+  
+  if (correct === quizLesson.questions.length) {
+    showToast('All answers correct! Course Completed!', 'success');
+    await completeCurrentLesson();
+  } else {
+    showToast(`Score: ${correct}/${quizLesson.questions.length}. Try again!`, 'error');
+  }
+}
+
+function toggleResumeWidget() {
+  const el = document.getElementById('floatingResumeAnalyzer');
+  if (el) {
+    el.classList.toggle('expanded');
+    el.classList.toggle('collapsed');
   }
 }
 
@@ -1904,6 +2183,12 @@ async function updateCandidateStage() {
 // INIT
 // ──────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  const isDark = localStorage.getItem('theme') === 'dark';
+  if (isDark) {
+    document.body.classList.add('dark');
+    const toggle = document.getElementById('darkThemeToggle');
+    if (toggle) toggle.checked = true;
+  }
   const loginScreen = document.getElementById('screen-login');
   if (loginScreen) loginScreen.style.display = 'flex';
   ['welcome','assessment','app','test','interview','results','interview-report'].forEach(id => {
@@ -1922,841 +2207,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // ── STUDENT PORTAL: hide T&P and Recruiter tabs, lock to Student role ──
-  document.querySelectorAll('.login-tab[data-role="college"], .login-tab[data-role="company"]').forEach(tab => {
-    tab.style.display = 'none';
-  });
-  setLoginRole('student');
-
   console.log('%cElevate Student Portal — GH Raisoni College', 'font-size:16px;font-weight:bold;color:#5B2D90');
   console.log('%cLogin with Student ID and password (min 3 chars)', 'font-size:12px;color:#6B7280');
 });
-
-// ──────────────────────────────────────────────────────────────
-// COLLEGE PORTAL — SECTION 1: DASHBOARD (REBUILT)
-// ──────────────────────────────────────────────────────────────
-const collegeDb = {
-  getCompanies: () => fetch('/api/companies').then(r => r.json()).catch(() => []),
-  getStartups: () => fetch('/api/startups').then(r => r.json()).catch(() => []),
-  getMeetings: () => fetch('/api/meetings').then(r => r.json()).catch(() => []),
-  upvoteStartup: (id) => fetch(`/api/startups/${id}/upvote`, { method: 'POST' }).then(r => r.json()),
-  updateCompany: (id, data) => fetch(`/api/companies/${id}`, {
-    method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
-  }).then(r => r.json()),
-  scheduleDrive: (data) => fetch('/api/drives', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
-  }).then(r => r.json())
-};
-
-const DEPT_READINESS_DATA = [
-  { dept: 'Computer Science', readiness: 85, target: 90, color: '#5B2D90' },
-  { dept: 'Information Tech', readiness: 78, target: 85, color: '#8B5FBF' },
-  { dept: 'Electronics', readiness: 62, target: 80, color: '#D4AF37' },
-  { dept: 'MBA Finance', readiness: 71, target: 80, color: '#40916c' },
-  { dept: 'Mechanical', readiness: 42, target: 75, color: '#ef4444' }
-];
-
-const MONTHLY_PROGRESS_DATA = [
-  { month: 'Feb', score: 52, target: 70 },
-  { month: 'Mar', score: 58, target: 70 },
-  { month: 'Apr', score: 61, target: 72 },
-  { month: 'May', score: 67, target: 74 },
-  { month: 'Jun', score: 72, target: 76 },
-  { month: 'Jul', score: 75, target: 78 }
-];
-
-let _monthlyChart = null;
-
-async function initCollegeDashboard() {
-  const students = await db.getStudents();
-  const drives = await db.getDrives();
-  const companies = await collegeDb.getCompanies();
-
-  const total = students.length;
-  const placed = students.filter(s => s.readiness >= 75).length;
-  const attention = students.filter(s => s.readiness < 50).length;
-  const rate = total > 0 ? ((placed / total) * 100).toFixed(1) : 0;
-  const avgReadiness = total > 0 ? Math.round(students.reduce((a, s) => a + (s.readiness || 50), 0) / total) : 0;
-
-  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-  set('tpKpiTotal', total);
-  set('tpKpiPlaced', placed);
-  set('tpKpiPlacedRate', `${rate}% Placement Rate`);
-  set('tpKpiDrives', drives.length);
-  set('tpKpiAttention', attention);
-  set('tpKpiReadiness', `${avgReadiness}%`);
-
-  const badge = document.getElementById('tpPlacedRateBadge');
-  if (badge) badge.textContent = `+${rate}%`;
-
-  const nextDrive = drives.sort((a, b) => new Date(a.date) - new Date(b.date))[0];
-  if (nextDrive) set('tpKpiNextDrive', `Next: ${nextDrive.company} (${nextDrive.date})`);
-
-  const drl = document.getElementById('deptReadinessList');
-  if (drl) {
-    drl.innerHTML = DEPT_READINESS_DATA.map(d => `
-      <div class="dept-row">
-        <span class="dept-name">${d.dept.split(' ')[0]} ${d.dept.split(' ')[1] || ''}</span>
-        <div class="dept-bar-track">
-          <div class="dept-bar-fill ${d.readiness < 60 ? 'fill-low' : 'fill-ready'}" style="width:${d.readiness}%"></div>
-        </div>
-        <span class="dept-pct" style="color:${d.readiness < 60 ? 'var(--error)' : 'var(--text)'}">${d.readiness}%</span>
-      </div>
-    `).join('');
-  }
-
-  setTimeout(() => {
-    const ctx = document.getElementById('monthlyProgressChart');
-    if (!ctx) return;
-    if (_monthlyChart) _monthlyChart.destroy();
-    _monthlyChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: MONTHLY_PROGRESS_DATA.map(d => d.month),
-        datasets: [{
-          label: 'Avg Readiness Score',
-          data: MONTHLY_PROGRESS_DATA.map(d => d.score),
-          borderColor: '#5B2D90',
-          backgroundColor: 'rgba(91,45,144,0.08)',
-          fill: true, tension: 0.4,
-          pointBackgroundColor: '#5B2D90',
-          pointRadius: 5, pointHoverRadius: 7
-        }, {
-          label: 'Target Score',
-          data: MONTHLY_PROGRESS_DATA.map(d => d.target),
-          borderColor: '#D4AF37',
-          backgroundColor: 'transparent',
-          borderDash: [5, 5], tension: 0.4,
-          pointBackgroundColor: '#D4AF37',
-          pointRadius: 4
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 12 } } },
-        scales: {
-          y: { min: 40, max: 100, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 10 } } },
-          x: { grid: { display: false }, ticks: { font: { size: 11 } } }
-        }
-      }
-    });
-  }, 300);
-
-  const dc = document.getElementById('upcomingDrivesContainer');
-  if (dc) {
-    const sorted = drives.sort((a, b) => new Date(a.date) - new Date(b.date)).slice(0, 5);
-    dc.innerHTML = sorted.length === 0
-      ? '<div class="ce-empty"><p style="color:var(--text-2)">No drives scheduled yet.</p></div>'
-      : sorted.map(d => `
-        <div class="drive-row">
-          <div class="drive-logo-sm">${(d.company || 'DR').substring(0,2).toUpperCase()}</div>
-          <div>
-            <div class="drive-company">${d.company}</div>
-            <div class="drive-date">${d.dept || 'Engineering'}</div>
-          </div>
-          <div class="drive-date">${d.date}</div>
-          <div class="drive-elig">CGPA ≥ ${d.minCgpa || '6.0'}</div>
-          <span class="badge-drive open">${d.status || 'Open'}</span>
-        </div>
-      `).join('');
-  }
-
-  const cnwList = document.getElementById('cnwList');
-  if (cnwList && companies.length > 0) {
-    const pending = companies.filter(c => c.status === 'Pending' || c.status === 'Requested').slice(0, 3);
-    cnwList.innerHTML = pending.length === 0
-      ? '<p style="font-size:12px;color:var(--text-2)">No pending requests.</p>'
-      : pending.map(c => `
-        <div class="cnw-company-row">
-          <div class="cnw-co-left">
-            <div class="cnw-avatar" style="background:var(--primary-lighter);color:var(--primary)">${c.avatar || c.name.substring(0,2)}</div>
-            <div>
-              <div class="cnw-co-name">${c.name}</div>
-              <div class="cnw-co-sub">${c.industry}</div>
-            </div>
-          </div>
-          <button class="cnw-add-btn" onclick="showToast('Request sent to ${c.name}!','success')">+</button>
-        </div>
-      `).join('');
-  }
-}
-
-// ──────────────────────────────────────────────────────────────
-// COLLEGE PORTAL — SECTION 2: STUDENT MONITORING
-// ──────────────────────────────────────────────────────────────
-let _cohortChart = null;
-let _smCurrentYear = 'All';
-let _smAllStudents = [];
-
-async function initCollegeStudents() {
-  const students = await db.getStudents();
-  _smAllStudents = students;
-
-  const ready = students.filter(s => s.readiness >= 75).length;
-  const improving = students.filter(s => s.readiness >= 55 && s.readiness < 75).length;
-  const attention = students.filter(s => s.readiness < 55).length;
-  const avg = students.length > 0 ? Math.round(students.reduce((a, s) => a + s.readiness, 0) / students.length) : 0;
-
-  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-  set('smStatReady', ready);
-  set('smStatImproving', improving);
-  set('smStatAttention', attention);
-  set('smStatAvg', `${avg}%`);
-
-  setTimeout(() => {
-    const ctx = document.getElementById('cohortTrendChart');
-    if (!ctx) return;
-    if (_cohortChart) _cohortChart.destroy();
-    _cohortChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-        datasets: [{
-          label: 'Ready',
-          data: [12, 15, 18, 22, 28, ready],
-          backgroundColor: 'rgba(34,197,94,0.7)',
-          borderRadius: 4, barThickness: 18
-        }, {
-          label: 'Improving',
-          data: [10, 12, 14, 16, 18, improving],
-          backgroundColor: 'rgba(245,158,11,0.7)',
-          borderRadius: 4, barThickness: 18
-        }, {
-          label: 'Attention',
-          data: [8, 7, 6, 6, 5, attention],
-          backgroundColor: 'rgba(239,68,68,0.7)',
-          borderRadius: 4, barThickness: 18
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10 } } },
-        scales: {
-          x: { grid: { display: false }, stacked: false },
-          y: { grid: { color: 'rgba(0,0,0,0.04)' }, stacked: false }
-        }
-      }
-    });
-  }, 300);
-
-  renderStudentCards();
-}
-
-function selectSmYear(btn, year) {
-  document.querySelectorAll('.sm-year-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  _smCurrentYear = year;
-  renderStudentCards();
-}
-
-async function renderStudentCards() {
-  let students = _smAllStudents.length > 0 ? _smAllStudents : await db.getStudents();
-
-  const query = (document.getElementById('smSearchInput')?.value || '').toLowerCase();
-  const dept = document.getElementById('smDeptFilter')?.value || 'All';
-  const minCgpa = parseFloat(document.getElementById('smCgpaFilter')?.value) || 0;
-  const showReady = document.getElementById('chkReady')?.checked;
-  const showImproving = document.getElementById('chkImproving')?.checked;
-  const showAttention = document.getElementById('chkAttention')?.checked;
-  const showInactive = document.getElementById('chkInactive')?.checked;
-  const sort = document.getElementById('smSortSelect')?.value || 'readiness';
-
-  students = students.filter(s => {
-    const matchQ = s.name.toLowerCase().includes(query) || s.id.toLowerCase().includes(query);
-    const matchDept = dept === 'All' || s.branch === dept;
-    const matchCgpa = s.cgpa >= minCgpa;
-    const r = s.readiness;
-    const matchStatus =
-      (showReady && r >= 75) ||
-      (showImproving && r >= 55 && r < 75) ||
-      (showAttention && r < 55) ||
-      (showInactive && r === 0);
-    return matchQ && matchDept && matchCgpa && matchStatus;
-  });
-
-  if (sort === 'readiness') students.sort((a, b) => b.readiness - a.readiness);
-  else if (sort === 'cgpa') students.sort((a, b) => b.cgpa - a.cgpa);
-  else students.sort((a, b) => a.name.localeCompare(b.name));
-
-  const countEl = document.getElementById('smStudentCount');
-  if (countEl) countEl.textContent = `(${students.length} students)`;
-
-  const grid = document.getElementById('studentCardsGrid');
-  if (!grid) return;
-
-  if (students.length === 0) {
-    grid.innerHTML = `<div class="ce-empty" style="grid-column:span 3"><div class="ce-empty-icon">🔍</div><h4>No students found</h4><p>Try adjusting your filters.</p></div>`;
-    return;
-  }
-
-  grid.innerHTML = students.map(s => {
-    const r = s.readiness;
-    let statusClass = r >= 75 ? 'ready' : r >= 55 ? 'improving' : 'attention';
-    let statusLabel = r >= 75 ? 'Ready' : r >= 55 ? 'Improving' : 'Attention';
-    let cgpaScore = r >= 75 ? 'score-high' : r >= 55 ? 'score-med' : 'score-low';
-    const initials = s.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
-    return `
-      <div class="student-mon-card card-${statusClass}" onclick="openStudentPanel('${s.id}')" role="button">
-        <div class="smc-top">
-          <div class="smc-avatar-wrap">
-            <div class="smc-avatar">${initials}</div>
-            <div>
-              <div class="smc-name">${s.name}</div>
-              <div class="smc-meta">${s.branch.split(' ')[0]} • ${s.semester || '6th Sem'}</div>
-            </div>
-          </div>
-          <span class="smc-badge ${statusClass}">${statusLabel}</span>
-        </div>
-        <div class="smc-scores">
-          <div class="smc-score-item">
-            <div class="scs-label">Readiness</div>
-            <div class="scs-value ${cgpaScore}">${s.readiness}%</div>
-          </div>
-          <div class="smc-score-item">
-            <div class="scs-label">CGPA</div>
-            <div class="scs-value">${s.cgpa}</div>
-          </div>
-        </div>
-        <div class="smc-progress">
-          <div class="smc-prog-label"><span>Overall Readiness</span><span>${s.readiness}%</span></div>
-          <div class="smc-prog-track"><div class="smc-prog-fill" style="width:${s.readiness}%"></div></div>
-        </div>
-        <div class="smc-mock">
-          <span>Resume: <strong>${s.resumeVerified || 'Pending'}</strong></span>
-          <span>Mock: <strong>${s.mockTests || 0} done</strong></span>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-function openStudentPanel(studentId) {
-  const s = _smAllStudents.find(st => st.id === studentId);
-  if (!s) return;
-
-  const initials = s.name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
-  const r = s.readiness;
-  const isReady = r >= 75, isImproving = r >= 55 && r < 75;
-
-  const assessments = [
-    { name: 'TCS Aptitude Mock', date: 'Jul 10, 2026', score: Math.min(100, r + 15) },
-    { name: 'System Design Test', date: 'Jun 28, 2026', score: Math.max(30, r - 5) },
-    { name: 'DSA Challenge', date: 'Jun 15, 2026', score: Math.min(100, r + 8) }
-  ];
-
-  const aiRecs = [
-    'Focus on time-complexity optimization for DSA problems in coming sessions.',
-    'Practice 2 mock interviews per week — current verbal fluency score is 68/100.',
-    `${isReady ? 'Apply to Amazon and Google campus drives opening next week.' : 'Complete 3 more certification modules to cross the placement-ready threshold.'}`
-  ];
-
-  const roadmap = [
-    { phase: 'Phase 1', title: 'Foundation Strengthening', status: 'done', progress: 100 },
-    { phase: 'Phase 2', title: 'Technical Specialization', status: isReady ? 'done' : 'current', progress: isReady ? 100 : Math.round(r * 1.2) },
-    { phase: 'Phase 3', title: 'High-Growth Companies', status: isReady ? 'current' : 'upcoming', progress: isReady ? 40 : 0 }
-  ];
-
-  const body = document.getElementById('sdpBody');
-  if (!body) return;
-
-  body.innerHTML = `
-    <div class="sdp-profile-hero">
-      <div class="sdp-avatar">${initials}</div>
-      <div>
-        <div class="sdp-hero-name">${s.name}</div>
-        <div class="sdp-hero-sub">${s.branch} • ${s.semester || '6th Sem'} • ${s.id}</div>
-        <div class="sdp-hero-tags">
-          <span class="sdp-hero-tag gold">CGPA: ${s.cgpa}</span>
-          <span class="sdp-hero-tag ${s.resumeVerified === 'Verified' ? 'green' : ''}">${s.resumeVerified || 'Pending'} Resume</span>
-          <span class="sdp-hero-tag">Readiness: ${r}%</span>
-          ${isReady ? '<span class="sdp-hero-tag green">🎯 Placement Ready</span>' : ''}
-        </div>
-      </div>
-    </div>
-
-    <div class="sdp-section-card">
-      <div class="sdp-section-title">📋 Assessment History</div>
-      ${assessments.map(a => `
-        <div class="sdp-assessment-row">
-          <div><div class="sdp-ass-name">${a.name}</div><div class="sdp-ass-date">${a.date}</div></div>
-          <div class="sdp-ass-score">${a.score}%</div>
-        </div>
-      `).join('')}
-    </div>
-
-    <div class="sdp-ai-recs">
-      <div class="sdp-section-title" style="color:rgba(255,255,255,0.7)">✦ AI Recommendations</div>
-      ${aiRecs.map(rec => `
-        <div class="sdp-ai-rec-item">
-          <div class="ai-dot"></div>
-          <span>${rec}</span>
-        </div>
-      `).join('')}
-    </div>
-
-    <div class="sdp-section-card">
-      <div class="sdp-section-title">🗺️ Strategic Learning Roadmap</div>
-      ${roadmap.map((step, i) => `
-        <div class="sdp-roadmap-item">
-          <div class="sdp-roadmap-dot-wrap">
-            <div class="sdp-roadmap-dot ${step.status}"></div>
-            ${i < roadmap.length - 1 ? '<div class="sdp-roadmap-line"></div>' : ''}
-          </div>
-          <div style="flex:1">
-            <div class="sdp-roadmap-phase">${step.phase}</div>
-            <div class="sdp-roadmap-title">${step.title}</div>
-            <span class="sdp-roadmap-badge ${step.status}">${step.status === 'done' ? 'Completed' : step.status === 'current' ? 'In Progress' : 'Upcoming'}</span>
-            ${step.progress > 0 ? `<div class="sdp-prog-bar"><div class="sdp-prog-fill" style="width:${step.progress}%"></div></div>` : ''}
-          </div>
-        </div>
-      `).join('')}
-    </div>
-  `;
-
-  document.getElementById('studentDetailOverlay')?.classList.add('open');
-  document.getElementById('studentDetailPanel')?.classList.add('open');
-}
-
-function closeStudentPanel(event) {
-  if (event && event.target !== document.getElementById('studentDetailOverlay')) return;
-  document.getElementById('studentDetailOverlay')?.classList.remove('open');
-  document.getElementById('studentDetailPanel')?.classList.remove('open');
-}
-
-// ──────────────────────────────────────────────────────────────
-// COLLEGE PORTAL — SECTION 3: INNOVATION HUB
-// ──────────────────────────────────────────────────────────────
-let _allStartups = [];
-let _ihActivityChart = null;
-
-async function initCollegeInnovation() {
-  _allStartups = await collegeDb.getStartups();
-  renderInnovationFeed('All');
-  renderInnovationSidebar();
-
-  setTimeout(() => {
-    const ctx = document.getElementById('innovationActivityChart');
-    if (!ctx) return;
-    if (_ihActivityChart) _ihActivityChart.destroy();
-    _ihActivityChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        datasets: [{ data: [3, 7, 5, 12, 8, 4, 6], backgroundColor: 'rgba(91,45,144,0.7)', borderRadius: 4, barThickness: 12 }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: { y: { display: false }, x: { grid: { display: false }, ticks: { font: { size: 9 } } } }
-      }
-    });
-  }, 300);
-}
-
-function renderInnovationFeed(category) {
-  const container = document.getElementById('innovationFeedContainer');
-  if (!container) return;
-  const CATEGORY_ICONS = { 'Sustainability': '🌿', 'EduTech': '📚', 'AI & ML': '🤖', 'FinTech': '💳' };
-  let filtered = category === 'All' ? _allStartups : _allStartups.filter(s => s.category === category);
-
-  filtered = [...filtered].sort((a, b) => b.upvotes - a.upvotes);
-
-  if (filtered.length === 0) {
-    container.innerHTML = `<div class="ce-empty"><div class="ce-empty-icon">🔍</div><h4>No projects found</h4><p>No startups in this category yet.</p></div>`;
-    return;
-  }
-
-  container.innerHTML = filtered.map(startup => {
-    const icon = CATEGORY_ICONS[startup.category] || '💡';
-    const teamAvatars = startup.team.slice(0, 3).map(t => `<div class="startup-team-avatar">${t}</div>`).join('');
-    const extra = startup.team.length > 3 ? `<div class="startup-team-more">+${startup.team.length - 3}</div>` : '';
-    const upvotes = startup.upvotes >= 1000 ? `${(startup.upvotes / 1000).toFixed(1)}k` : startup.upvotes;
-
-    return `
-      <div class="startup-feed-card" id="startup-${startup.id}">
-        <div class="startup-cover">
-          <div class="startup-cover-inner" style="background:${startup.gradient || 'linear-gradient(135deg, #1a1a2e, #5B2D90)'}">
-            ${startup.trending ? '<div class="startup-trending-badge">🔥 Trending</div>' : ''}
-            <div class="startup-cover-icon">${icon}</div>
-          </div>
-        </div>
-        <div class="startup-card-body">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-            <span style="font-size:10px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:0.06em">${startup.category}</span>
-          </div>
-          <div class="startup-card-name">${startup.name}</div>
-          <div class="startup-card-tagline">${startup.tagline}</div>
-          <div class="startup-card-footer">
-            <div class="startup-team">${teamAvatars}${extra}</div>
-            <div class="startup-actions">
-              <button class="startup-action-btn" id="upvote-${startup.id}" onclick="upvoteStartupFn('${startup.id}')">
-                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
-                ${upvotes}
-              </button>
-              <button class="startup-action-btn" onclick="showStartupDetail('${startup.id}')">
-                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                ${startup.comments}
-              </button>
-              <button class="startup-share-btn" onclick="showToast('Link copied to clipboard!','success')">
-                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-function renderInnovationSidebar() {
-  const CATEGORY_ICONS = { 'Sustainability': '🌿', 'EduTech': '📚', 'AI & ML': '🤖', 'FinTech': '💳' };
-  const sorted = [..._allStartups].sort((a, b) => b.upvotes - a.upvotes).slice(0, 3);
-  const el = document.getElementById('ihTrendingList');
-  if (!el) return;
-  el.innerHTML = sorted.map((s, i) => {
-    const upvotes = s.upvotes >= 1000 ? `${(s.upvotes / 1000).toFixed(1)}k` : s.upvotes;
-    const icon = CATEGORY_ICONS[s.category] || '💡';
-    return `
-      <div class="ih-trending-item">
-        <div class="ih-trend-thumb" style="background:${s.gradient}">${icon}</div>
-        <div>
-          <div class="ih-trend-name">${s.name}</div>
-          <div class="ih-trend-count">▲ ${upvotes} upvotes</div>
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  const totalEl = document.getElementById('ihTotalProjects');
-  if (totalEl) totalEl.textContent = _allStartups.length + 242;
-}
-
-function filterInnovationFeed(btn, category) {
-  document.querySelectorAll('.ih-filter-chip').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderInnovationFeed(category);
-}
-
-async function upvoteStartupFn(id) {
-  const res = await collegeDb.upvoteStartup(id);
-  if (res.success) {
-    const idx = _allStartups.findIndex(s => s.id === id);
-    if (idx !== -1) _allStartups[idx].upvotes = res.upvotes;
-    const btn = document.getElementById(`upvote-${id}`);
-    if (btn) {
-      const v = res.upvotes >= 1000 ? `${(res.upvotes / 1000).toFixed(1)}k` : res.upvotes;
-      btn.classList.add('upvoted');
-      btn.innerHTML = `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg> ${v}`;
-    }
-    showToast('Upvoted!', 'success');
-  }
-}
-
-function showStartupDetail(id) {
-  const s = _allStartups.find(st => st.id === id);
-  if (!s) return;
-  const CATEGORY_ICONS = { 'Sustainability': '🌿', 'EduTech': '📚', 'AI & ML': '🤖', 'FinTech': '💳' };
-  const icon = CATEGORY_ICONS[s.category] || '💡';
-  const modal = document.getElementById('startupModalContent');
-  if (!modal) return;
-  modal.innerHTML = `
-    <div style="position:relative">
-      <div class="smod-cover" style="background:${s.gradient}">${icon}</div>
-      <button class="smod-close" onclick="closeStartupModal()">✕</button>
-    </div>
-    <div class="smod-body">
-      <div class="smod-category">${s.category}</div>
-      <div class="smod-name">${s.name}</div>
-      <div class="smod-tagline">${s.tagline}</div>
-      <div class="smod-section-label">🔴 Problem Statement</div>
-      <div class="smod-text">${s.problem}</div>
-      <div class="smod-section-label">✅ Our Solution</div>
-      <div class="smod-text">${s.solution}</div>
-      <div class="smod-section-label">👥 Team</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
-        ${s.team.map(t => `<div style="width:36px;height:36px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">${t}</div>`).join('')}
-      </div>
-    </div>
-  `;
-  document.getElementById('startupModalOverlay')?.classList.add('open');
-}
-
-function closeStartupModal(event) {
-  if (event && event.target !== document.getElementById('startupModalOverlay')) return;
-  document.getElementById('startupModalOverlay')?.classList.remove('open');
-}
-
-// ──────────────────────────────────────────────────────────────
-// COLLEGE PORTAL — SECTION 4: COMPANY RELATIONS
-// ──────────────────────────────────────────────────────────────
-let _engagementChart = null;
-let _calendarDate = new Date();
-let _allCompanies = [];
-let _allMeetings = [];
-let _crViewMode = 'grid';
-
-async function initCollegeCompanies() {
-  _allCompanies = await collegeDb.getCompanies();
-  _allMeetings = await collegeDb.getMeetings();
-
-  renderCompanyDirectory();
-  renderCalendar();
-  populateDriveCompanySelect();
-  initEngagementChart();
-}
-
-function initEngagementChart(period = 'Q') {
-  const ctx = document.getElementById('engagementChart');
-  if (!ctx) return;
-  if (_engagementChart) _engagementChart.destroy();
-
-  const dataMap = {
-    Q: { labels: ['IT Services', 'Finance', 'Cloud/SaaS', 'Auto-Tech', 'Consulting', 'E-Commerce'], data: [14, 8, 12, 6, 9, 11] },
-    H: { labels: ['IT Services', 'Finance', 'Cloud/SaaS', 'Auto-Tech', 'Consulting', 'E-Commerce'], data: [28, 16, 22, 11, 18, 21] },
-    Y: { labels: ['IT Services', 'Finance', 'Cloud/SaaS', 'Auto-Tech', 'Consulting', 'E-Commerce'], data: [54, 32, 44, 22, 36, 41] }
-  };
-
-  const d = dataMap[period] || dataMap.Q;
-  _engagementChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: d.labels,
-      datasets: [{ label: 'Engagement Score', data: d.data, backgroundColor: [
-        '#5B2D90','#8B5FBF','#D4AF37','#40916c','#ef4444','#3b82f6'
-      ], borderRadius: 6, barThickness: 28 }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: { y: { grid: { color: 'rgba(0,0,0,0.04)' } }, x: { grid: { display: false } } }
-    }
-  });
-}
-
-function switchEngagementPeriod(btn, period) {
-  document.querySelectorAll('.cr-period-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  initEngagementChart(period);
-}
-
-function renderCalendar() {
-  const y = _calendarDate.getFullYear();
-  const m = _calendarDate.getMonth();
-  const today = new Date();
-
-  const label = document.getElementById('calMonthLabel');
-  if (label) label.textContent = _calendarDate.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
-
-  const firstDay = new Date(y, m, 1).getDay();
-  const daysInMonth = new Date(y, m + 1, 0).getDate();
-
-  const meetingDays = new Set(_allMeetings
-    .filter(mt => {
-      const d = new Date(mt.date);
-      return d.getFullYear() === y && d.getMonth() === m;
-    })
-    .map(mt => new Date(mt.date).getDate())
-  );
-
-  const calDays = document.getElementById('calDays');
-  if (!calDays) return;
-
-  let html = '';
-  for (let i = 0; i < firstDay; i++) html += '<div class="msc-day empty"></div>';
-  for (let d = 1; d <= daysInMonth; d++) {
-    const isToday = d === today.getDate() && m === today.getMonth() && y === today.getFullYear();
-    const hasMeeting = meetingDays.has(d);
-    html += `<div class="msc-day ${isToday ? 'today' : ''} ${hasMeeting && !isToday ? 'has-meeting' : ''}" onclick="selectCalDay(${d})">${d}</div>`;
-  }
-  calDays.innerHTML = html;
-
-  renderMeetingsList(today.getDate());
-}
-
-function selectCalDay(day) {
-  renderMeetingsList(day);
-}
-
-function renderMeetingsList(day) {
-  const y = _calendarDate.getFullYear();
-  const m = _calendarDate.getMonth();
-  const dayStr = `${y}-${String(m + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-  const dayMeetings = _allMeetings.filter(mt => mt.date === dayStr);
-
-  const el = document.getElementById('calMeetingsList');
-  if (!el) return;
-
-  if (dayMeetings.length === 0) {
-    el.innerHTML = `<p style="font-size:11px;color:var(--text-2);text-align:center;padding:8px 0">No meetings on this day</p>`;
-    return;
-  }
-
-  el.innerHTML = dayMeetings.map(mt => `
-    <div class="msc-meeting-item ${mt.mode}">
-      <div>
-        <svg class="msc-meeting-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          ${mt.mode === 'online' ? '<polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>' : '<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>'}
-        </svg>
-      </div>
-      <div>
-        <div class="msc-meeting-company">${mt.company}</div>
-        <div class="msc-meeting-time">${mt.time} • ${mt.mode === 'online' ? 'Online' : mt.venue}</div>
-        <div class="msc-meeting-type">${mt.type}</div>
-      </div>
-    </div>
-  `).join('');
-}
-
-function changeCalendarMonth(delta) {
-  _calendarDate.setMonth(_calendarDate.getMonth() + delta);
-  renderCalendar();
-}
-
-function renderCompanyDirectory() {
-  const query = (document.getElementById('companySearchInput')?.value || '').toLowerCase();
-  let companies = _allCompanies.filter(c =>
-    c.name.toLowerCase().includes(query) || c.industry.toLowerCase().includes(query)
-  );
-
-  const grid = document.getElementById('companyDirectoryGrid');
-  if (!grid) return;
-
-  if (companies.length === 0) {
-    grid.innerHTML = `<div class="ce-empty" style="grid-column:span 4"><div class="ce-empty-icon">🏢</div><h4>No companies found</h4></div>`;
-    return;
-  }
-
-  if (_crViewMode === 'list') {
-    grid.style.gridTemplateColumns = '1fr';
-  } else {
-    grid.style.gridTemplateColumns = 'repeat(auto-fill, minmax(200px, 1fr))';
-  }
-
-  grid.innerHTML = companies.map(c => {
-    const statusActions = {
-      'Connected': `<button class="cdc-btn manage" onclick="showToast('Opening chat with ${c.name}','success')">Message</button>
-                   <button class="cdc-btn details" onclick="showToast('${c.name} profile loaded.','success')">View</button>`,
-      'Pending': `<button class="cdc-btn details" onclick="showToast('Request pending for ${c.name}.','success')">Pending...</button>`,
-      'Requested': `<button class="cdc-btn accept" onclick="acceptCompanyRequest('${c.id}')">Accept</button>
-                   <button class="cdc-btn reject" onclick="rejectCompanyRequest('${c.id}')">Decline</button>`
-    };
-    const dotClass = c.status.toLowerCase();
-    const actions = statusActions[c.status] || statusActions['Pending'];
-    return `
-      <div class="company-dir-card ${dotClass}" id="cdc-${c.id}">
-        <div class="cdc-avatar">${c.avatar || c.name.substring(0, 2)}</div>
-        <div class="cdc-name">${c.name}</div>
-        <div class="cdc-industry">${c.industry}</div>
-        <div class="cdc-contact">
-          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          ${c.contact}
-        </div>
-        <div class="cdc-status">
-          <div class="cdc-status-dot ${dotClass}"></div>
-          <span class="cdc-status-text" style="color:${dotClass === 'connected' ? 'var(--success)' : dotClass === 'requested' ? 'var(--primary)' : 'var(--warning)'}">${c.status}</span>
-          ${c.previousVisits > 0 ? `<span style="margin-left:auto;font-size:10px;color:var(--text-3)">${c.previousVisits}× visited</span>` : ''}
-        </div>
-        <div class="cdc-actions">${actions}</div>
-      </div>
-    `;
-  }).join('');
-}
-
-function setCrView(mode, btn) {
-  _crViewMode = mode;
-  document.querySelectorAll('.cr-view-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderCompanyDirectory();
-}
-
-async function acceptCompanyRequest(id) {
-  const res = await collegeDb.updateCompany(id, { status: 'Connected', connectionDate: new Date().toISOString().split('T')[0] });
-  if (res.success) {
-    const idx = _allCompanies.findIndex(c => c.id === id);
-    if (idx !== -1) _allCompanies[idx] = res.company;
-    renderCompanyDirectory();
-    showToast(`Connection accepted! Welcome aboard.`, 'success');
-  }
-}
-
-async function rejectCompanyRequest(id) {
-  const c = _allCompanies.find(co => co.id === id);
-  showModal('Decline Request?', `Decline connection request from ${c?.name}?`, async () => {
-    await collegeDb.updateCompany(id, { status: 'Pending' });
-    const idx = _allCompanies.findIndex(c => c.id === id);
-    if (idx !== -1) _allCompanies[idx].status = 'Pending';
-    renderCompanyDirectory();
-    showToast('Request declined.', 'warning');
-  });
-}
-
-function showPendingRequests() {
-  const pending = _allCompanies.filter(c => c.status === 'Requested');
-  if (pending.length === 0) {
-    showToast('No pending requests at the moment.', 'success');
-    return;
-  }
-  showModal(
-    'Pending Connection Requests',
-    pending.map(c => `${c.name} (${c.industry})`).join('\n'),
-    null
-  );
-}
-
-function populateDriveCompanySelect() {
-  const sel = document.getElementById('crDrvCompany');
-  if (!sel) return;
-  const connected = _allCompanies.filter(c => c.status === 'Connected');
-  sel.innerHTML = '<option value="">Select connected company</option>' +
-    connected.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
-}
-
-async function handleCrScheduleDrive(e) {
-  e.preventDefault();
-  const company = document.getElementById('crDrvCompany').value;
-  const role = document.getElementById('crDrvRole').value.trim();
-  const ctc = document.getElementById('crDrvCtc').value.trim();
-  const date = document.getElementById('crDrvDate').value;
-  const minCgpa = parseFloat(document.getElementById('crDrvCgpa').value);
-  const dept = document.getElementById('crDrvDept').value;
-  const desc = document.getElementById('crDrvDesc').value.trim();
-
-  const drive = { id: `drv_${Date.now()}`, company, role, ctc, date, dept, minCgpa, desc, status: 'Scheduled' };
-  await collegeDb.scheduleDrive(drive);
-  e.target.reset();
-  showToast(`🚀 Placement drive published for ${company} — ${role}!`, 'success');
-}
-
-function sendCrMessage(event) {
-  if (event.key === 'Enter') sendCrMessageBtn();
-}
-
-function sendCrMessageBtn() {
-  const input = document.getElementById('crChatInputField');
-  if (!input || !input.value.trim()) return;
-  const msg = input.value.trim();
-  const msgs = document.getElementById('crChatMessages');
-  if (msgs) {
-    const div = document.createElement('div');
-    div.className = 'cr-msg outgoing';
-    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    div.innerHTML = `<div class="cr-msg-avatar" style="background:var(--accent);color:#1a0a2e">TP</div><div><div class="cr-msg-bubble">${msg}</div><div class="cr-msg-time">${time}</div></div>`;
-    msgs.appendChild(div);
-    msgs.scrollTop = msgs.scrollHeight;
-
-    setTimeout(() => {
-      const replies = [
-        'Thank you! We will confirm the dates with our HR team.',
-        'Sounds great! Could you share the shortlist by end of week?',
-        'Perfect. We will send you the assessment details shortly.',
-        'Noted. Our team will review and get back to you.'
-      ];
-      const reply = document.createElement('div');
-      reply.className = 'cr-msg incoming';
-      reply.innerHTML = `<div class="cr-msg-avatar">SC</div><div><div class="cr-msg-bubble">${replies[Math.floor(Math.random() * replies.length)]}</div><div class="cr-msg-time">${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</div></div>`;
-      msgs.appendChild(reply);
-      msgs.scrollTop = msgs.scrollHeight;
-    }, 1500);
-  }
-  input.value = '';
-}

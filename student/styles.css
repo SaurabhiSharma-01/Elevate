@@ -7,20 +7,20 @@
 
 /* ─── CSS Variables ─── */
 :root {
-  --primary:        #5B2D90;
+  --primary:        #5B2D90; /* Elevate Royal Purple */
   --primary-hover:  #4A2476;
   --primary-light:  #EDE9F7;
   --primary-lighter:#F5F2FC;
   --secondary:      #8B5FBF;
   --accent:         #D4AF37;
   --accent-light:   #FBF5DC;
-  --bg:             #F8F9FC;
-  --surface:        #FFFFFF;
-  --surface-2:      #F3F4F6;
+  --bg:             #F5F4F8; /* Soft lavender-gray page background */
+  --surface:        #FFFFFF; /* Pure white cards */
+  --surface-2:      #F8F7FC; /* Elevated sub-surface */
   --text:           #1F2937;
   --text-2:         #6B7280;
   --text-3:         #9CA3AF;
-  --border:         #E5E7EB;
+  --border:         #E2E2EC;
   --border-light:   #F3F4F6;
   --success:        #22C55E;
   --success-light:  #DCFCE7;
@@ -41,6 +41,53 @@
   --shadow-lg:      0 16px 48px rgba(0,0,0,0.12);
   --shadow-primary: 0 8px 24px rgba(91,45,144,0.25);
   --transition:     0.22s cubic-bezier(.4,0,.2,1);
+
+  /* Mappings */
+  --primary-fixed:  #EDE9F7;
+  --primary-fixed-dim: #D8D1F0;
+  --on-primary-fixed-variant: #4A2476;
+  --primary-container: #EDE9F7;
+  --bg-card:        #FFFFFF; /* White widgets stand out against lavender background */
+  --bg-sidebar:     #E8E7EE; /* Darker sidebar background in light mode */
+}
+
+/* Dark Mode overrides */
+body.dark {
+  --bg:             #0A0B10; /* Darkened gray-black space background */
+  --surface:        #131622; /* Elevated slate-gray card backgrounds */
+  --surface-2:      #1D2030; /* Elevated subsurface */
+  --bg-sidebar:     #05060A; /* Even darker sidebar background for contrast */
+  --text:           #F9FAFB;
+  --text-2:         #9CA3AF;
+  --text-3:         #6B7280;
+  --border:         #232738; /* Card borders */
+  --border-light:   #131622;
+  
+  --primary:        #A78BFA; /* Vibrant Violet */
+  --primary-hover:  #C4B5FD;
+  --primary-light:  #1E1B4B;
+  --primary-lighter:#312E81;
+  --secondary:      #C084FC;
+  --accent:         #FBBF24;
+  --accent-light:   #451A03;
+  --success:        #34D399;
+  --success-light:  #062F17;
+  --warning:        #FBBF24;
+  --warning-light:  #451A03;
+  --error:          #F87171;
+  --error-light:    #4C0519;
+  --info:           #60a5fa;
+  --info-light:     #172554;
+
+  --primary-fixed:  #1E1B4B;
+  --primary-fixed-dim: #312E81;
+  --on-primary-fixed-variant: #C084FC;
+  --primary-container: #1E1B4B;
+  --bg-card:        #131622; /* Dark card widgets */
+  --shadow-sm:      0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+  --shadow:         0 10px 25px -5px rgba(0,0,0,0.5), 0 8px 16px -6px rgba(0,0,0,0.4);
+  --shadow-md:      0 20px 25px -5px rgba(0,0,0,0.6), 0 10px 10px -5px rgba(0,0,0,0.5);
+  --shadow-lg:      0 25px 50px -12px rgba(0,0,0,0.7);
 }
 
 /* ─── Reset & Base ─── */
@@ -629,7 +676,7 @@ ul { list-style: none; }
 .sidebar {
   width: var(--sidebar-w);
   flex-shrink: 0;
-  background: #fff;
+  background: var(--bg-sidebar);
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
@@ -637,7 +684,7 @@ ul { list-style: none; }
   top: 0; left: 0;
   height: 100vh;
   z-index: 200;
-  transition: transform var(--transition);
+  transition: width 0.3s cubic-bezier(.4,0,.2,1), transform 0.3s cubic-bezier(.4,0,.2,1), background-color var(--transition);
   overflow-y: auto;
 }
 .sidebar-brand {
@@ -744,6 +791,7 @@ ul { list-style: none; }
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  transition: margin-left 0.3s cubic-bezier(.4,0,.2,1);
 }
 .app-header {
   height: var(--header-h);
@@ -3274,3 +3322,207 @@ ul { list-style: none; }
 .ce-empty-icon { font-size: 48px; margin-bottom: 12px; }
 .ce-empty h4 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
 .ce-empty p { font-size: 13px; color: var(--text-2); }
+
+/* ============================================================
+   SIDEBAR COLLAPSE & CONTROLS RELOCATION OVERRIDES
+   ============================================================ */
+.sidebar {
+  transition: width 0.3s cubic-bezier(.4,0,.2,1), transform 0.3s cubic-bezier(.4,0,.2,1), background-color var(--transition);
+}
+.sidebar.collapsed {
+  width: 60px;
+}
+.sidebar.collapsed .sb-name-wrapper,
+.sidebar.collapsed .nav-section-label,
+.sidebar.collapsed .sidebar-readiness,
+.sidebar.collapsed .sidebar-user .user-info,
+.sidebar.collapsed .nav-text {
+  display: none !important;
+}
+.sidebar.collapsed .nav-item {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+.sidebar.collapsed .sidebar-brand {
+  flex-direction: column;
+  padding-left: 10px;
+  padding-right: 10px;
+  justify-content: center;
+}
+.sidebar.collapsed .sidebar-brand .hamburger {
+  margin: 10px auto 0 auto !important;
+}
+.sidebar.collapsed .sidebar-controls {
+  flex-direction: column;
+  padding: 12px 0;
+  gap: 8px;
+  justify-content: center;
+}
+.sidebar.collapsed .sidebar-user {
+  justify-content: center;
+  padding: 12px 0;
+}
+
+.sidebar.collapsed ~ .app-main {
+  margin-left: 60px;
+}
+
+/* Sidebar Controls Header */
+.sidebar-controls {
+  display: flex;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  justify-content: flex-start;
+  transition: all var(--transition);
+}
+
+/* Relocated Notification Panel */
+.sidebar .notif-panel {
+  position: absolute;
+  top: 64px;
+  left: 100%;
+  margin-left: 12px;
+  width: 360px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  z-index: 500;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-16px);
+  transition: all var(--transition);
+}
+.sidebar .notif-panel.open {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateX(0);
+}
+
+/* Mobile Menu Button */
+.mobile-only-btn {
+  display: none;
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 150;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+@media (max-width: 768px) {
+  .mobile-only-btn {
+    display: flex;
+  }
+  .sidebar.collapsed ~ .app-main {
+    margin-left: 0 !important;
+  }
+  .sidebar.collapsed {
+    width: 220px !important;
+  }
+  .sidebar.collapsed .sb-name-wrapper,
+  .sidebar.collapsed .nav-section-label,
+  .sidebar.collapsed .sidebar-readiness,
+  .sidebar.collapsed .sidebar-user .user-info,
+  .sidebar.collapsed .nav-text {
+    display: block !important;
+  }
+  .sidebar.collapsed .nav-item {
+    justify-content: flex-start !important;
+    padding-left: 16px !important;
+  }
+  .sidebar.collapsed .sidebar-brand {
+    flex-direction: row !important;
+    padding-left: 20px !important;
+  }
+  .sidebar.collapsed .sidebar-controls {
+    flex-direction: row !important;
+    padding: 12px 20px !important;
+    justify-content: flex-start !important;
+  }
+}
+
+/* Floating Collapsible Resume Analyzer Widget */
+.floating-widget {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.fw-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 99px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+.fw-trigger:hover {
+  transform: scale(1.05);
+  background: var(--primary-hover);
+}
+.fw-content {
+  display: none;
+  width: 320px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 16px;
+  flex-direction: column;
+}
+.fw-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+.fw-close-btn {
+  background: none;
+  border: none;
+  color: var(--text-3);
+  font-size: 14px;
+  cursor: pointer;
+}
+.fw-body textarea {
+  width: 100%;
+  height: 90px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  font-size: 12px;
+  background: var(--surface-2);
+  color: var(--text);
+  resize: none;
+  outline: none;
+}
+
+/* Expanded state toggles */
+.floating-widget.expanded .fw-trigger {
+  display: none;
+}
+.floating-widget.expanded .fw-content {
+  display: flex;
+}

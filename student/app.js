@@ -1074,36 +1074,70 @@ function initAchievements() {
   `).join('');
 }
 
+function getCourseVideos(courseId) {
+  const topics = [
+    { title: "Introduction & Fundamentals", desc: "Get started with the basic concepts.", dur: "15:00" },
+    { title: "Core Architecture & Deep Dive", desc: "Understanding the underlying mechanics.", dur: "45:30" },
+    { title: "Advanced Problem Solving", desc: "Applying theory to real-world scenarios.", dur: "1:20:00" }
+  ];
+  
+  return topics.map((t, i) => {
+    let statusHtml = `<div class="lh-video-status watch-now" onclick="openCoursePlayer(${courseId}); event.stopPropagation();">Watch Now</div>`;
+    
+    // Mocking video statuses for visual variety
+    if (i === 0) {
+      statusHtml = `<div class="lh-video-status completed">Completed</div>`;
+    } else if (i === 1) {
+      statusHtml = `<div class="lh-video-status paused" onclick="openCoursePlayer(${courseId}); event.stopPropagation();">12:45 / ${t.dur}</div>`;
+    }
+    
+    return `
+      <div class="lh-video-row">
+        <div class="lh-video-thumb"></div>
+        <div class="lh-video-info">
+          <div class="lh-video-title">${t.title}</div>
+          <div class="lh-video-desc">${t.desc}</div>
+        </div>
+        ${statusHtml}
+      </div>
+    `;
+  }).join('');
+}
+
+function toggleLHDropdown(id) {
+  const card = document.getElementById(`lh-card-${id}`);
+  if (card) card.classList.toggle('open');
+}
+
 function initLearningHub(filter = 'all', search = '') {
-  const grid = document.getElementById('coursesGrid');
-  if (!grid) return;
+  const list = document.getElementById('coursesList');
+  if (!list) return;
   let courses = COURSES.filter(c =>
     (filter === 'all' || c.cat === filter) &&
     (!search || c.title.toLowerCase().includes(search.toLowerCase()))
   );
-  grid.innerHTML = courses.map(c => `
-    <div class="course-card">
-      <div class="course-thumb-big" style="background:${c.bg}">
-        <span>${c.icon}</span>
-        <span class="course-diff ${c.diff}">${c.diff}</span>
+  list.innerHTML = courses.map(c => `
+    <div class="lh-subject-card" id="lh-card-${c.id}">
+      <div class="lh-subject-header" onclick="toggleLHDropdown(${c.id})">
+        <div class="lh-subject-thumb" style="background:${c.bg}">
+          ${c.icon}
+        </div>
+        <div class="lh-subject-info">
+          <div class="lh-subject-title">${c.title}</div>
+          <div class="lh-subject-meta">
+            <span class="lh-subject-badge">Bestseller</span>
+            <span class="lh-subject-rating">${c.rating} ⭐</span>
+            <span>👥 ${(c.lessons * 1234).toLocaleString()}</span>
+            <span>⏱ ${c.duration}</span>
+            <span>Updated: 12/2025</span>
+          </div>
+        </div>
+        <div class="lh-subject-right">
+          <div class="lh-subject-toggle">▼</div>
+        </div>
       </div>
-      <div class="course-card-body">
-        <h4>${c.title}</h4>
-        <div class="course-card-meta">
-          <span>⏱ ${c.duration}</span>
-          <span>📚 ${c.lessons} lessons</span>
-        </div>
-        <div class="course-rating">
-          <span class="stars">${'★'.repeat(Math.floor(c.rating))}${'☆'.repeat(5 - Math.floor(c.rating))}</span>
-          <span>${c.rating} • ${c.instructor}</span>
-        </div>
-        <div class="course-prog-wrap">
-          <div class="course-prog-top"><span>${c.progress}% complete</span><span>${c.lessons - Math.floor(c.lessons * c.progress / 100)} left</span></div>
-          <div class="course-prog-bar"><div class="course-prog-fill" style="width:${c.progress}%"></div></div>
-        </div>
-        <button class="btn-continue" onclick="openCoursePlayer(${c.id})">
-          ${c.progress > 0 ? '▶ Continue Learning' : '▶ Start Course'}
-        </button>
+      <div class="lh-video-dropdown">
+        ${getCourseVideos(c.id)}
       </div>
     </div>
   `).join('') || '<div class="empty-state"><div class="es-icon">📭</div><h4>No courses found</h4><p>Try a different filter or search term.</p></div>';
@@ -1120,108 +1154,196 @@ function searchHub(val) {
   initLearningHub(activeFilter, val);
 }
 
+let activeCompanyFilter = null;
+const TOP_RECRUITERS = ['Microsoft', 'Google', 'Amazon', 'Adobe', 'Infosys', 'TCS'];
+
+function toggleCompanyPrepExpand(e) {
+  if (e) e.stopPropagation();
+  const navItem = document.querySelector('.expandable-nav[data-page="company-prep"]');
+  const submenu = document.getElementById('companyPrepSubmenu');
+  const chevron = navItem?.querySelector('.chevron-icon');
+  
+  if (submenu && navItem) {
+    if (submenu.classList.contains('open')) {
+      submenu.classList.remove('open');
+      if (chevron) chevron.classList.remove('rotated');
+    } else {
+      submenu.classList.add('open');
+      if (chevron) chevron.classList.add('rotated');
+    }
+  }
+  navigateTo('company-prep');
+}
+
+function scrollToPrepSection(sectionId) {
+  if (state.currentPage !== 'company-prep') {
+    navigateTo('company-prep');
+  }
+  setTimeout(() => {
+    const section = document.getElementById('section-' + sectionId);
+    if (section) {
+      const headerHeight = 80;
+      const yOffset = -headerHeight;
+      const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({
+        top: y,
+        behavior: 'smooth'
+      });
+      document.querySelectorAll('.nav-subitem').forEach(el => el.classList.remove('active'));
+      document.querySelector(`.nav-subitem[data-section="${sectionId}"]`)?.classList.add('active');
+    }
+  }, 100);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  window.addEventListener('scroll', () => {
+    if (state.currentPage !== 'company-prep') return;
+    const sections = document.querySelectorAll('.scroll-spy-section');
+    let currentSection = '';
+    sections.forEach(section => {
+      const rect = section.getBoundingClientRect();
+      if (rect.top <= 120) {
+        currentSection = section.id.replace('section-', '');
+      }
+    });
+    document.querySelectorAll('.nav-subitem').forEach(el => {
+      el.classList.toggle('active', el.dataset.section === currentSection);
+    });
+  });
+});
+
 async function initCompanyPrep() {
-  const list = document.getElementById('companyList');
+  const list = document.getElementById('recruitersGrid');
   if (!list) return;
   const jobs = await db.getJobs();
   
-  if (jobs.length === 0) {
-    list.innerHTML = '<div style="padding:20px;color:var(--text-3)">No active jobs available.</div>';
-    document.getElementById('companyDetail').innerHTML = '';
-    return;
-  }
+  let recruiters = jobs.filter(j => TOP_RECRUITERS.includes(j.company));
+  if (recruiters.length < 6) recruiters = [...recruiters, ...jobs.filter(j => !TOP_RECRUITERS.includes(j.company))].slice(0, 6);
   
-  list.innerHTML = jobs.map((j, i) => `
-    <div class="company-list-item ${i === 0 ? 'active' : ''}" onclick="selectCompanyJob(this,'${j.id}')">
-      <div class="cli-logo">${j.logo || j.company.substring(0,3).toUpperCase()}</div>
-      <div class="cli-info">
-        <div class="ci-company">${j.company}</div>
-        <div class="ci-type">${j.role}</div>
-        <span class="ci-badge hiring" style="font-size:10px;background:var(--success-light);color:#16a34a;padding:2px 6px;border-radius:4px;font-weight:700">OPEN</span>
+  list.innerHTML = recruiters.map((j) => `
+    <div class="recruiter-card ${activeCompanyFilter === j.company ? 'active' : ''}" onclick="selectCompanyJob(this,'${j.id}','${j.company}')">
+      <div class="rc-logo">${j.logo || j.company.substring(0,3).toUpperCase()}</div>
+      <div class="rc-info-wrap">
+        <div class="rc-name">${j.company}</div>
+        <div class="rc-role">${j.role}</div>
+        <span class="rc-badge">OPEN / ACTIVE</span>
       </div>
     </div>
   `).join('');
   
-  renderCompanyJobDetail(jobs[0]);
+  if (!activeCompanyFilter) {
+    const detailContainer = document.getElementById('companyDetailContainer');
+    if (detailContainer) {
+      detailContainer.style.display = 'none';
+      detailContainer.style.opacity = '0';
+    }
+  }
+
+  initCompanyPapers();
+  initMockTests();
 }
 
-async function selectCompanyJob(el, id) {
-  document.querySelectorAll('.company-list-item').forEach(i => i.classList.remove('active'));
+async function selectCompanyJob(el, jobId, companyName) {
+  activeCompanyFilter = companyName;
+  document.querySelectorAll('.recruiter-card').forEach(i => i.classList.remove('active'));
   el.classList.add('active');
+
   const jobs = await db.getJobs();
-  const job = jobs.find(j => j.id === id);
-  if (job) renderCompanyJobDetail(job);
+  const job = jobs.find(j => j.id === jobId);
+  if (job) await renderCompanyJobDetail(job);
+
+  document.getElementById('clearPapersFilterBtn').style.display = 'inline-flex';
+  document.getElementById('clearTestsFilterBtn').style.display = 'inline-flex';
+
+  initCompanyPapers();
+  filterMockTests();
+}
+
+function clearCompanyFilter(keepDropdowns = false) {
+  activeCompanyFilter = null;
+  document.querySelectorAll('.recruiter-card').forEach(i => i.classList.remove('active'));
+  
+  const detailContainer = document.getElementById('companyDetailContainer');
+  if (detailContainer) {
+    detailContainer.style.opacity = '0';
+    setTimeout(() => detailContainer.style.display = 'none', 400);
+  }
+
+  document.getElementById('clearPapersFilterBtn').style.display = 'none';
+  document.getElementById('clearTestsFilterBtn').style.display = 'none';
+
+  initCompanyPapers();
+  
+  if (!keepDropdowns) {
+    const diffFilter = document.getElementById('testDifficultyFilter');
+    const subjFilter = document.getElementById('testSubjectFilter');
+    if(diffFilter) diffFilter.value = 'all';
+    if(subjFilter) subjFilter.value = 'all';
+  }
+  
+  filterMockTests();
 }
 
 async function renderCompanyJobDetail(j) {
-  const panel = document.getElementById('companyDetail');
+  const panel = document.getElementById('companyDetailContainer');
   if (!panel) return;
   
   const studentId = state.student?.id || 'GHRCE2024047';
   const student = await db.getStudentById(studentId);
-  const alreadyApplied = student?.appliedJobs?.some(a => a.jobId === j.id);
   const eligible = student ? student.cgpa >= (j.eligibility?.cgpa || 6.0) : false;
   
   panel.innerHTML = `
-    <div class="company-hero">
-      <div class="ch-left">
-        <div class="ch-logo">${j.logo || j.company.substring(0,3).toUpperCase()}</div>
-        <div class="ch-info">
-          <h2>${j.company} - ${j.role} <span style="font-size:12px;background:var(--success-light);color:#16a34a;padding:3px 10px;border-radius:99px;font-weight:700;vertical-align:middle">ACTIVE</span></h2>
-          <p>${j.desc} • CTC: <strong>${j.ctc}</strong></p>
-          <div class="ch-tags">
-            <span class="ch-tag" style="background:var(--primary-light);color:var(--primary);padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600;margin-right:6px">${j.type}</span>
-            <span class="ch-tag" style="background:var(--border-light);color:var(--text-2);padding:3px 8px;border-radius:4px;font-size:11px;font-weight:600">${j.location}</span>
+    <div class="hero-card">
+      <div class="hero-header">
+        <div class="hero-logo">${j.logo || j.company.substring(0,3).toUpperCase()}</div>
+        <div>
+          <div class="hero-title">${j.company}</div>
+          <div style="font-size: 16px; color: var(--text-2); margin-bottom: 8px;">${j.role} • <span style="color:#16a34a; font-weight:700;">Hiring Active</span></div>
+          <div style="font-size: 14px;">${j.desc}</div>
+          <div class="hero-tags">
+            <span class="hero-tag">CTC: ${j.ctc}</span>
+            <span class="hero-tag">${j.location}</span>
+            <span class="hero-tag">${j.type}</span>
           </div>
         </div>
       </div>
-      <div class="ch-actions">
-        ${alreadyApplied 
-          ? `<button class="btn-prep" style="background:var(--success-light);color:#16a34a;cursor:default;font-weight:700;border:none" disabled>✓ Applied</button>`
-          : eligible
-            ? `<button class="btn-prep primary" onclick="applyForJobFromStudentPortal('${j.id}')">Apply Now</button>`
-            : `<button class="btn-prep" style="background:var(--error-light);color:var(--error);cursor:not-allowed" disabled>Not Eligible</button>`
-        }
-        <button class="btn-prep outline" onclick="startInterview()">Practice Interview</button>
-      </div>
     </div>
-    <div class="company-info-grid">
-      <div class="card eligibility-card">
-        <h4>✅ Eligibility Criteria</h4>
+    
+    <div class="details-grid">
+      <div class="detail-card">
+        <h3>✅ Eligibility Criteria</h3>
         <div class="elig-item" style="display:flex;align-items:center;gap:8px;margin-top:10px;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span>Min CGPA: <strong>${j.eligibility?.cgpa || '6.0'}</strong></span></div>
-        <div class="elig-item" style="display:flex;align-items:center;gap:8px;margin-top:6px;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span>Eligible Branches: <strong>Computer Science, IT</strong></span></div>
+        <div class="elig-item" style="display:flex;align-items:center;gap:8px;margin-top:6px;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span>Eligible Branches: <strong>All Allowed</strong></span></div>
         <div class="elig-item" style="display:flex;align-items:center;gap:8px;margin-top:6px;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span>Active Backlogs: <strong>Max ${j.eligibility?.backlogs ?? '0'}</strong></span></div>
+        <div class="elig-item" style="display:flex;align-items:center;gap:8px;margin-top:6px;"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg><span>Passing Year: <strong>2024</strong></span></div>
       </div>
-      <div class="card process-card">
-        <h4>🔢 Recruitment Process</h4>
-        <div class="process-step"><div class="ps-num">1</div><div class="ps-info"><div class="ps-name">Online Test</div><div class="ps-desc">Technical & Aptitude MCQ</div></div></div>
-        <div class="process-step"><div class="ps-num">2</div><div class="ps-info"><div class="ps-name">Technical Interview</div><div class="ps-desc">Live coding and DSA round</div></div></div>
-        <div class="process-step"><div class="ps-num">3</div><div class="ps-info"><div class="ps-name">HR & Fitment Round</div><div class="ps-desc">Behavioral and team match</div></div></div>
+      <div class="detail-card">
+        <h3>🔢 Recruitment Process</h3>
+        <div class="process-step"><div class="ps-num">1</div><div class="ps-info"><div class="ps-name">Online Assessment</div><div class="ps-desc">Technical & Aptitude MCQ</div></div></div>
+        <div class="process-step"><div class="ps-num">2</div><div class="ps-info"><div class="ps-name">Coding Round</div><div class="ps-desc">DSA & Logic Building</div></div></div>
+        <div class="process-step"><div class="ps-num">3</div><div class="ps-info"><div class="ps-name">Technical Interview</div><div class="ps-desc">Live coding</div></div></div>
+        <div class="process-step"><div class="ps-num">4</div><div class="ps-info"><div class="ps-name">HR Interview</div><div class="ps-desc">Behavioral and team match</div></div></div>
       </div>
     </div>
-    <div class="company-resources-grid">
-      <div class="resource-card" onclick="navigateTo('company-papers')" style="cursor:pointer">
-        <div class="rc-info"><div class="rci-title">Previous Papers</div><div class="rci-sub">Explore last 5 years' questions</div></div>
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-      </div>
-      <div class="resource-card" onclick="navigateTo('mock-tests')" style="cursor:pointer">
-        <div class="rc-info"><div class="rci-title">Company Mock Test</div><div class="rci-sub">Timed assessment matching actual pattern</div></div>
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-      </div>
-      <div class="card match-score-card" style="grid-column: span 2;">
-        <h4>Eligibility Match Analysis</h4>
-        <div class="ms-circle" style="margin-top: 12px; display:flex; align-items:center; gap:16px;">
-          <div class="ms-pct" style="font-size:32px;color:${eligible ? 'var(--success)' : 'var(--error)'};font-weight:800">${eligible ? '100%' : '0%'}</div>
-          <div class="ms-desc" style="font-size:12px;color:var(--text-2)">
-            ${eligible 
-              ? `Your CGPA (${student?.cgpa}) meets the eligibility requirement of ${j.eligibility?.cgpa || '6.0'}.`
-              : `Your CGPA (${student?.cgpa}) does not meet the minimum criteria of ${j.eligibility?.cgpa || '6.0'} required for this opening.`
-            }
-          </div>
+
+    <div class="eligibility-match-card">
+      <div class="emc-score ${eligible ? 'success' : 'error'}">${eligible ? '100%' : '0%'}</div>
+      <div>
+        <h3 style="font-family:'Rajdhani', sans-serif; font-size:20px; font-weight:700; margin-bottom:4px;">Eligibility Match Analysis</h3>
+        <div style="font-size:14px; color:var(--text-2);">
+          ${eligible 
+            ? `Your CGPA (${student?.cgpa}) meets the eligibility requirement of ${j.eligibility?.cgpa || '6.0'}. You are a strong match for this position.`
+            : `Your CGPA (${student?.cgpa}) does not meet the minimum criteria of ${j.eligibility?.cgpa || '6.0'} required for this opening.`
+          }
         </div>
       </div>
     </div>
   `;
+  panel.style.display = 'block';
+  setTimeout(() => {
+    panel.style.opacity = '1';
+    panel.style.transform = 'translateY(0)';
+  }, 50);
 }
 
 async function applyForJobFromStudentPortal(jobId) {
@@ -1240,12 +1362,23 @@ async function applyForJobFromStudentPortal(jobId) {
 function initCompanyPapers() {
   const grid = document.getElementById('papersGrid');
   if (!grid) return;
-  grid.innerHTML = PAPERS.map((p, i) => `
-    <div class="paper-card">
+  
+  let papersToRender = PAPERS;
+  if (activeCompanyFilter) {
+    papersToRender = PAPERS.filter(p => p.company.toLowerCase() === activeCompanyFilter.toLowerCase());
+  }
+
+  if (papersToRender.length === 0) {
+    grid.innerHTML = '<div style="padding:20px;color:var(--text-3);grid-column:1/-1;text-align:center;">No papers found for this selection.</div>';
+    return;
+  }
+
+  grid.innerHTML = papersToRender.map((p, i) => `
+    <div class="paper-card" style="box-shadow: 0 4px 12px rgba(0,0,0,0.02); transition: transform 0.2s; border-radius: 12px;">
       <div class="pc-top">
         <div class="pc-company">
           <div class="pc-logo">${p.logo}</div>
-          <div><div class="pc-name">${p.company}</div><div class="pc-role">${p.role}</div></div>
+          <div><div class="pc-name" style="font-family:'Rajdhani',sans-serif;font-size:16px;">${p.company}</div><div class="pc-role">${p.role}</div></div>
         </div>
         <button class="bookmark-btn ${state.bookmarks.has(i) ? 'active' : ''}" onclick="toggleBookmark(this,${i})">
           <svg width="16" height="16" fill="${state.bookmarks.has(i) ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
@@ -1281,9 +1414,42 @@ function toggleBookmark(btn, idx) {
 }
 
 function initMockTests() {
+  filterMockTests();
+}
+
+function filterMockTests() {
   const list = document.getElementById('testsList');
   if (!list) return;
-  list.innerHTML = MOCK_TESTS.map(t => `
+
+  const diffFilter = document.getElementById('testDifficultyFilter')?.value || 'all';
+  const subjFilter = document.getElementById('testSubjectFilter')?.value || 'all';
+
+  if (activeCompanyFilter && (diffFilter !== 'all' || subjFilter !== 'all')) {
+    clearCompanyFilter(true);
+    scrollToPrepSection('mock-tests');
+    return;
+  }
+
+  let testsToRender = MOCK_TESTS;
+
+  if (activeCompanyFilter) {
+    testsToRender = testsToRender.filter(t => t.companyLabel.toLowerCase().includes(activeCompanyFilter.toLowerCase()));
+  }
+
+  if (diffFilter !== 'all') {
+    testsToRender = testsToRender.filter(t => t.difficulty.toLowerCase() === diffFilter.toLowerCase());
+  }
+
+  if (subjFilter !== 'all') {
+    testsToRender = testsToRender.filter(t => t.desc.toLowerCase().includes(subjFilter.toLowerCase()) || t.name.toLowerCase().includes(subjFilter.toLowerCase()));
+  }
+
+  if (testsToRender.length === 0) {
+    list.innerHTML = '<div style="padding:20px;color:var(--text-3);width:100%;text-align:center;">No mock tests found for this selection.</div>';
+    return;
+  }
+
+  list.innerHTML = testsToRender.map(t => `
     <div class="test-card ${t.featured ? 'featured' : ''} ${t.locked ? 'locked' : ''}">
       <div class="tc-top-row">
         <div style="flex:1">
@@ -1306,10 +1472,7 @@ function initMockTests() {
   `).join('');
 }
 
-function filterTest(btn) {
-  document.querySelectorAll('.filter-tag').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-}
+function filterTest(btn) {}
 
 function startTestFromPaper(company) {
   const test = MOCK_TESTS.find(t => t.company === company) || MOCK_TESTS[0];

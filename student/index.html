@@ -4,13 +4,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Prashikshan — AI Training & Placement Portal | GH Raisoni College</title>
+  <title>Elevate — AI Training & Placement Portal | GH Raisoni College</title>
   <meta name="description"
     content="AI-powered Training & Placement Cell Portal for GH Raisoni College. Smart career preparation, skill gap analysis, mock interviews, and placement readiness tracking." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="/student/styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -633,28 +633,23 @@
           </svg>
           <span class="nav-text">Learning Hub</span>
         </div>
-        <div class="nav-item student-only" data-page="company-prep" onclick="navigateTo('company-prep')">
+        <div class="nav-item student-only expandable-nav" data-page="company-prep" onclick="toggleCompanyPrepExpand(event)">
           <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
             <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
           </svg>
-          <span class="nav-text">Company Prep</span>
-        </div>
-        <div class="nav-item student-only" data-page="company-papers" onclick="navigateTo('company-papers')">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <polyline points="14 2 14 8 20 8" />
+          <span class="nav-text">Company Preparation</span>
+          <svg class="chevron-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin-left: auto; transition: transform 0.3s ease;">
+            <polyline points="6 9 12 15 18 9" />
           </svg>
-          <span class="nav-text">Company Papers</span>
         </div>
-
-        <div class="nav-section-label student-only">Practice</div>
-        <div class="nav-item student-only" data-page="mock-tests" onclick="navigateTo('mock-tests')">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M9 11l3 3L22 4" />
-            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-          </svg>
-          <span class="nav-text">Mock Tests</span>
+        <div class="nav-submenu" id="companyPrepSubmenu">
+          <div class="nav-subitem" data-section="previous-papers" onclick="scrollToPrepSection('previous-papers')">
+            <span class="nav-subtext">Previous Papers</span>
+          </div>
+          <div class="nav-subitem" data-section="mock-tests" onclick="scrollToPrepSection('mock-tests')">
+            <span class="nav-subtext">Mock Tests</span>
+          </div>
         </div>
         <div class="nav-item student-only" data-page="ai-interview" onclick="navigateTo('ai-interview')">
           <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -1216,23 +1211,23 @@
         </div>
       </div>
 
-      <!-- ── PAGE: LEARNING HUB ── -->
+      <!--  PAGE: LEARNING HUB  -->
       <div class="app-page fade-in" id="page-learning-hub">
-        <div class="page-header-row">
-          <div>
-            <h1 style="font-family:'Inter',sans-serif;font-size:26px;font-weight:800">Learning Hub</h1>
-            <p style="color:var(--text-2);font-size:14px">Recommended resources based on your skill gaps and learning
-              goals.</p>
-          </div>
+        <div class="page-header" style="text-align: center; margin-bottom: 24px;">
+          <h1 style="font-family:'Inter',sans-serif;font-size:26px;font-weight:800;margin-bottom:8px;">Learning Hub</h1>
+          <p style="color:var(--text-2);font-size:14px;max-width:600px;margin:0 auto;">Recommended resources based on your skill gaps and learning goals.</p>
         </div>
-        <div class="hub-filters">
-          <button class="filter-chip active" onclick="filterHub(this,'all')">All Courses</button>
-          <button class="filter-chip" onclick="filterHub(this,'programming')">Programming</button>
-          <button class="filter-chip" onclick="filterHub(this,'dsa')">DSA</button>
-          <button class="filter-chip" onclick="filterHub(this,'aptitude')">Aptitude</button>
-          <button class="filter-chip" onclick="filterHub(this,'communication')">Communication</button>
-          <button class="filter-chip" onclick="filterHub(this,'core')">Core CS</button>
-          <div class="hub-search">
+        
+        <div class="lh-filters-card">
+          <div class="lh-filters-left">
+            <button class="filter-chip active" onclick="filterHub(this,'all')">All Courses</button>
+            <button class="filter-chip" onclick="filterHub(this,'programming')">Programming</button>
+            <button class="filter-chip" onclick="filterHub(this,'dsa')">DSA</button>
+            <button class="filter-chip" onclick="filterHub(this,'aptitude')">Aptitude</button>
+            <button class="filter-chip" onclick="filterHub(this,'communication')">Communication</button>
+            <button class="filter-chip" onclick="filterHub(this,'core')">Core CS</button>
+          </div>
+          <div class="lh-search">
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <circle cx="11" cy="11" r="8" />
               <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -1240,105 +1235,103 @@
             <input type="text" placeholder="Search courses..." oninput="searchHub(this.value)" />
           </div>
         </div>
-        <div class="courses-grid" id="coursesGrid"></div>
+
+        <div class="learning-list-container" id="coursesList"></div>
       </div>
 
       <!-- ── PAGE: COMPANY PREP ── -->
       <div class="app-page fade-in" id="page-company-prep">
-        <div class="page-header">
-          <h1>Company Preparation</h1>
-          <p>Targeted preparation resources for top recruiters visiting your campus.</p>
+        <div class="page-header" style="text-align: center; margin-bottom: 40px;">
+          <h1 style="font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 40px; background: linear-gradient(135deg, var(--primary), #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Company Preparation</h1>
+          <p style="font-size: 16px; color: var(--text-2); margin-top: 8px;">Targeted preparation resources for top recruiters visiting your campus.</p>
         </div>
-        <div class="company-grid">
-          <div class="company-list-panel">
-            <div class="clp-header">
-              <h3>Top Recruiters</h3>
-            </div>
-            <div id="companyList"></div>
-          </div>
-          <div class="company-detail-panel" id="companyDetail"></div>
-        </div>
-      </div>
 
-      <!-- ── PAGE: COMPANY PAPERS ── -->
-      <div class="app-page fade-in" id="page-company-papers">
-        <div class="page-header-row">
-          <div>
-            <h1 style="font-family:'Inter',sans-serif;font-size:26px;font-weight:800">Company Papers Repository</h1>
-            <p style="color:var(--text-2);font-size:14px">Access previous year questions, placement patterns, and
-              specific assessments.</p>
-          </div>
-          <div class="phr-actions">
-            <button class="btn-outline" onclick="showToast('Bookmarks loaded!','success')">
-              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-              </svg>
-              Bookmarks
-            </button>
-            <button class="btn-outline">
-              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
-              </svg>
-              Filter
-            </button>
-          </div>
+        <div class="top-recruiters-section">
+          <h2 style="font-family: 'Rajdhani', sans-serif; font-size: 24px; margin-bottom: 20px;">Top Recruiters</h2>
+          <div class="recruiters-grid" id="recruitersGrid"></div>
         </div>
-        <div class="papers-toolbar">
-          <div class="papers-search">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-            <input type="text" placeholder="Search company papers, patterns..." />
-          </div>
-        </div>
-        <div class="papers-grid" id="papersGrid"></div>
-      </div>
 
-      <!-- ── PAGE: MOCK TESTS ── -->
-      <div class="app-page fade-in" id="page-mock-tests">
-        <div class="page-header-row">
-          <div>
-            <h1 style="font-family:'Inter',sans-serif;font-size:26px;font-weight:800">Company Mock Tests</h1>
-            <p style="color:var(--text-2);font-size:14px">Simulate actual hiring assessments to gauge your readiness.
-            </p>
-          </div>
-          <button class="btn-outline" onclick="showToast('Test history loaded!','success')">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-            </svg>
-            Test History
-          </button>
+        <div class="company-detail-container" id="companyDetailContainer" style="display: none; opacity: 0; transition: opacity 0.4s ease, transform 0.4s ease; transform: translateY(20px); margin-top: 32px;">
+          <!-- Info panel renders here -->
         </div>
-        <div class="mock-tests-grid">
-          <div class="test-filters">
-            <h4>Filters</h4>
-            <div class="filter-section">
-              <label>Target Company</label>
-              <div class="filter-tags">
-                <span class="filter-tag active">All</span>
-                <span class="filter-tag" onclick="filterTest(this)">TCS</span>
-                <span class="filter-tag" onclick="filterTest(this)">Infosys</span>
-                <span class="filter-tag" onclick="filterTest(this)">Wipro</span>
-                <span class="filter-tag" onclick="filterTest(this)">Accenture</span>
-              </div>
+
+        <div class="prep-section-divider" style="height: 1px; background: var(--border); margin: 40px 0;"></div>
+
+        <!-- ── SECTION: PREVIOUS PAPERS ── -->
+        <div id="section-previous-papers" class="prep-section scroll-spy-section">
+          <div class="page-header-row" style="margin-bottom: 24px;">
+            <div>
+              <h2 style="font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700">Previous Papers</h2>
+              <p style="color:var(--text-2);font-size:14px">Access previous year questions, placement patterns, and specific assessments.</p>
             </div>
-            <div class="filter-section">
-              <label>Difficulty</label>
-              <div class="checkbox-group">
-                <label class="checkbox-item"><input type="checkbox" checked /><span>Beginner</span></label>
-                <label class="checkbox-item"><input type="checkbox" checked /><span>Intermediate</span></label>
-                <label class="checkbox-item"><input type="checkbox" /><span>Advanced</span></label>
-              </div>
+            <div class="phr-actions">
+              <button id="clearPapersFilterBtn" class="btn-outline clear-filter-btn" style="display: none; color: var(--error); border-color: var(--error-light);" onclick="clearCompanyFilter()">✕ Clear Company Filter</button>
+              <button class="btn-outline" onclick="showToast('Bookmarks loaded!','success')">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                </svg>
+                Bookmarks
+              </button>
+              <button class="btn-outline">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+                </svg>
+                Filter
+              </button>
             </div>
-            <div class="filter-section">
-              <label>Subject Domain</label>
-              <div class="filter-tags">
-                <span class="filter-tag active" onclick="filterTest(this)">Aptitude & Reasoning</span>
-                <span class="filter-tag" onclick="filterTest(this)">Technical</span>
-                <span class="filter-tag" onclick="filterTest(this)">Coding</span>
-                <span class="filter-tag" onclick="filterTest(this)">Communication</span>
-              </div>
+          </div>
+          <div class="papers-toolbar">
+            <div class="papers-search">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+              <input type="text" placeholder="Search company papers, patterns..." />
+            </div>
+          </div>
+          <div class="papers-grid" id="papersGrid"></div>
+        </div>
+
+        <div class="prep-section-divider" style="height: 1px; background: var(--border); margin: 40px 0;"></div>
+
+        <!-- ── SECTION: MOCK TESTS ── -->
+        <div id="section-mock-tests" class="prep-section scroll-spy-section">
+          <div class="page-header-row" style="margin-bottom: 24px;">
+            <div>
+              <h2 style="font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700">Mock Tests</h2>
+              <p style="color:var(--text-2);font-size:14px">Simulate actual hiring assessments to gauge your readiness.</p>
+            </div>
+            <div class="phr-actions">
+              <button id="clearTestsFilterBtn" class="btn-outline clear-filter-btn" style="display: none; color: var(--error); border-color: var(--error-light);" onclick="clearCompanyFilter()">✕ Clear Company Filter</button>
+              <button class="btn-outline" onclick="showToast('Test history loaded!','success')">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                </svg>
+                Test History
+              </button>
+            </div>
+          </div>
+          <div class="mock-tests-toolbar" style="display: flex; gap: 16px; margin-bottom: 20px;">
+            <div class="dropdown-filter">
+              <select id="testDifficultyFilter" class="modern-select" onchange="filterMockTests()">
+                <option value="all">Difficulty: All</option>
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
+              </select>
+            </div>
+            <div class="dropdown-filter">
+              <select id="testSubjectFilter" class="modern-select" onchange="filterMockTests()">
+                <option value="all">Subject: All</option>
+                <option value="Aptitude">Aptitude</option>
+                <option value="DSA">DSA</option>
+                <option value="Operating Systems">Operating Systems</option>
+                <option value="DBMS">DBMS</option>
+                <option value="Computer Networks">Computer Networks</option>
+                <option value="OOP">OOP</option>
+                <option value="AI/ML">AI/ML</option>
+                <option value="System Design">System Design</option>
+              </select>
             </div>
           </div>
           <div class="tests-list" id="testsList"></div>
@@ -2592,8 +2585,8 @@
     </div>
   </div>
 
-  <script src="db.js"></script>
-  <script src="app.js"></script>
+  <script src="/student/db.js"></script>
+  <script src="/student/app.js"></script>
 </body>
 
 </html>

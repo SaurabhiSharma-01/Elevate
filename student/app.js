@@ -361,7 +361,8 @@ function navigateTo(page) {
     'dashboard': 'Dashboard', 'skill-report': 'Skill Report', 'roadmap': 'Learning Roadmap',
     'learning-hub': 'Learning Hub', 'company-prep': 'Company Preparation',
     'company-papers': 'Company Papers', 'mock-tests': 'Mock Tests',
-    'ai-interview': 'AI Interview', 'profile': 'Profile', 'settings': 'Settings',
+    'ai-interview': 'AI Interview', 'all-startups': 'All Startups', 'my-startup': 'Pitch My Startup', 'mentors': 'Startup Mentors',
+    'profile': 'Profile', 'settings': 'Settings',
     'college-dashboard': 'T&P Dashboard', 'college-students': 'Student Monitoring',
     'college-innovation': 'Innovation Hub', 'college-companies': 'Company Relations',
     'company-dashboard': 'Recruiter Dashboard', 'company-jobs': 'Post Job Openings',
@@ -377,6 +378,7 @@ function navigateTo(page) {
   // Page-specific init
   if (page === 'skill-report') initSkillReport();
   if (page === 'roadmap') initRoadmap();
+  if (page === 'all-startups') renderAllStartupsList();
   if (page === 'learning-hub') initLearningHub();
   if (page === 'company-prep') initCompanyPrep();
   if (page === 'company-papers') initCompanyPapers();
@@ -2531,4 +2533,558 @@ document.addEventListener('DOMContentLoaded', () => {
 
   console.log('%cElevate Student Portal — GH Raisoni College', 'font-size:16px;font-weight:bold;color:#5B2D90');
   console.log('%cLogin with Student ID and password (min 3 chars)', 'font-size:12px;color:#6B7280');
+  
+  // Initialize Startup Pitch Slide & All Startups List
+  if (typeof setStartupSlide === 'function') {
+    setStartupSlide(0);
+    startAutoScroll();
+  }
+  if (typeof renderAllStartupsList === 'function') {
+    renderAllStartupsList();
+  }
 });
+
+// ──────────────────────────────────────────────────────────────
+// ALL STARTUPS & PITCH SLIDER LOGIC
+// ──────────────────────────────────────────────────────────────
+let currentStartupSlide = 0;
+let autoScrollTimer = null;
+let isAutoScrollPaused = false;
+
+const startupSlides = [
+  {
+    title: 'SolarGrid',
+    tagline: 'Decentralizing energy for a resilient tomorrow',
+    fundedPercent: 45,
+    daysLeft: 24,
+    views: '315 views this week',
+    badge: 'TRENDING',
+    image: 'solargrid_banner.png'
+  },
+  {
+    title: 'NeuroStream AI',
+    tagline: 'Predictive health analytics & early diagnostic AI platform',
+    fundedPercent: 78,
+    daysLeft: 12,
+    views: '540 views this week',
+    badge: 'POPULAR',
+    image: 'healthpulse_banner.png'
+  },
+  {
+    title: 'BioPulp',
+    tagline: 'Compostable protective packaging grown from agricultural waste and mycelium',
+    fundedPercent: 60,
+    daysLeft: 30,
+    views: '298 views this week',
+    badge: 'NEW PITCH',
+    image: 'biopulp_banner.png'
+  }
+];
+
+function setStartupSlide(index) {
+  if (index < 0) index = startupSlides.length - 1;
+  if (index >= startupSlides.length) index = 0;
+  currentStartupSlide = index;
+  const slide = startupSlides[index];
+  
+  const imgEl = document.getElementById('tpSlideImg');
+  const viewsEl = document.getElementById('tpSlideViews');
+  const badgeEl = document.getElementById('tpSlideBadge');
+  const titleEl = document.getElementById('tpSlideTitle');
+  const taglineEl = document.getElementById('tpSlideTagline');
+  const progressEl = document.getElementById('tpSlideProgress');
+  const statsEl = document.getElementById('tpSlideStats');
+  const dotsContainer = document.getElementById('tpPaginationDots');
+  
+  if (imgEl) imgEl.src = slide.image;
+  if (viewsEl) viewsEl.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:inline;margin-right:5px;"><circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/></svg> ${slide.views}`;
+  if (badgeEl) badgeEl.innerHTML = `<svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24" style="display:inline;margin-right:4px;"><path d="M17.5 12a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg> ${slide.badge}`;
+  if (titleEl) titleEl.textContent = slide.title;
+  if (taglineEl) taglineEl.textContent = slide.tagline;
+  if (progressEl) progressEl.style.width = slide.fundedPercent + '%';
+  if (statsEl) statsEl.textContent = `${slide.fundedPercent}% FUNDED • ${slide.daysLeft} DAYS LEFT`;
+  
+  if (dotsContainer) {
+    dotsContainer.innerHTML = startupSlides.map((_, i) => `
+      <button onclick="setStartupSlide(${i}); resetAutoScroll();" class="tp-dot ${i === index ? 'active' : ''}" style="${i === index ? 'width: 24px; background: var(--primary); border-radius: 10px;' : 'width: 7px; background: var(--border); border-radius: 50%;'} height: 7px; border: none; padding: 0; cursor: pointer; transition: all 0.3s ease;"></button>
+    `).join('');
+  }
+}
+
+function prevStartupSlide() {
+  setStartupSlide(currentStartupSlide - 1);
+}
+
+function nextStartupSlide() {
+  setStartupSlide(currentStartupSlide + 1);
+}
+
+function startAutoScroll() {
+  if (autoScrollTimer) clearInterval(autoScrollTimer);
+  autoScrollTimer = setInterval(() => {
+    if (!isAutoScrollPaused) {
+      nextStartupSlide();
+    }
+  }, 5000);
+}
+
+function resetAutoScroll() {
+  startAutoScroll();
+}
+
+function pauseAutoScroll() {
+  isAutoScrollPaused = true;
+}
+
+function resumeAutoScroll() {
+  isAutoScrollPaused = false;
+}
+
+// ──────────────────────────────────────────────────────────────
+// ALL STARTUPS DATA & MODALS
+// ──────────────────────────────────────────────────────────────
+const allStartupsData = [
+  {
+    id: 'biopulp',
+    title: 'BioPulp',
+    founder: 'Ingrid Solberg',
+    stage: 'SEED',
+    categories: ['CLEANTECH', 'MATERIALS'],
+    tagline: 'Compostable protective packaging grown from agricultural waste and mycelium',
+    description: 'Compostable protective packaging grown from agricultural waste and mycelium, shipping cost-competitive with styrofoam at scale.',
+    fullStory: 'BioPulp transforms agricultural waste streams into high-performance, fully bio-degradable packaging materials using proprietary fungal mycelium strains. Our packaging degrades completely within 30 days in soil while matching the impact cushioning of EPS styrofoam. We have signed pilot agreements with leading e-commerce distributors to replace single-use plastic cushions.',
+    views: '298 views this week',
+    upvotes: 298,
+    commentsCount: 1,
+    image: 'biopulp_banner.png',
+    raised: '$1.2M',
+    goal: '$2M',
+    fundedPercent: 60,
+    team: [
+      { name: 'Ingrid Solberg', role: 'Founder & Lead Chemist', initials: 'IS', bg: '#059669' },
+      { name: 'Lars Lindqvist', role: 'Head of Supply Chain', initials: 'LL', bg: '#0d9488' }
+    ],
+    comments: [
+      { author: 'Elena Petrova', time: '3 days ago', text: 'Integrated the beta SDK into our Shopify store in a single afternoon. The automated 3D pipeline is the real magic here.', avatar: 'EP', color: '#84cc16' }
+    ]
+  },
+  {
+    id: 'roboserve',
+    title: 'RoboServe',
+    founder: 'Wei Zhang',
+    stage: 'LATE SEED',
+    categories: ['ROBOTICS', 'LOGISTICS'],
+    tagline: 'Autonomous delivery units purpose-built for high-density campuses',
+    description: 'Autonomous delivery units purpose-built for high-density campuses, hospitals, and corporate parks with elevator and door-system integration.',
+    fullStory: 'RoboServe designs level-4 autonomous indoor/outdoor micro-delivery rovers. Built specifically for universities, medical centers, and tech campuses, RoboServe autonomous fleets navigate multi-story buildings, interact with smart elevators, and provide contactless last-yard deliveries.',
+    views: '189 views this week',
+    upvotes: 189,
+    commentsCount: 2,
+    image: 'roboserve_banner.png',
+    raised: '$2.1M',
+    goal: '$3M',
+    fundedPercent: 70,
+    team: [
+      { name: 'Wei Zhang', role: 'Co-founder & CEO', initials: 'WZ', bg: '#2563eb' },
+      { name: 'Chloe Dubois', role: 'Head of Autonomy', initials: 'CD', bg: '#3b82f6' }
+    ],
+    comments: [
+      { author: 'David Osei', time: '1 week ago', text: 'Curious how the asset quality holds up for soft goods like apparel. Furniture demo looked great though.', avatar: 'DO', color: '#9333ea' },
+      { author: 'Marcus Vance', time: '2 weeks ago', text: 'Autonomous elevator integration is super smooth on campus testing.', avatar: 'MV', color: '#0284c7' }
+    ]
+  },
+  {
+    id: 'neurostream-ai',
+    title: 'NeuroStream AI',
+    founder: 'Dr. Maya Chen',
+    stage: 'SERIES A',
+    categories: ['HEALTH TECH', 'AI'],
+    tagline: 'Bridging cognitive performance and physical excellence',
+    description: 'Real-time brain activity visualization for specialized athletic training. Bridging the gap between cognitive performance and physical excellence through proprietary AI hardware.',
+    fullStory: 'NeuroStream AI builds proprietary EEG hardware paired with a real-time visualization platform that lets coaches and athletes see cognitive load, focus, and recovery states during training. Our patented dry-electrode headband streams sub-10ms latency data to a dashboard powered by on-device machine learning models. Teams across three professional leagues are already using NeuroStream to reduce injury rates and optimize peak performance windows. We are now scaling manufacturing and expanding into rehabilitation clinics.',
+    views: '482 views this week',
+    upvotes: 482,
+    commentsCount: 3,
+    image: 'healthpulse_banner.png',
+    raised: '$4.2M',
+    goal: '$6M',
+    fundedPercent: 78,
+    team: [
+      { name: 'Dr. Maya Chen', role: 'CEO & Co-founder', initials: 'DM', bg: '#5B2D90' },
+      { name: 'Arjun Patel', role: 'CTO & Co-founder', initials: 'AP', bg: '#7c3aed' },
+      { name: 'Sofia Reyes', role: 'Head of Hardware', initials: 'SR', bg: '#9333ea' }
+    ],
+    comments: [
+      { author: 'You', time: 'Just now', text: 'This is an incredible product. The latency demo blew me away!', avatar: 'Y', color: '#5B2D90' },
+      { author: 'Jordan Lee', time: '2 days ago', text: 'The latency numbers here are seriously impressive. Would love to see this applied to esports training as well.', avatar: 'JL', color: '#2563eb' },
+      { author: 'Priya Nair', time: '5 days ago', text: 'Met the team at the Elevate demo day. The hardware demo was flawless and the coaching insights were super clean.', avatar: 'PN', color: '#16a34a' }
+    ]
+  },
+  {
+    id: 'solargrid',
+    title: 'SolarGrid',
+    founder: 'Tomas Alvarez',
+    stage: 'SEED',
+    categories: ['CLEANTECH', 'ENERGY'],
+    tagline: 'Decentralizing energy for a resilient tomorrow',
+    description: 'Peer-to-peer energy trading platform that lets neighborhoods share excess solar power through smart microgrids and transparent billing.',
+    fullStory: 'SolarGrid empowers communities to trade renewable energy directly with neighbors. By combining IoT smart meters with automated microgrid controllers, SolarGrid balances local energy supply and demand in real-time, reducing grid reliance during peak hours by up to 40%.',
+    views: '315 views this week',
+    upvotes: 315,
+    commentsCount: 2,
+    image: 'solargrid_banner.png',
+    raised: '$450K',
+    goal: '$3M',
+    fundedPercent: 15,
+    team: [
+      { name: 'Tomas Alvarez', role: 'Founder & CEO', initials: 'TA', bg: '#d97706' },
+      { name: 'Aisha Bello', role: 'Lead Grid Architect', initials: 'AB', bg: '#b45309' }
+    ],
+    comments: [
+      { author: 'Elena Petrova', time: '3 days ago', text: 'Integrated the beta SDK into our Shopify store in a single afternoon. The automated 3D pipeline is the real magic here.', avatar: 'EP', color: '#84cc16' },
+      { author: 'David Osei', time: '1 week ago', text: 'Curious how the asset quality holds up for soft goods like apparel. Furniture demo looked great though.', avatar: 'DO', color: '#9333ea' }
+    ]
+  }
+];
+
+function renderAllStartupsList(filterQuery = '') {
+  const container = document.getElementById('allStartupsList');
+  if (!container) return;
+  
+  const filtered = allStartupsData.filter(s => 
+    s.title.toLowerCase().includes(filterQuery.toLowerCase()) ||
+    s.founder.toLowerCase().includes(filterQuery.toLowerCase()) ||
+    s.categories.some(c => c.toLowerCase().includes(filterQuery.toLowerCase())) ||
+    s.description.toLowerCase().includes(filterQuery.toLowerCase())
+  );
+  
+  if (filtered.length === 0) {
+    container.innerHTML = `
+      <div style="text-align: center; padding: 40px; color: rgba(233, 213, 255, 0.7); background: rgba(30, 22, 53, 0.7); border-radius: 20px; border: 1px solid rgba(168, 85, 247, 0.25);">
+        <p style="font-size: 14px; font-weight: 600;">No startups match your search query "${filterQuery}".</p>
+      </div>
+    `;
+    return;
+  }
+  
+  container.innerHTML = filtered.map(s => `
+    <div class="card startup-list-card" style="display: flex; flex-direction: row; border-radius: 20px; background: rgba(30, 22, 53, 0.75); border: 1px solid rgba(168, 85, 247, 0.25); overflow: hidden; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); backdrop-filter: blur(10px); color: #fff; transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.boxShadow='0 14px 40px rgba(147, 51, 234, 0.3)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.boxShadow='0 10px 30px rgba(0, 0, 0, 0.3)'; this.style.transform='translateY(0)';" onclick="openStartupModal('${s.id}')">
+      <!-- Left Photo -->
+      <div style="width: 290px; min-width: 290px; height: 180px; overflow: hidden; background: #0b0f19; position: relative;">
+        <img src="${s.image}" alt="${s.title}" style="width: 100%; height: 100%; object-fit: cover;" />
+      </div>
+      <!-- Right Content -->
+      <div style="flex: 1; padding: 18px 22px; display: flex; flex-direction: column; justify-content: space-between; gap: 8px;">
+        <!-- Top Row: Title & Stage -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <h3 style="font-size: 20px; font-weight: 800; color: #fff; font-family: 'Rajdhani', sans-serif; margin: 0 0 2px;">${s.title}</h3>
+            <div style="font-size: 12px; color: rgba(233, 213, 255, 0.7); font-weight: 500;">Founded by <span style="color: #fff; font-weight: 600;">${s.founder}</span></div>
+          </div>
+          <span style="background: linear-gradient(135deg, #9333ea, #c084fc); color: #fff; font-size: 10px; font-weight: 700; padding: 4px 12px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 0 4px 12px rgba(147, 51, 234, 0.4);">${s.stage}</span>
+        </div>
+        <!-- Category Pills -->
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+          ${s.categories.map(c => `<span style="background: rgba(168, 85, 247, 0.18); color: #e9d5ff; border: 1px solid rgba(168, 85, 247, 0.3); font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 12px; letter-spacing: 0.03em;">${c}</span>`).join('')}
+        </div>
+        <!-- Description -->
+        <p style="font-size: 12px; color: rgba(233, 213, 255, 0.8); margin: 0; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${s.description}</p>
+        <!-- Footer: Upvote, Comment & View Details -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+          <div style="display: flex; gap: 16px; align-items: center;">
+            <button onclick="event.stopPropagation(); toggleUpvote('${s.id}')" style="background: none; border: none; color: #c084fc; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 0;">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+              <span>${s.upvotes}</span>
+            </button>
+            <button onclick="event.stopPropagation(); openStartupModal('${s.id}', true)" style="background: none; border: none; color: #c084fc; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 0;">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              <span>${s.commentsCount}</span>
+            </button>
+          </div>
+          <button onclick="event.stopPropagation(); openStartupModal('${s.id}')" style="background: linear-gradient(135deg, #9333ea, #c084fc); color: #fff; border: none; padding: 6px 18px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; box-shadow: 0 4px 14px rgba(147, 51, 234, 0.4); transition: transform 0.2s ease;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+            View Details <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterStartups(query) {
+  renderAllStartupsList(query);
+}
+
+function toggleUpvote(startupId) {
+  const s = allStartupsData.find(item => item.id === startupId);
+  if (!s) return;
+  if (!s.isUpvoted) {
+    s.upvotes += 1;
+    s.isUpvoted = true;
+    showToast(`Upvoted ${s.title}!`, 'success');
+  } else {
+    s.upvotes -= 1;
+    s.isUpvoted = false;
+  }
+  renderAllStartupsList();
+  const modalEl = document.getElementById('startupModalOverlay');
+  if (modalEl && modalEl.style.display !== 'none') {
+    openStartupModal(startupId, false);
+  }
+}
+
+function openStartupModal(startupId, focusComment = false) {
+  const s = allStartupsData.find(item => item.id === startupId);
+  if (!s) return;
+  
+  const modalOverlay = document.getElementById('startupModalOverlay');
+  const modalBox = document.getElementById('startupModalBox');
+  if (!modalOverlay || !modalBox) return;
+  
+  modalBox.innerHTML = `
+    <div style="position: relative;">
+      <!-- Close Button -->
+      <button onclick="closeStartupModal()" style="position: absolute; top: 16px; right: 16px; width: 34px; height: 34px; border-radius: 50%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.3); color: #fff; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10;" onmouseover="this.style.background='rgba(0,0,0,0.8)'" onmouseout="this.style.background='rgba(0,0,0,0.5)'">✕</button>
+      
+      <!-- Top Pitch Banner -->
+      <div style="position: relative; width: 100%; height: 220px; overflow: hidden; background: #0b0f19;">
+        <img src="${s.image}" alt="${s.title}" style="width: 100%; height: 100%; object-fit: cover;" />
+        <div style="position: absolute; bottom: -20px; left: 24px; width: 56px; height: 56px; border-radius: 16px; background: var(--surface); border: 2px solid var(--border); box-shadow: 0 8px 16px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; color: var(--primary); font-weight: 800; font-size: 22px;">
+          🚀
+        </div>
+      </div>
+      
+      <!-- Modal Content Body -->
+      <div style="padding: 32px 24px 24px;">
+        <!-- Title & Tagline -->
+        <h2 style="font-size: 26px; font-weight: 800; color: var(--text); font-family: 'Rajdhani', sans-serif; margin: 0 0 4px;">${s.title}</h2>
+        <p style="font-size: 14px; font-weight: 600; color: var(--primary); margin: 0 0 14px;">${s.tagline}</p>
+        
+        <!-- Category & Stage Pills -->
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;">
+          ${s.categories.map(c => `<span style="background: rgba(91, 45, 144, 0.08); color: var(--primary); font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 14px;">${c}</span>`).join('')}
+          <span style="background: var(--primary); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 14px;">${s.stage}</span>
+        </div>
+        
+        <!-- Full Pitch Story -->
+        <p style="font-size: 13px; color: var(--text-2); line-height: 1.6; margin-bottom: 24px;">${s.fullStory || s.description}</p>
+        
+        <!-- Founding Team Section -->
+        <div style="margin-bottom: 24px;">
+          <h4 style="font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+            👥 Founding Team
+          </h4>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            ${s.team ? s.team.map(m => `
+              <div style="flex: 1; min-width: 180px; background: var(--bg); border: 1px solid var(--border); padding: 10px 14px; border-radius: 14px; display: flex; align-items: center; gap: 10px;">
+                <div style="width: 36px; height: 36px; border-radius: 50%; background: ${m.bg}; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700;">${m.initials}</div>
+                <div>
+                  <div style="font-size: 12px; font-weight: 700; color: var(--text);">${m.name}</div>
+                  <div style="font-size: 10px; color: var(--text-2);">${m.role}</div>
+                </div>
+              </div>
+            `).join('') : ''}
+          </div>
+        </div>
+        
+        <!-- Funding Section -->
+        <div style="margin-bottom: 24px;">
+          <h4 style="font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+            🏦 Funding
+          </h4>
+          <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 16px;">
+            <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 8px;">
+              <span>${s.raised} raised of ${s.goal} goal</span>
+              <span style="color: var(--primary);">${s.fundedPercent}%</span>
+            </div>
+            <div style="width: 100%; height: 8px; background: var(--border); border-radius: 9999px; overflow: hidden; margin-bottom: 8px;">
+              <div style="width: ${s.fundedPercent}%; height: 100%; background: linear-gradient(90deg, var(--primary), #8b5cf6); border-radius: 9999px;"></div>
+            </div>
+            <div style="font-size: 10px; font-weight: 700; color: var(--text-2); letter-spacing: 0.05em; text-transform: uppercase;">
+              STAGE: ${s.stage} • FOUNDER: ${s.founder.toUpperCase()}
+            </div>
+          </div>
+        </div>
+        
+        <!-- Action Buttons: Upvote & Comment -->
+        <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+          <button onclick="toggleUpvote('${s.id}')" style="padding: 10px 20px; border-radius: 20px; border: 1px solid var(--border); background: ${s.isUpvoted ? 'var(--primary)' : 'rgba(91, 45, 144, 0.08)'}; color: ${s.isUpvoted ? '#fff' : 'var(--primary)'}; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg>
+            <span>Upvote · ${s.upvotes}</span>
+          </button>
+          <button onclick="document.getElementById('commentSectionAnchor').scrollIntoView({ behavior: 'smooth' })" style="padding: 10px 20px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            <span>Comment</span>
+          </button>
+        </div>
+        
+        <!-- Comments Section -->
+        <div id="commentSectionAnchor" style="border-top: 1px solid var(--border); padding-top: 20px;">
+          <h4 style="font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 14px;">
+            Comments (${s.comments ? s.comments.length : 0})
+          </h4>
+          
+          <!-- Add Comment Form -->
+          <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 14px; margin-bottom: 20px;">
+            <textarea id="modalCommentInput" rows="3" placeholder="Share your thoughts..." style="width: 100%; border: none; background: transparent; color: var(--text); font-family: inherit; font-size: 13px; outline: none; resize: none;"></textarea>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; border-top: 1px solid var(--border); padding-top: 8px;">
+              <span style="font-size: 10px; color: var(--text-3);">0/500</span>
+              <button onclick="postStartupComment('${s.id}')" style="background: var(--primary); color: #fff; border: none; padding: 6px 16px; border-radius: 14px; font-size: 11px; font-weight: 700; cursor: pointer;">
+                Post Comment
+              </button>
+            </div>
+          </div>
+          
+          <!-- Comments List Feed -->
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            ${s.comments ? s.comments.map(c => `
+              <div style="display: flex; gap: 12px; align-items: flex-start;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: ${c.color || '#5B2D90'}; color: #fff; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; shrink: 0;">${c.avatar}</div>
+                <div>
+                  <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 2px;">
+                    <span style="font-size: 12px; font-weight: 700; color: var(--text);">${c.author}</span>
+                    <span style="font-size: 10px; color: var(--text-3);">• ${c.time}</span>
+                  </div>
+                  <p style="font-size: 12px; color: var(--text-2); margin: 0; line-height: 1.4;">${c.text}</p>
+                </div>
+              </div>
+            `).join('') : ''}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  modalOverlay.style.display = 'flex';
+  if (focusComment) {
+    setTimeout(() => {
+      const el = document.getElementById('commentSectionAnchor');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  }
+}
+
+function closeStartupModal() {
+  const modalOverlay = document.getElementById('startupModalOverlay');
+  if (modalOverlay) modalOverlay.style.display = 'none';
+}
+
+function handleStartupModalOverlayClick(event) {
+  if (event.target.id === 'startupModalOverlay') {
+    closeStartupModal();
+  }
+}
+
+function postStartupComment(startupId) {
+  const input = document.getElementById('modalCommentInput');
+  if (!input || !input.value.trim()) return;
+  const text = input.value.trim();
+  
+  const s = allStartupsData.find(item => item.id === startupId);
+  if (!s) return;
+  
+  s.comments.unshift({
+    author: 'You',
+    time: 'Just now',
+    text: text,
+    avatar: 'Y',
+    color: '#5B2D90'
+  });
+  s.commentsCount = s.comments.length;
+  
+  showToast('Comment posted!', 'success');
+  renderAllStartupsList();
+  openStartupModal(startupId, true);
+}
+
+let uploadedPitchCoverDataUrl = null;
+
+function handleCoverPhotoSelect(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    uploadedPitchCoverDataUrl = e.target.result;
+    const previewBox = document.getElementById('coverPhotoPreviewContent');
+    const dropzone = document.getElementById('coverDropzone');
+    if (previewBox && dropzone) {
+      dropzone.style.padding = '0';
+      dropzone.style.height = '200px';
+      previewBox.innerHTML = `
+        <div style="width: 100%; height: 200px; position: relative;">
+          <img src="${uploadedPitchCoverDataUrl}" style="width: 100%; height: 100%; object-fit: cover;" />
+          <button type="button" onclick="event.stopPropagation(); resetCoverPhoto();" style="position: absolute; top: 12px; right: 12px; background: rgba(0,0,0,0.7); border: 1px solid rgba(255,255,255,0.4); color: #fff; border-radius: 50%; width: 32px; height: 32px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+        </div>
+      `;
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function resetCoverPhoto() {
+  uploadedPitchCoverDataUrl = null;
+  const dropzone = document.getElementById('coverDropzone');
+  const fileInput = document.getElementById('coverFileInput');
+  if (fileInput) fileInput.value = '';
+  if (dropzone) {
+    dropzone.style.padding = '36px 20px';
+    dropzone.style.height = 'auto';
+    dropzone.innerHTML = `
+      <input type="file" id="coverFileInput" accept="image/*" style="display: none;" onchange="handleCoverPhotoSelect(event)" />
+      <div id="coverPhotoPreviewContent" style="display: flex; flex-direction: column; align-items: center;">
+        <div style="width: 54px; height: 54px; border-radius: 16px; background: linear-gradient(135deg, #9333ea, #c084fc); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 24px; margin-bottom: 12px; box-shadow: 0 8px 24px rgba(147, 51, 234, 0.4);">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        </div>
+        <div style="font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 4px;">Upload Cover Photo</div>
+        <div style="font-size: 12px; color: rgba(233, 213, 255, 0.6);">Drag & drop or click — JPG, PNG, WEBP</div>
+      </div>
+    `;
+  }
+}
+
+function formatFundingGoalInput(input) {
+  let val = input.value.replace(/[^0-9]/g, '');
+  if (!val) {
+    input.value = '';
+    return;
+  }
+  input.value = Number(val).toLocaleString('en-US');
+}
+
+function handleStartupPitchSubmit(event) {
+  event.preventDefault();
+  
+  const name = document.getElementById('pitchNameInput').value.trim();
+  const category = document.getElementById('pitchCategorySelect').value;
+  const tagline = document.getElementById('pitchTaglineInput').value.trim();
+  const desc = document.getElementById('pitchDescriptionInput').value.trim();
+  const rawGoal = document.getElementById('pitchGoalInput').value.replace(/[^0-9]/g, '');
+  const numericGoal = parseInt(rawGoal, 10) || 500000;
+  
+  const newPitch = {
+    id: 'startup-' + Date.now(),
+    title: name,
+    founder: 'Priya Sharma',
+    stage: 'PRE-SEED',
+    categories: [category.toUpperCase()],
+    description: tagline,
+    fullStory: desc,
+    upvotes: 1,
+    isUpvoted: true,
+    commentsCount: 0,
+    comments: [],
+    raised: '$0',
+    goal: '$' + numericGoal.toLocaleString('en-US'),
+    fundedPercent: 0,
+    tagline: tagline,
+    image: uploadedPitchCoverDataUrl || './solargrid_banner.png',
+    team: [
+      { name: 'Priya Sharma', role: 'Founder & CEO', initials: 'PS', bg: '#5B2D90' }
+    ]
+  };
+  
+  allStartupsData.unshift(newPitch);
+  showToast('🚀 Startup Pitch Submitted Successfully!', 'success');
+  renderAllStartupsList();
+  navigateTo('all-startups');
+}

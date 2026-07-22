@@ -75,6 +75,55 @@
     </div>
   </div>
 
+  <!-- Mentor Session Booking Modal -->
+  <div id="mentorSessionModalOverlay" style="position: fixed; inset: 0; z-index: 1300; backdrop-filter: blur(10px); background: rgba(12, 10, 20, 0.85); display: none; align-items: center; justify-content: center;" onclick="handleMentorSessionOverlayClick(event)">
+    <div style="max-width: 520px; width: 92%; background: linear-gradient(145deg, rgba(24, 18, 43, 0.98), rgba(37, 27, 62, 0.98)); border-radius: 24px; border: 1.5px solid rgba(245, 158, 11, 0.4); box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5); padding: 28px; color: #fff; position: relative;" onclick="event.stopPropagation()">
+      <button onclick="closeMentorSessionModal()" style="position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.1); border: none; color: #fff; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+      
+      <div id="mentorSessionHeader" style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+        <!-- Dynamic header content -->
+      </div>
+
+      <form id="mentorSessionForm" onsubmit="handleSessionBookingSubmit(event)">
+        <input type="hidden" id="bookingMentorId" />
+        <div style="margin-bottom: 16px;">
+          <label style="font-size: 11px; font-weight: 800; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 6px;">PREFERRED DATE</label>
+          <input type="date" id="sessionDateInput" required style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.3); background: rgba(255,255,255,0.06); color: #fff; font-family: inherit; font-size: 14px; outline: none;" />
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <label style="font-size: 11px; font-weight: 800; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 6px;">TIME SLOT</label>
+          <select id="sessionTimeSlot" required style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.3); background: #1f1638; color: #fff; font-family: inherit; font-size: 14px; outline: none;">
+            <option value="10:00 AM - 10:45 AM">10:00 AM - 10:45 AM (Morning)</option>
+            <option value="02:00 PM - 02:45 PM">02:00 PM - 02:45 PM (Afternoon)</option>
+            <option value="05:30 PM - 06:15 PM">05:30 PM - 06:15 PM (Evening)</option>
+            <option value="08:00 PM - 08:45 PM">08:00 PM - 08:45 PM (Late Evening)</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom: 20px;">
+          <label style="font-size: 11px; font-weight: 800; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.08em; display: block; margin-bottom: 6px;">SESSION AGENDA / TOPIC</label>
+          <textarea id="sessionAgendaInput" rows="3" placeholder="Describe what you want to discuss e.g. pitch deck review, technical architecture, seed funding advice..." required style="width: 100%; padding: 12px 16px; border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.3); background: rgba(255,255,255,0.06); color: #fff; font-family: inherit; font-size: 13px; outline: none; resize: vertical;"></textarea>
+        </div>
+
+        <button type="submit" style="width: 100%; padding: 14px; border-radius: 14px; border: none; background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-family: inherit; font-size: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4); display: flex; align-items: center; justify-content: center; gap: 8px;">
+          ⚡ Confirm 1-on-1 Session Request
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Incubation Head Info Modal -->
+  <div id="headInfoModalOverlay" style="position: fixed; inset: 0; z-index: 1300; backdrop-filter: blur(10px); background: rgba(12, 10, 20, 0.85); display: none; align-items: center; justify-content: center;" onclick="handleHeadInfoOverlayClick(event)">
+    <div style="max-width: 550px; width: 92%; background: linear-gradient(145deg, rgba(30, 18, 55, 0.98), rgba(45, 25, 80, 0.98)); border-radius: 24px; border: 1.5px solid #c084fc; box-shadow: 0 25px 50px rgba(147, 51, 234, 0.4); padding: 28px; color: #fff; position: relative;" onclick="event.stopPropagation()">
+      <button onclick="closeHeadInfoModal()" style="position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.1); border: none; color: #fff; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+      
+      <div id="headInfoContent">
+        <!-- Dynamic content -->
+      </div>
+    </div>
+  </div>
+
   <div class="modal-overlay" id="registerModalOverlay">
     <div class="modal-box" style="max-width: 480px;">
       <h3 style="color:var(--primary)">Student Registration</h3>
@@ -230,140 +279,7 @@
   </div>
 
 
-  <!-- ============================================================
-     SCREEN 1: LOGIN
-     ============================================================ -->
-  <div id="screen-login" class="screen flex-screen">
-    <div class="login-left">
-      <div class="brand-badge">
-        <svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="10" />
-        </svg>
-        GH Raisoni College of Engineering
-      </div>
-      <div class="login-illustration">
-        <div class="ill-icon">
-          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" width="200" height="200">
-            <defs>
-              <radialGradient id="g1" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#D4AF37" stop-opacity="0.3" />
-                <stop offset="100%" stop-color="#5B2D90" stop-opacity="0.6" />
-              </radialGradient>
-            </defs>
-            <circle cx="100" cy="100" r="90" fill="url(#g1)" stroke="rgba(212,175,55,0.3)" stroke-width="1.5" />
-            <!-- Graduation cap -->
-            <polygon points="100,45 148,70 100,95 52,70" fill="rgba(212,175,55,0.9)" stroke="rgba(255,255,255,0.3)"
-              stroke-width="1" />
-            <rect x="136" y="70" width="4" height="32" fill="rgba(212,175,55,0.7)" rx="2" />
-            <circle cx="138" cy="106" r="6" fill="#D4AF37" />
-            <rect x="60" y="70" width="80" height="4" fill="rgba(212,175,55,0.6)" rx="2" />
-            <rect x="75" y="76" width="50" height="35" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)"
-              stroke-width="1" rx="3" />
-            <!-- Growth chart -->
-            <polyline points="80,145 90,135 100,128 115,118 130,108" stroke="#D4AF37" stroke-width="2.5" fill="none"
-              stroke-linecap="round" />
-            <circle cx="130" cy="108" r="4" fill="#D4AF37" />
-            <!-- Stars -->
-            <circle cx="40" cy="40" r="2" fill="rgba(212,175,55,0.6)" />
-            <circle cx="160" cy="35" r="1.5" fill="rgba(212,175,55,0.4)" />
-            <circle cx="170" cy="160" r="2.5" fill="rgba(212,175,55,0.5)" />
-            <circle cx="30" cy="155" r="2" fill="rgba(212,175,55,0.3)" />
-          </svg>
-        </div>
-        <h2>Your Career Journey<br />Starts <span>Here</span></h2>
-        <p>India's most intelligent AI-powered Training & Placement platform. Assess, learn, prepare, and get placed —
-          all in one place.</p>
-      </div>
-      <div class="login-stats">
-        <div class="login-stat">
-          <div class="stat-num">2,400+</div>
-          <div class="stat-lbl">Students</div>
-        </div>
-        <div class="login-stat">
-          <div class="stat-num">92%</div>
-          <div class="stat-lbl">Placement Rate</div>
-        </div>
-        <div class="login-stat">
-          <div class="stat-num">150+</div>
-          <div class="stat-lbl">Companies</div>
-        </div>
-      </div>
-    </div>
-    <div class="login-right">
-      <div class="login-card">
-        <div class="login-logo">
-          <div class="logo-mark">P</div>
-          <div class="logo-text">
-            <div class="logo-name">Prashikshan</div>
-            <div class="logo-sub">Training & Placement Portal</div>
-          </div>
-        </div>
-
-
-        <h1 id="loginTitle">Student Login</h1>
-        <p class="login-subtitle" id="loginSubtitle">Enter your college-provided credentials to continue.</p>
-
-        <div class="login-tip" id="loginTip"
-          style="background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.25);border-radius:8px;padding:10px 14px;font-size:11px;color:var(--accent);margin-bottom:16px;line-height:1.5;text-align:center">
-          <strong>Demo Login:</strong> ID <span style="font-weight:700">GHRCE2024047</span> & Pass <span
-            style="font-weight:700">123</span>
-        </div>
-
-        <div class="error-msg" id="loginError">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="10" />
-            <line x1="15" y1="9" x2="9" y2="15" />
-            <line x1="9" y1="9" x2="15" y2="15" />
-          </svg>
-          <span id="loginErrorMsg">Invalid Student ID or Password. Please try again.</span>
-        </div>
-
-        <form id="loginForm" onsubmit="handleLogin(event)">
-          <div class="form-group">
-            <label class="form-label" id="loginIdLabel" for="studentId">Student ID</label>
-            <div class="input-wrap">
-              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
-              <input type="text" id="studentId" class="form-input" placeholder="e.g. GHRCE2024047"
-                autocomplete="username" />
-            </div>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="password">Password</label>
-            <div class="input-wrap">
-              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-              </svg>
-              <input type="password" id="password" class="form-input" placeholder="Enter your password"
-                autocomplete="current-password" />
-              <button type="button" class="show-pass" onclick="togglePassword()" id="showPassBtn">
-                <svg id="eyeIcon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
-                  viewBox="0 0 24 24">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                  <circle cx="12" cy="12" r="3" />
-                </svg>
-              </button>
-            </div>
-          </div>
-          <a class="forgot-link" href="#" onclick="showForgotModal()">Forgot Password? Contact T&P Cell</a>
-          <button type="submit" class="btn-login" id="loginBtn">
-            <span id="loginBtnText">Sign In to Portal</span>
-          </button>
-          <div style="text-align:center;margin-top:16px;" id="regLinkContainer">
-            <a class="forgot-link" href="#" onclick="showRegisterModal()" style="font-size:12px;opacity:0.85">New
-              student? Self Register</a>
-          </div>
-        </form>
-        <div class="login-footer">
-          <p>Having trouble? Contact the <span>Training & Placement Cell</span><br />Room 204, Academic Block |
-            placement@ghrce.ac.in</p>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- Screen 1: Login Removed (Using root login.html) -->
 
   <!-- ============================================================
      SCREEN 2: FIRST LOGIN / WELCOME
@@ -766,9 +682,21 @@
       <!-- ── PAGE: DASHBOARD ── -->
       <div class="app-page active fade-in" id="page-dashboard">
 <!-- Welcome Section -->
-<div class="mb-8 border-b border-outline-variant pb-6">
-  <p class="text-primary text-sm font-label font-bold uppercase tracking-widest mb-2" id="dashGreetingText">Welcome back</p>
-  <h2 class="text-4xl font-headline font-bold text-on-surface mt-1">Welcome back, <span class="text-primary" id="dashStudentName">Priya.</span></h2>
+<div style="display: flex; align-items: flex-start; gap: 14px; margin-bottom: 24px;">
+  <div style="width: 5px; height: 38px; border-radius: 4px; background: linear-gradient(180deg, #c084fc 0%, #9333ea 100%); flex-shrink: 0; margin-top: 3px;"></div>
+  <div>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #251b3e, #1a102f); border: 1px solid rgba(168, 85, 247, 0.4); display: flex; align-items: center; justify-content: center; color: #c084fc; flex-shrink: 0; box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
+      </div>
+      <h2 style="font-size: 28px; font-weight: 900; color: var(--text, #1e1b4b); font-family: 'Rajdhani', sans-serif; margin: 0; letter-spacing: -0.01em;">
+        Welcome back, <span style="color: var(--primary, #9333ea);" id="dashStudentName">Priya</span>
+      </h2>
+    </div>
+    <p style="font-size: 14px; color: #a855f7; font-weight: 600; margin: 4px 0 0 0;">
+      Here is your placement readiness overview and current academic progress.
+    </p>
+  </div>
 </div>
 <!-- BEGIN: Dashboard Grid -->
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
@@ -811,6 +739,14 @@
             <span class="text-4xl md:text-5xl font-headline font-extrabold tracking-tighter"><span id="dashReadinessVal">72</span><span class="text-xl md:text-2xl text-primary-fixed">%</span></span>
           </div>
         </div>
+      </div>
+      <!-- CTA Button at the bottom of the card -->
+      <div class="mt-6 pt-4 border-t border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <p class="text-xs text-primary-fixed-dim font-medium max-w-md">Discover your core strengths, weak areas, and company-readiness level with our AI Skill Gap report.</p>
+        <button id="btnFindSkillGap" class="px-5 py-2.5 rounded-xl text-white border border-white/30 text-xs font-bold font-label uppercase tracking-widest transition-all shadow-md flex items-center gap-2 shrink-0" style="background: var(--primary, #5B2D90);" onmouseover="this.style.filter='brightness(1.15)';" onmouseout="this.style.filter='brightness(1.0)';" onclick="startSkillGapAssessmentFlow()">
+          Find My Skill Gap
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
       </div>
     </div>
     <!-- Tasks & Skills Row -->
@@ -896,46 +832,8 @@
               See All <i class="ph ph-arrow-right ml-1 font-bold"></i>
 </a>
 </div>
-<div class="space-y-6 flex-1">
-<div class="flex items-center p-3 rounded-xl hover:bg-surface-dim transition-colors border border-transparent hover:border-outline-variant">
-<div class="w-14 h-14 bg-surface-dim border border-outline-variant text-primary flex items-center justify-center mr-4 shrink-0 rounded-xl shadow-sm">
-<i class="ph ph-code text-2xl font-bold"></i>
-</div>
-<div class="flex-1">
-<h5 class="text-sm font-bold text-on-surface leading-tight font-headline">Data Structures &amp; Algo</h5>
-<p class="text-xs text-on-surface-variant font-label mt-1 font-medium">12h • 48 lessons</p>
-<div class="w-full bg-surface-variant rounded-full h-1.5 mt-3 shadow-inner">
-<div class="bg-primary h-1.5 rounded-full" style="width: 68%"></div>
-</div>
-</div>
-<div class="ml-4 text-sm font-extrabold text-primary font-headline">68%</div>
-</div>
-<div class="flex items-center p-3 rounded-xl hover:bg-surface-dim transition-colors border border-transparent hover:border-outline-variant">
-<div class="w-14 h-14 bg-surface-dim border border-outline-variant text-primary flex items-center justify-center mr-4 shrink-0 rounded-xl shadow-sm">
-<i class="ph ph-database text-2xl font-bold"></i>
-</div>
-<div class="flex-1">
-<h5 class="text-sm font-bold text-on-surface leading-tight font-headline">Database Management</h5>
-<p class="text-xs text-on-surface-variant font-label mt-1 font-medium">8h • 32 lessons</p>
-<div class="w-full bg-surface-variant rounded-full h-1.5 mt-3 shadow-inner">
-<div class="bg-primary h-1.5 rounded-full" style="width: 35%"></div>
-</div>
-</div>
-<div class="ml-4 text-sm font-extrabold text-primary font-headline">35%</div>
-</div>
-<div class="flex items-center p-3 rounded-xl hover:bg-surface-dim transition-colors border border-transparent hover:border-outline-variant">
-<div class="w-14 h-14 bg-surface-dim border border-outline-variant text-primary flex items-center justify-center mr-4 shrink-0 rounded-xl shadow-sm">
-<i class="ph ph-calculator text-2xl font-bold"></i>
-</div>
-<div class="flex-1">
-<h5 class="text-sm font-bold text-on-surface leading-tight font-headline">Quantitative Aptitude</h5>
-<p class="text-xs text-on-surface-variant font-label mt-1 font-medium">10h • 80 topics</p>
-<div class="w-full bg-surface-variant rounded-full h-1.5 mt-3 shadow-inner">
-<div class="bg-primary h-1.5 rounded-full" style="width: 52%"></div>
-</div>
-</div>
-<div class="ml-4 text-sm font-extrabold text-primary font-headline">52%</div>
-</div>
+<div class="space-y-6 flex-1" id="dashRecommendedCourses">
+  <!-- Dynamic Recommended Courses will be inserted here -->
 </div>
 </div>
 <!-- Upcoming Drives -->
@@ -1028,7 +926,7 @@
 </div>
 <div class="relative z-10 flex-1">
 <h4 class="text-xl font-headline font-extrabold text-on-surface mb-2">AI Recommendations for You</h4>
-<p class="text-sm text-on-surface-variant leading-relaxed mb-6 max-w-3xl font-medium">
+<p id="dashAIRecommendations" class="text-sm text-on-surface-variant leading-relaxed mb-6 max-w-3xl font-medium">
             Based on your skill assessment and mock test performance, focus on <strong class="text-primary font-extrabold font-headline">Operating Systems</strong> and <strong class="text-primary font-extrabold font-headline">Computer Networks</strong> this week. Take the TCS Mock Test before the drive on July 25. Practice SQL joins for the Infosys preparation.
           </p>
 <div class="flex flex-wrap gap-4">
@@ -1042,9 +940,21 @@
       <!-- ── PAGE: SKILL REPORT ── -->
       <div class="app-page fade-in" id="page-skill-report">
         <!-- Page Header -->
-        <div class="page-header" style="margin-bottom: 28px;">
-          <h1 class="skill-report-title">Skill Report</h1>
-          <p class="skill-report-subtitle">Your comprehensive skill analysis based on assessment results and learning progress.</p>
+        <div style="display: flex; align-items: flex-start; gap: 14px; margin-bottom: 24px;">
+          <div style="width: 5px; height: 38px; border-radius: 4px; background: linear-gradient(180deg, #c084fc 0%, #9333ea 100%); flex-shrink: 0; margin-top: 3px;"></div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #251b3e, #1a102f); border: 1px solid rgba(168, 85, 247, 0.4); display: flex; align-items: center; justify-content: center; color: #c084fc; flex-shrink: 0; box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /></svg>
+              </div>
+              <h2 style="font-size: 28px; font-weight: 900; color: var(--text, #1e1b4b); font-family: 'Rajdhani', sans-serif; margin: 0; letter-spacing: -0.01em;">
+                Skill Report
+              </h2>
+            </div>
+            <p style="font-size: 14px; color: #a855f7; font-weight: 600; margin: 4px 0 0 0;">
+              Your comprehensive skill analysis based on assessment results and learning progress.
+            </p>
+          </div>
         </div>
 
         <!-- Section 1: Top Overview — Two Columns -->
@@ -1052,67 +962,8 @@
           <!-- Left Card: Subject Performance -->
           <div class="card" style="padding: 24px;">
             <h3 class="sr-section-heading">Subject Performance</h3>
-            <div class="sr-subject-grid">
-              <div class="score-circle-item">
-                <div class="circular-chart">
-                  <svg width="80" height="80" viewBox="0 0 80 80">
-                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="7" />
-                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--primary)" stroke-width="7" stroke-dasharray="201.06" stroke-dashoffset="60.32" stroke-linecap="round" />
-                  </svg>
-                  <div class="cc-num">70%</div>
-                </div>
-                <div class="sci-label">DSA</div>
-              </div>
-              <div class="score-circle-item">
-                <div class="circular-chart">
-                  <svg width="80" height="80" viewBox="0 0 80 80">
-                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="7" />
-                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--success)" stroke-width="7" stroke-dasharray="201.06" stroke-dashoffset="80.42" stroke-linecap="round" />
-                  </svg>
-                  <div class="cc-num">60%</div>
-                </div>
-                <div class="sci-label">DBMS</div>
-              </div>
-              <div class="score-circle-item">
-                <div class="circular-chart">
-                  <svg width="80" height="80" viewBox="0 0 80 80">
-                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="7" />
-                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--error)" stroke-width="7" stroke-dasharray="201.06" stroke-dashoffset="136.72" stroke-linecap="round" />
-                  </svg>
-                  <div class="cc-num">32%</div>
-                </div>
-                <div class="sci-label">OS</div>
-              </div>
-              <div class="score-circle-item">
-                <div class="circular-chart">
-                  <svg width="80" height="80" viewBox="0 0 80 80">
-                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="7" />
-                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--warning)" stroke-width="7" stroke-dasharray="201.06" stroke-dashoffset="90.48" stroke-linecap="round" />
-                  </svg>
-                  <div class="cc-num">55%</div>
-                </div>
-                <div class="sci-label">Aptitude</div>
-              </div>
-              <div class="score-circle-item">
-                <div class="circular-chart">
-                  <svg width="80" height="80" viewBox="0 0 80 80">
-                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="7" />
-                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--error)" stroke-width="7" stroke-dasharray="201.06" stroke-dashoffset="120.64" stroke-linecap="round" />
-                  </svg>
-                  <div class="cc-num">40%</div>
-                </div>
-                <div class="sci-label">Networks</div>
-              </div>
-              <div class="score-circle-item">
-                <div class="circular-chart">
-                  <svg width="80" height="80" viewBox="0 0 80 80">
-                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="7" />
-                    <circle cx="40" cy="40" r="32" fill="none" stroke="var(--secondary)" stroke-width="7" stroke-dasharray="201.06" stroke-dashoffset="50.27" stroke-linecap="round" />
-                  </svg>
-                  <div class="cc-num">75%</div>
-                </div>
-                <div class="sci-label">Coding</div>
-              </div>
+            <div class="sr-subject-grid" id="srSubjectGrid">
+              <!-- Dynamic subject performance circles -->
             </div>
           </div>
 
@@ -1126,66 +977,16 @@
         <!-- Section 2: Detailed Breakdown — Full Width, 2-Column Grid -->
         <div class="card" style="padding: 24px; margin-bottom: 24px;">
           <h3 class="sr-section-heading">Detailed Breakdown</h3>
-          <div class="sr-breakdown-grid">
-            <div class="sp-item">
-              <div class="sp-header"><span class="sp-name">Technical Programming</span><span class="sp-pct">75%</span></div>
-              <div class="sp-bar"><div class="sp-fill" style="width:75%;background:linear-gradient(90deg,var(--primary),var(--secondary))"></div></div>
-            </div>
-            <div class="sp-item">
-              <div class="sp-header"><span class="sp-name">Data Structures</span><span class="sp-pct">70%</span></div>
-              <div class="sp-bar"><div class="sp-fill" style="width:70%;background:linear-gradient(90deg,var(--primary),var(--secondary))"></div></div>
-            </div>
-            <div class="sp-item">
-              <div class="sp-header"><span class="sp-name">Quantitative Aptitude</span><span class="sp-pct">55%</span></div>
-              <div class="sp-bar"><div class="sp-fill" style="width:55%;background:linear-gradient(90deg,var(--warning),#fbbf24)"></div></div>
-            </div>
-            <div class="sp-item">
-              <div class="sp-header"><span class="sp-name">Communication Skills</span><span class="sp-pct">62%</span></div>
-              <div class="sp-bar"><div class="sp-fill" style="width:62%;background:linear-gradient(90deg,var(--info),#60a5fa)"></div></div>
-            </div>
-            <div class="sp-item">
-              <div class="sp-header"><span class="sp-name">Logical Reasoning</span><span class="sp-pct">68%</span></div>
-              <div class="sp-bar"><div class="sp-fill" style="width:68%;background:linear-gradient(90deg,var(--success),#4ade80)"></div></div>
-            </div>
-            <div class="sp-item">
-              <div class="sp-header"><span class="sp-name">Problem Solving</span><span class="sp-pct">73%</span></div>
-              <div class="sp-bar"><div class="sp-fill" style="width:73%;background:linear-gradient(90deg,var(--primary),var(--secondary))"></div></div>
-            </div>
-            <div class="sp-item">
-              <div class="sp-header"><span class="sp-name">Operating Systems</span><span class="sp-pct">32%</span></div>
-              <div class="sp-bar"><div class="sp-fill" style="width:32%;background:linear-gradient(90deg,var(--error),#ff8080)"></div></div>
-            </div>
-            <div class="sp-item">
-              <div class="sp-header"><span class="sp-name">Computer Networks</span><span class="sp-pct">38%</span></div>
-              <div class="sp-bar"><div class="sp-fill" style="width:38%;background:linear-gradient(90deg,var(--error),#ff8080)"></div></div>
-            </div>
+          <div class="sr-breakdown-grid" id="srBreakdownGrid">
+            <!-- Dynamic skill breakdown bars -->
           </div>
         </div>
 
         <!-- Section 3: AI-Powered Insights — Slim Horizontal Banner -->
         <div class="sr-insights-banner" style="margin-bottom: 24px;">
           <h3 class="sr-section-heading">AI-Powered Insights</h3>
-          <div class="sr-insights-row">
-            <div class="sr-insight-card">
-              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-              </svg>
-              <p><strong>Strength:</strong> Your programming and DSA scores are in the top 30% of your batch. You're well-prepared for technical coding rounds.</p>
-            </div>
-            <div class="sr-insight-card">
-              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
-              </svg>
-              <p><strong>Gap:</strong> Operating Systems (32%) and Computer Networks (38%) are critical weak areas for TCS and Infosys. Prioritize these immediately.</p>
-            </div>
-            <div class="sr-insight-card">
-              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-              </svg>
-              <p><strong>Action:</strong> At your current learning pace, you'll reach placement readiness (80%) in approximately 6 weeks. Increase daily practice to 3h to achieve this in 4 weeks.</p>
-            </div>
+          <div class="sr-insights-row" id="srInsightsRow">
+            <!-- Dynamic AI Insights cards -->
           </div>
         </div>
 
@@ -1203,19 +1004,19 @@
             <div class="gh-stats-grid">
               <div class="gh-stat-card">
                 <div class="gh-stat-label">TOTAL TIME</div>
-                <div class="gh-stat-val">142h</div>
+                <div class="gh-stat-val" id="ghTotalTime">0h</div>
               </div>
               <div class="gh-stat-card">
                 <div class="gh-stat-label">ACTIVE DAYS</div>
-                <div class="gh-stat-val">268 / 365</div>
+                <div class="gh-stat-val" id="ghActiveDays">0 / 365</div>
               </div>
               <div class="gh-stat-card">
                 <div class="gh-stat-label">CURRENT STREAK</div>
-                <div class="gh-stat-val">12 Days</div>
+                <div class="gh-stat-val" id="ghCurrentStreak">0 Days</div>
               </div>
               <div class="gh-stat-card">
                 <div class="gh-stat-label">CONSISTENCY</div>
-                <div class="gh-stat-val">76%</div>
+                <div class="gh-stat-val" id="ghConsistency">0%</div>
               </div>
             </div>
 
@@ -1234,32 +1035,61 @@
 
       <!-- ── PAGE: ROADMAP ── -->
       <div class="app-page fade-in" id="page-roadmap">
-        <div class="page-header">
-          <h1>Personalized Roadmap</h1>
-          <p>Your AI-generated learning path from assessment to placement readiness.</p>
+        <!-- Page Header -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+          <div style="display: flex; align-items: flex-start; gap: 14px;">
+            <div style="width: 5px; height: 38px; border-radius: 4px; background: linear-gradient(180deg, #c084fc 0%, #9333ea 100%); flex-shrink: 0; margin-top: 3px;"></div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #251b3e, #1a102f); border: 1px solid rgba(168, 85, 247, 0.4); display: flex; align-items: center; justify-content: center; color: #c084fc; flex-shrink: 0; box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
+                </div>
+                <h2 style="font-size: 28px; font-weight: 900; color: var(--text, #1e1b4b); font-family: 'Rajdhani', sans-serif; margin: 0; letter-spacing: -0.01em;">
+                  Roadmap
+                </h2>
+              </div>
+              <p style="font-size: 14px; color: #a855f7; font-weight: 600; margin: 4px 0 0 0;">
+                Your AI-generated learning path from assessment to placement readiness.
+              </p>
+            </div>
+          </div>
+          
+          <!-- Subject Dropdown Filter -->
+          <div style="display: flex; align-items: center; gap: 10px; margin-top: 6px;">
+            <span style="font-size: 13px; font-weight: 700; color: var(--text-2);">Filter by Subject:</span>
+            <select id="roadmapSubjectFilter" onchange="changeRoadmapSubject(this.value)" style="padding: 8px 16px; border-radius: 10px; background: var(--surface); border: 1px solid var(--border); color: var(--text); font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; outline: none; box-shadow: var(--shadow-sm); transition: border-color 0.2s ease;">
+              <option value="overall">All Subjects (Overall)</option>
+              <option value="dsa">Data Structures &amp; Algorithms (DSA)</option>
+              <option value="dbms">Database Management Systems (DBMS)</option>
+              <option value="os">Operating Systems (OS)</option>
+              <option value="aptitude">Quantitative &amp; Logical Aptitude</option>
+              <option value="networks">Computer Networks</option>
+              <option value="coding">Problem Solving &amp; Coding Sprints</option>
+            </select>
+          </div>
         </div>
         <div class="rm-overview-card">
           <div class="rm-overview-title">Roadmap Overview</div>
           <div class="rm-stats-row">
             <div class="rm-stat-tile">
               <span class="rs-label">Overall Progress</span>
-              <span class="rs-val">72%</span>
+              <span class="rs-val" id="rmProgressVal">--</span>
             </div>
             <div class="rm-stat-tile">
               <span class="rs-label">Est. Completion</span>
-              <span class="rs-val">6 wk</span>
+              <span class="rs-val" id="rmCompletionVal">--</span>
             </div>
             <div class="rm-stat-tile">
               <span class="rs-label">Topics Done</span>
-              <span class="rs-val">14</span>
+              <span class="rs-val" id="rmTopicsDoneVal">--</span>
             </div>
             <div class="rm-stat-tile">
               <span class="rs-label">Remaining</span>
-              <span class="rs-val">8</span>
+              <span class="rs-val" id="rmRemainingVal">--</span>
             </div>
             <div class="rm-stat-tile">
               <span class="rs-label">Batch Rank</span>
-              <span class="rs-val">#47</span>
+              <span class="rs-val" id="rmRankVal">--</span>
             </div>
           </div>
         </div>
@@ -1280,9 +1110,22 @@
 
       <!--  PAGE: LEARNING HUB  -->
       <div class="app-page fade-in" id="page-learning-hub">
-        <div class="page-header" style="text-align: center; margin-bottom: 24px;">
-          <h1 style="font-family:'Inter',sans-serif;font-size:26px;font-weight:800;margin-bottom:8px;">Learning Hub</h1>
-          <p style="color:var(--text-2);font-size:14px;max-width:600px;margin:0 auto;">Recommended resources based on your skill gaps and learning goals.</p>
+        <!-- Page Header -->
+        <div style="display: flex; align-items: flex-start; gap: 14px; margin-bottom: 24px;">
+          <div style="width: 5px; height: 38px; border-radius: 4px; background: linear-gradient(180deg, #c084fc 0%, #9333ea 100%); flex-shrink: 0; margin-top: 3px;"></div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #251b3e, #1a102f); border: 1px solid rgba(168, 85, 247, 0.4); display: flex; align-items: center; justify-content: center; color: #c084fc; flex-shrink: 0; box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></svg>
+              </div>
+              <h2 style="font-size: 28px; font-weight: 900; color: var(--text, #1e1b4b); font-family: 'Rajdhani', sans-serif; margin: 0; letter-spacing: -0.01em;">
+                Learning Hub
+              </h2>
+            </div>
+            <p style="font-size: 14px; color: #a855f7; font-weight: 600; margin: 4px 0 0 0;">
+              Recommended resources based on your skill gaps and learning goals.
+            </p>
+          </div>
         </div>
         
         <div class="lh-filters-card">
@@ -1308,9 +1151,22 @@
 
       <!-- ── PAGE: COMPANY PREP ── -->
       <div class="app-page fade-in" id="page-company-prep">
-        <div class="page-header" style="text-align: center; margin-bottom: 40px;">
-          <h1 style="font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 40px; background: linear-gradient(135deg, var(--primary), #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Company Preparation</h1>
-          <p style="font-size: 16px; color: var(--text-2); margin-top: 8px;">Targeted preparation resources for top recruiters visiting your campus.</p>
+        <!-- Page Header -->
+        <div style="display: flex; align-items: flex-start; gap: 14px; margin-bottom: 24px;">
+          <div style="width: 5px; height: 38px; border-radius: 4px; background: linear-gradient(180deg, #c084fc 0%, #9333ea 100%); flex-shrink: 0; margin-top: 3px;"></div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #251b3e, #1a102f); border: 1px solid rgba(168, 85, 247, 0.4); display: flex; align-items: center; justify-content: center; color: #c084fc; flex-shrink: 0; box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /></svg>
+              </div>
+              <h2 style="font-size: 28px; font-weight: 900; color: var(--text, #1e1b4b); font-family: 'Rajdhani', sans-serif; margin: 0; letter-spacing: -0.01em;">
+                Company Preparation
+              </h2>
+            </div>
+            <p style="font-size: 14px; color: #a855f7; font-weight: 600; margin: 4px 0 0 0;">
+              Targeted preparation resources for top recruiters visiting your campus.
+            </p>
+          </div>
         </div>
 
         <div class="top-recruiters-section">
@@ -1407,9 +1263,22 @@
 
       <!-- ── PAGE: AI INTERVIEW (Selector) ── -->
       <div class="app-page fade-in" id="page-ai-interview">
-        <div class="page-header">
-          <h1>AI Mock Interview</h1>
-          <p>Practice with our AI interviewer. Select a company and interview type to begin.</p>
+        <!-- Page Header -->
+        <div style="display: flex; align-items: flex-start; gap: 14px; margin-bottom: 24px;">
+          <div style="width: 5px; height: 38px; border-radius: 4px; background: linear-gradient(180deg, #c084fc 0%, #9333ea 100%); flex-shrink: 0; margin-top: 3px;"></div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #251b3e, #1a102f); border: 1px solid rgba(168, 85, 247, 0.4); display: flex; align-items: center; justify-content: center; color: #c084fc; flex-shrink: 0; box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+              </div>
+              <h2 style="font-size: 28px; font-weight: 900; color: var(--text, #1e1b4b); font-family: 'Rajdhani', sans-serif; margin: 0; letter-spacing: -0.01em;">
+                AI Interview
+              </h2>
+            </div>
+            <p style="font-size: 14px; color: #a855f7; font-weight: 600; margin: 4px 0 0 0;">
+              Practice with our AI interviewer. Select a company and interview type to begin.
+            </p>
+          </div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:900px">
           <div class="card" style="padding:28px">
@@ -1508,6 +1377,26 @@
 
       <!-- ── PAGE: ALL STARTUPS ── -->
       <div class="app-page fade-in" id="page-all-startups" style="width: 100%; max-width: 100%; border-radius: 24px; background: linear-gradient(145deg, rgba(24, 18, 43, 0.98) 0%, rgba(37, 27, 62, 0.98) 50%, rgba(26, 16, 47, 0.98) 100%); border: 1px solid rgba(168, 85, 247, 0.25); box-shadow: 0 20px 50px rgba(15, 10, 30, 0.4); padding: 32px 32px 48px; position: relative; overflow: hidden; color: #fff; box-sizing: border-box;">
+        
+        <!-- Header Banner matching sidebar icon -->
+        <div style="display: flex; align-items: flex-start; gap: 14px; margin-bottom: 24px; position: relative; z-index: 2;">
+          <div style="width: 5px; height: 38px; border-radius: 4px; background: linear-gradient(180deg, #c084fc 0%, #9333ea 100%); flex-shrink: 0; margin-top: 3px;"></div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #251b3e, #1a102f); border: 1px solid rgba(168, 85, 247, 0.4); display: flex; align-items: center; justify-content: center; color: #c084fc; flex-shrink: 0; box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+              </div>
+              <h2 style="font-size: 28px; font-weight: 900; color: #fff; font-family: 'Rajdhani', sans-serif; margin: 0; letter-spacing: -0.01em;">
+                All Startups
+              </h2>
+            </div>
+            <p style="font-size: 14px; color: #c084fc; font-weight: 600; margin: 4px 0 0 0;">
+              Discover trending student pitches, active ventures, and innovative ideas.
+            </p>
+          </div>
+        </div>
         
         <!-- Background Ambient Glow Orbs -->
         <div style="position: absolute; top: -80px; right: -80px; width: 400px; height: 400px; border-radius: 50%; background: radial-gradient(circle, rgba(168, 85, 247, 0.35) 0%, rgba(0, 0, 0, 0) 70%); pointer-events: none;"></div>
@@ -1733,27 +1622,59 @@
       </div>
 
       <!-- ── PAGE: MENTORS ── -->
-      <div class="app-page fade-in" id="page-mentors">
-        <div style="margin-bottom: 24px;">
-          <h2 style="font-size: 24px; font-weight: 700; color: var(--text); font-family: 'Rajdhani', sans-serif;">Startup Mentors</h2>
-          <p style="font-size: 13px; color: var(--text-2);">Connect with industry leaders, alumni founders, and incubation mentors for guidance.</p>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; max-width: 900px;">
-          <div class="card" style="padding: 20px; border-radius: 16px; background: var(--surface); border: 1px solid var(--border); text-align: center;">
-            <div style="width: 64px; height: 64px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; margin: 0 auto 12px;">AK</div>
-            <h4 style="font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 4px;">Dr. Amit Kulkarni</h4>
-            <p style="font-size: 12px; color: var(--primary); font-weight: 600; margin-bottom: 12px;">Incubation Director & Angel Investor</p>
-            <p style="font-size: 12px; color: var(--text-2); margin-bottom: 16px;">Specializes in CleanTech scaling, IP filing, and seed round valuation.</p>
-            <button class="btn-outline" style="width: 100%; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 600;" onclick="showToast('Mentorship request sent!', 'success')">Request 1-on-1 Session</button>
+      <div class="app-page fade-in" id="page-mentors" style="width: 100%; max-width: 100%; min-height: 100%; background: linear-gradient(145deg, rgba(24, 18, 43, 0.98) 0%, rgba(37, 27, 62, 0.98) 50%, rgba(26, 16, 47, 0.98) 100%); border-radius: 24px; padding: 32px 32px 48px; box-sizing: border-box; position: relative; overflow: hidden; color: #fff;">
+        
+        <!-- Header Banner matching sidebar icon -->
+        <div style="display: flex; align-items: flex-start; gap: 14px; margin-bottom: 24px; position: relative; z-index: 2;">
+          <div style="width: 5px; height: 38px; border-radius: 4px; background: linear-gradient(180deg, #c084fc 0%, #9333ea 100%); flex-shrink: 0; margin-top: 3px;"></div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #251b3e, #1a102f); border: 1px solid rgba(168, 85, 247, 0.4); display: flex; align-items: center; justify-content: center; color: #c084fc; flex-shrink: 0; box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              </div>
+              <h2 style="font-size: 28px; font-weight: 900; color: #fff; font-family: 'Rajdhani', sans-serif; margin: 0; letter-spacing: -0.01em;">
+                Mentors
+              </h2>
+            </div>
+            <p style="font-size: 14px; color: #c084fc; font-weight: 600; margin: 4px 0 0 0;">
+              Connect with industry leaders, alumni founders, and incubation directors.
+            </p>
           </div>
-          <div class="card" style="padding: 20px; border-radius: 16px; background: var(--surface); border: 1px solid var(--border); text-align: center;">
-            <div style="width: 64px; height: 64px; border-radius: 50%; background: rgba(16, 185, 129, 0.15); color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; margin: 0 auto 12px;">RS</div>
-            <h4 style="font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 4px;">Rohan Saxena</h4>
-            <p style="font-size: 12px; color: #10b981; font-weight: 600; margin-bottom: 12px;">SaaS Founder (Alumni '18)</p>
-            <p style="font-size: 12px; color: var(--text-2); margin-bottom: 16px;">Growth marketing, product-market fit, and enterprise B2B sales strategy.</p>
-            <button class="btn-outline" style="width: 100%; padding: 8px; border-radius: 8px; font-size: 12px; font-weight: 600;" onclick="showToast('Mentorship request sent!', 'success')">Request 1-on-1 Session</button>
-          </div>
         </div>
+        
+        <!-- Ambient Glow Orbs -->
+        <div style="position: absolute; top: -100px; right: -100px; width: 450px; height: 450px; background: radial-gradient(circle, rgba(168, 85, 247, 0.22) 0%, rgba(0, 0, 0, 0) 70%); pointer-events: none; z-index: 0;"></div>
+        <div style="position: absolute; bottom: -80px; left: -80px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(236, 72, 153, 0.18) 0%, rgba(0, 0, 0, 0) 70%); pointer-events: none; z-index: 0;"></div>
+
+        <!-- Mentors Header Search & Filter Bar -->
+        <div style="position: relative; z-index: 1; margin-bottom: 24px; display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+          <div style="position: relative; flex: 1; min-width: 260px;">
+            <svg width="18" height="18" fill="none" stroke="rgba(233, 213, 255, 0.6)" stroke-width="2" viewBox="0 0 24 24" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); pointer-events: none;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" id="mentorSearchInput" placeholder="Search mentors by name, specialty, or domain..." oninput="filterMentorsDisplay()" style="width: 100%; padding: 12px 16px 12px 42px; border-radius: 14px; border: 1.5px solid rgba(168, 85, 247, 0.25); background: rgba(30, 22, 53, 0.8); color: #fff; font-family: inherit; font-size: 13px; outline: none; box-shadow: 0 4px 16px rgba(0,0,0,0.2);" />
+          </div>
+          <select id="mentorFieldSelect" onchange="filterMentorsDisplay()" style="padding: 12px 18px; border-radius: 14px; border: 1.5px solid rgba(168, 85, 247, 0.25); background: #1f1638; color: #e9d5ff; font-family: inherit; font-size: 13px; font-weight: 700; outline: none; cursor: pointer;">
+            <option value="all">All Field Domains</option>
+            <option value="agri">🌱 Soil & AgriTech</option>
+            <option value="health">🩺 Healthcare & BioTech</option>
+            <option value="ai">🤖 AI & DeepTech</option>
+            <option value="clean">⚡ CleanTech & Energy</option>
+            <option value="fintech">💰 FinTech & Web3</option>
+            <option value="saas">💻 Enterprise SaaS</option>
+            <option value="robotics">🏭 Hardware & Robotics</option>
+            <option value="edtech">🎓 EdTech & Skilling</option>
+          </select>
+        </div>
+
+        <!-- Dynamic Mentors Sections Container -->
+        <div id="mentorsListContainer" style="position: relative; z-index: 1; display: flex; flex-direction: column; gap: 36px;">
+          <!-- Rendered dynamically by renderMentorsPage() -->
+        </div>
+
       </div>
 
       <!-- ── PAGE: PROFILE ── -->
@@ -2583,6 +2504,109 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+     SCREEN: SKILL GAP RESULTS (AI-POWERED)
+     ============================================================ -->
+  <div id="screen-skill-gap-results" class="screen" style="background: linear-gradient(135deg, #0f0a1c 0%, #17102b 100%); color: #fff; min-height: 100vh;">
+    <div style="padding: 40px 24px; max-width: 1100px; margin: 0 auto;">
+      
+      <!-- Top Header -->
+      <div style="text-align: center; margin-bottom: 40px; display: flex; flex-direction: column; align-items: center;">
+        <div style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px; border-radius: 99px; background: rgba(168, 85, 247, 0.15); border: 1.5px solid rgba(168, 85, 247, 0.35); font-family: 'Rajdhani', sans-serif; font-weight: 800; font-size: 12px; color: #c084fc; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(168, 85, 247, 0.1);">
+          ✨ AI Skill Analysis Report
+        </div>
+        <h1 style="font-size: 36px; font-weight: 900; font-family: 'Rajdhani', sans-serif; margin: 0 0 8px; color: #fff; letter-spacing: -0.01em;">Skill Gap Assessment Complete</h1>
+        <p style="font-size: 14px; color: rgba(233, 213, 255, 0.7); max-width: 600px; line-height: 1.6; margin: 0;">Your responses have been processed by our Multi-Agent AI system. Here is your personalized capability profile and learning path.</p>
+      </div>
+
+      <!-- Main Grid Layout -->
+      <div style="display: grid; grid-template-columns: 1fr; lg:grid-template-columns: 1.2fr 2fr; gap: 24px; margin-bottom: 40px;">
+        
+        <!-- Left Panel: Core Metrics & Readiness -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          
+          <!-- Overall Score Card -->
+          <div style="background: rgba(30, 22, 53, 0.65); border: 1.5px solid rgba(168, 85, 247, 0.25); border-radius: 20px; padding: 30px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 8px 32px rgba(0,0,0,0.25); backdrop-filter: blur(10px);">
+            <h4 style="font-size: 13px; font-weight: 800; color: rgba(233, 213, 255, 0.6); text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 20px; font-family: 'Rajdhani', sans-serif;">Overall Skill Score</h4>
+            
+            <!-- Circular Progress Wheel -->
+            <div style="position: relative; width: 140px; height: 140px; margin-bottom: 20px; filter: drop-shadow(0 0 12px rgba(168, 85, 247, 0.4));">
+              <svg width="140" height="140" viewBox="0 0 140 140" style="transform: rotate(-90deg);">
+                <circle cx="70" cy="70" r="58" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10" />
+                <circle id="sgrFillCircle" cx="70" cy="70" r="58" fill="none" stroke="#a855f7"
+                  stroke-width="10" stroke-dasharray="364.42" stroke-dashoffset="364.42" stroke-linecap="round"
+                  style="transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1)" />
+              </svg>
+              <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <span id="sgrScore" style="font-size: 42px; font-weight: 900; font-family: 'Rajdhani', sans-serif; color: #fff;">0</span>
+                <span style="font-size: 11px; font-weight: 700; color: rgba(233, 213, 255, 0.5); text-transform: uppercase; margin-top: -4px;">/ 100</span>
+              </div>
+            </div>
+
+            <!-- Readiness Badge -->
+            <div style="margin-top: 6px;">
+              <div style="font-size: 10px; font-weight: 700; color: rgba(233, 213, 255, 0.5); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Hiring Readiness</div>
+              <span id="sgrReadinessLevel" class="px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-orange-100/10 text-orange-400 border border-orange-400/30">Analyzing...</span>
+            </div>
+          </div>
+
+          <!-- Strengths & Weaknesses Cards -->
+          <div style="background: rgba(30, 22, 53, 0.65); border: 1.5px solid rgba(168, 85, 247, 0.25); border-radius: 20px; padding: 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.25); backdrop-filter: blur(10px); display: flex; flex-direction: column; gap: 20px;">
+            <div>
+              <h4 style="font-size: 13px; font-weight: 800; color: #c084fc; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 12px; font-family: 'Rajdhani', sans-serif;">Key Strengths</h4>
+              <ul id="sgrStrengths" style="list-style: none; padding: 0; margin: 0;">
+                <!-- Dynamic Strengths -->
+              </ul>
+            </div>
+            <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 16px;">
+              <h4 style="font-size: 13px; font-weight: 800; color: #ef4444; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 12px; font-family: 'Rajdhani', sans-serif;">Skill Gaps / Weaknesses</h4>
+              <ul id="sgrWeaknesses" style="list-style: none; padding: 0; margin: 0;">
+                <!-- Dynamic Weaknesses -->
+              </ul>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right Panel: AI Insights & Roadmap -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          
+          <!-- AI Summary Card -->
+          <div style="background: rgba(30, 22, 53, 0.65); border: 1.5px solid rgba(168, 85, 247, 0.25); border-radius: 20px; padding: 26px; box-shadow: 0 8px 32px rgba(0,0,0,0.25); backdrop-filter: blur(10px);">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 14px;">
+              <span style="font-size: 20px;">🔮</span>
+              <h4 style="font-size: 16px; font-weight: 800; color: #fff; font-family: 'Rajdhani', sans-serif; margin: 0;">AI Analysis Insight</h4>
+            </div>
+            <p id="sgrSummary" style="font-size: 13px; color: rgba(233, 213, 255, 0.85); line-height: 1.6; margin: 0; font-weight: 500;">Your AI profile is being generated...</p>
+          </div>
+
+          <!-- Learning Path Card -->
+          <div style="background: rgba(30, 22, 53, 0.65); border: 1.5px solid rgba(168, 85, 247, 0.25); border-radius: 20px; padding: 26px; box-shadow: 0 8px 32px rgba(0,0,0,0.25); backdrop-filter: blur(10px); flex: 1;">
+            <h4 style="font-size: 13px; font-weight: 800; color: #c084fc; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 16px; font-family: 'Rajdhani', sans-serif;">Recommended Learning Path</h4>
+            <div id="sgrLearningPath" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px;">
+              <!-- Dynamic Suggestions -->
+            </div>
+
+            <h4 style="font-size: 13px; font-weight: 800; color: #c084fc; text-transform: uppercase; letter-spacing: 0.05em; margin: 0 0 12px; font-family: 'Rajdhani', sans-serif;">Suggested Practice Areas</h4>
+            <div id="sgrPracticeAreas" style="display: flex; flex-wrap: wrap; gap: 8px;">
+              <!-- Dynamic tags -->
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- View Dashboard CTA Button -->
+      <div style="text-align: center;">
+        <button class="px-8 py-3 rounded-xl text-white font-bold text-sm uppercase tracking-widest shadow-lg hover:shadow-xl transition-all" style="background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); border: none; cursor: pointer;" onmouseover="this.style.transform='translateY(-1px)';" onmouseout="this.style.transform='translateY(0)';" onclick="navigateTo('dashboard')">
+          View My Dashboard
+        </button>
+      </div>
+
     </div>
   </div>
 

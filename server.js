@@ -26,6 +26,28 @@ app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'login.html'));
 });
 
+// ─── Portal Pages ──────────────────────────────────────────────────────────────
+app.get('/student/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'student', 'index.html'));
+});
+app.get('/student', (req, res) => {
+  res.redirect('/student/');
+});
+
+app.get('/institute/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'institute', 'index.html'));
+});
+app.get('/institute', (req, res) => {
+  res.redirect('/institute/');
+});
+
+app.get('/industry/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'industry', 'index.html'));
+});
+app.get('/industry', (req, res) => {
+  res.redirect('/industry/');
+});
+
 // Redirect root to login
 app.get('/', (req, res) => {
   res.redirect('/login');
@@ -36,32 +58,24 @@ const DEFAULT_DB = {
   students: [
     {
       id: 'GHRCE2024047',
-      name: 'Priya Sharma',
-      email: 'priya.sharma@ghrce.ac.in',
+      name: 'Saurabhi Sharma',
+      email: 'saurabhi.sharma@ghrce.ac.in',
       dept: 'Engineering',
-      branch: 'Computer Science',
-      semester: '6th Semester',
-      cgpa: 8.4,
-      readiness: 72,
-      rank: 47,
-      targetCompany: 'TCS / Infosys',
-      resumeVerified: 'Verified',
-      resumeText: 'Priya Sharma. B.Tech Computer Science student. Skills: Java, Python, SQL, DSA. Projects: E-Commerce site optimization.',
-      coursesCompleted: 8,
-      todayHours: 2.4,
-      mockTestsCompleted: 14,
-      weakSkills: ['Operating Systems', 'Computer Networks', 'Verbal Communication'],
+      branch: 'TY COE',
+      semester: '5th Semester',
+      passingYear: 2028,
+      cgpa: 7.0,
+      readiness: 0,
+      rank: '--',
+      targetCompany: '--',
+      resumeVerified: 'Pending',
+      resumeText: '',
+      coursesCompleted: 0,
+      todayHours: 0,
+      mockTestsCompleted: 0,
+      weakSkills: [],
       appliedJobs: [],
-      interviewHistory: [
-        {
-          company: 'Microsoft',
-          type: 'HR',
-          date: '2026-07-10',
-          score: 80,
-          reportId: 'rep_001',
-          feedback: 'Strong answers, good confidence, needs minor alignment with company cloud strategy.'
-        }
-      ]
+      interviewHistory: []
     },
     {
       id: 'GHRCE2024012',
@@ -215,7 +229,34 @@ const DEFAULT_DB = {
     { id: 'mtg_002', company: 'Deloitte', companyId: 'comp_008', type: 'Campus Visit', date: '2026-07-18', time: '14:00', mode: 'offline', venue: 'Seminar Hall A', description: 'Pre-placement talk for MBA and CSE batch 2026.' },
     { id: 'mtg_003', company: 'Synthetix Cloud', companyId: 'comp_001', type: 'Follow-up', date: '2026-07-25', time: '11:00', mode: 'online', link: 'https://zoom.us/j/123456', description: 'Follow-up on candidate shortlist submission.' },
     { id: 'mtg_004', company: 'Amazon AWS', companyId: 'comp_007', type: 'Recruitment Drive', date: '2026-08-05', time: '09:00', mode: 'offline', venue: 'Main Auditorium', description: 'AWS campus recruitment for SDE and cloud engineer roles.' }
-  ]
+  ],
+  tnpOfficers: [
+    {
+      id: "76a6e1e3-6400-497d-97fe-38e5b9763ef4",
+      name: "Saurabhi sharma",
+      email: "saurabhi.sharma.cse.ghrcemp@raisoni.net",
+      passwordHash: "$2b$10$FtZjz.UOKCmSg5S.t8o7.O2dSHGv7CnoY0JTDJ2GHfpdOZc7Y45QK",
+      college: "Raisoni College",
+      role: "tnp",
+      createdAt: "2026-07-19T08:00:57.552Z"
+    }
+  ],
+  studentAccounts: [
+    {
+      prn: "GHRCE2024047",
+      name: "Saurabhi Sharma",
+      email: "saurabhi.sharma@ghrce.ac.in",
+      dob: "2006-01-01",
+      passingYear: 2028,
+      passwordHash: "$2b$10$MFtogeWWWzPDz8jeOvmtjeYmHqkSLYGGCUPEjMsVxpJctghl7rANy",
+      role: "student",
+      firstLogin: true,
+      importedBy: "system",
+      createdAt: "2026-07-22T08:00:00.000Z",
+      lastLogin: null
+    }
+  ],
+  companyAccounts: []
 };
 
 // Helper: Read DB

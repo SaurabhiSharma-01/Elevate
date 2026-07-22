@@ -759,15 +759,6 @@ ul { list-style: none; }
   color: var(--primary);
   font-weight: 600;
 }
-.nav-item.active::before {
-  content: '';
-  position: absolute;
-  left: 0; top: 50%;
-  transform: translateY(-50%);
-  width: 3px; height: 20px;
-  background: var(--primary);
-  border-radius: 0 3px 3px 0;
-}
 .nav-badge {
   margin-left: auto;
   background: var(--error);
@@ -3703,6 +3694,11 @@ ul { list-style: none; }
 .sidebar.collapsed ~ .sidebar-toggle-btn svg,
 #mainSidebar.collapsed ~ #sidebarEdgeToggle svg {
   transform: rotate(180deg);
+}
+
+#screen-app #mainSidebar.collapsed .nav-section-label,
+#screen-app .sidebar.collapsed .nav-section-label {
+  display: none !important;
 }
 
 /* Sidebar Section Box Progressive Contrasts & Darker Borders */

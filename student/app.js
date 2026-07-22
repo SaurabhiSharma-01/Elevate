@@ -13,14 +13,15 @@ const state = {
   currentPage: 'dashboard',
   selectedDept: 'Engineering',
   student: {
-    name: 'Priya Sharma',
-    initials: 'PS',
+    name: 'Saurabhi Sharma',
+    initials: 'SS',
     id: 'GHRCE2024047',
-    dept: 'CSE',
-    semester: '6th Semester',
-    readiness: 72,
-    rank: 47,
-    targetCompany: 'TCS / Infosys'
+    dept: 'Engineering',
+    branch: 'TY COE',
+    semester: '5th Semester',
+    readiness: 0,
+    rank: '--',
+    targetCompany: '--'
   },
   assessment: {
     currentQ: 0,
@@ -298,17 +299,53 @@ const INTERVIEW_QUESTIONS = {
   }
 };
 
-const ROADMAP_ITEMS = [
-  { week: 'Week 1-2', title: 'Foundation Reset', desc: 'Reassess fundamentals in Arrays, Strings, and basic Math. Complete aptitude basics.', topics: ['Arrays', 'Strings', 'Basic Math', 'Number Systems'], progress: 100, status: 'done' },
-  { week: 'Week 3-4', title: 'DSA Core', desc: 'Master Linked Lists, Stacks, Queues, and Trees. Solve 30 LeetCode easy problems.', topics: ['Linked Lists', 'Stacks', 'Queues', 'Trees'], progress: 70, status: 'current' },
-  { week: 'Week 5-6', title: 'Database & OS', desc: 'Complete DBMS fundamentals (SQL, Normalization) and OS basics (Process Management, Memory).', topics: ['SQL', 'Normalization', 'Process Management', 'Memory Management'], progress: 20, status: 'upcoming' },
-  { week: 'Week 7-8', title: 'Advanced DSA', desc: 'Graph algorithms, Dynamic Programming, and Advanced Trees. Solve 50 medium problems.', topics: ['Graphs', 'DP', 'Heaps', 'Tries'], progress: 0, status: 'upcoming' },
-  { week: 'Week 9-10', title: 'Mock Tests Sprint', desc: 'Take company-specific mock tests daily. Focus on weak areas identified in analytics.', topics: ['TCS Mock', 'Infosys Mock', 'Aptitude Tests', 'Verbal Tests'], progress: 0, status: 'locked' },
-  { week: 'Week 11-12', title: 'Interview Preparation', desc: 'Practice 20+ AI mock interviews. Improve communication, confidence, and STAR method answers.', topics: ['HR Questions', 'Technical Interview', 'STAR Method', 'Communication'], progress: 0, status: 'locked' }
-];
+const SUBJECT_ROADMAPS = {
+  overall: [
+    { week: 'Week 1-2', title: 'Foundation Reset', desc: 'Reassess fundamentals in Arrays, Strings, and basic Math. Complete aptitude basics.', topics: ['Arrays', 'Strings', 'Basic Math', 'Number Systems'], progress: 100, status: 'done' },
+    { week: 'Week 3-4', title: 'DSA Core', desc: 'Master Linked Lists, Stacks, Queues, and Trees. Solve 30 LeetCode easy problems.', topics: ['Linked Lists', 'Stacks', 'Queues', 'Trees'], progress: 70, status: 'current' },
+    { week: 'Week 5-6', title: 'Database & OS', desc: 'Complete DBMS fundamentals (SQL, Normalization) and OS basics (Process Management, Memory).', topics: ['SQL', 'Normalization', 'Process Management', 'Memory Management'], progress: 20, status: 'upcoming' },
+    { week: 'Week 7-8', title: 'Advanced DSA', desc: 'Graph algorithms, Dynamic Programming, and Advanced Trees. Solve 50 medium problems.', topics: ['Graphs', 'DP', 'Heaps', 'Tries'], progress: 0, status: 'upcoming' },
+    { week: 'Week 9-10', title: 'Mock Tests Sprint', desc: 'Take company-specific mock tests daily. Focus on weak areas identified in analytics.', topics: ['TCS Mock', 'Infosys Mock', 'Aptitude Tests', 'Verbal Tests'], progress: 0, status: 'locked' },
+    { week: 'Week 11-12', title: 'Interview Preparation', desc: 'Practice 20+ AI mock interviews. Improve communication, confidence, and STAR method answers.', topics: ['HR Questions', 'Technical Interview', 'STAR Method', 'Communication'], progress: 0, status: 'locked' }
+  ],
+  dsa: [
+    { week: 'Week 1', title: 'Arrays & Strings', desc: 'Master two-pointer techniques, sliding windows, and basic searching/sorting.', topics: ['Two Pointer', 'Sliding Window', 'Binary Search'], progress: 100, status: 'done' },
+    { week: 'Week 2', title: 'Linear Structures', desc: 'Implement Linked Lists, Stacks, Queues, and practice recursion.', topics: ['Linked Lists', 'Stacks', 'Queues', 'Recursion'], progress: 80, status: 'current' },
+    { week: 'Week 3', title: 'Non-Linear Structures', desc: 'Explore Trees, Binary Search Trees, and Heaps with BFS/DFS traversals.', topics: ['Binary Trees', 'BST', 'Heaps', 'BFS/DFS'], progress: 0, status: 'upcoming' },
+    { week: 'Week 4', title: 'Dynamic DP & Graphs', desc: 'Tackle classic DP problems, shortest path graph algorithms, and DFS/BFS graph applications.', topics: ['DP Basics', 'Shortest Path', 'MST', 'Graph Cycles'], progress: 0, status: 'locked' }
+  ],
+  dbms: [
+    { week: 'Week 1', title: 'Relational Model & SQL', desc: 'Understand ER diagrams, keys, schemas, and basic to advanced SQL queries.', topics: ['ER Diagrams', 'Joins', 'Aggregations', 'Subqueries'], progress: 100, status: 'done' },
+    { week: 'Week 2', title: 'Normalization & Transactions', desc: 'Master normal forms (1NF-3NF, BCNF) and ACID properties with concurrency control.', topics: ['Normalization', 'ACID', 'Locks', 'Schedules'], progress: 0, status: 'upcoming' },
+    { week: 'Week 3', title: 'Indexing & Recovery', desc: 'Learn file organization, B-Trees, B+ Trees indexing, and database backup protocols.', topics: ['B+ Trees', 'Hashing', 'Crash Recovery', 'ARIES'], progress: 0, status: 'locked' }
+  ],
+  os: [
+    { week: 'Week 1', title: 'Processes & Threads', desc: 'Learn process states, life cycles, context switching, and CPU scheduling algorithms.', topics: ['Process States', 'SJF/Round-Robin', 'Threads', 'IPC'], progress: 100, status: 'done' },
+    { week: 'Week 2', title: 'Process Sync & Deadlocks', desc: 'Solve classical synchronization problems and learn deadlock handling strategies.', topics: ['Semaphores', 'Mutex', 'Deadlock Detection', 'Bankers Algorithm'], progress: 40, status: 'current' },
+    { week: 'Week 3', title: 'Memory Management', desc: 'Understand paging, segmentation, virtual memory, and page replacement algorithms.', topics: ['Paging', 'Virtual Memory', 'LRU/FIFO Page Replacement'], progress: 0, status: 'upcoming' },
+    { week: 'Week 4', title: 'Storage & I/O Systems', desc: 'Explore disk scheduling, file systems, directories, and free space management.', topics: ['Disk Scheduling', 'Inodes', 'RAID Levels'], progress: 0, status: 'locked' }
+  ],
+  aptitude: [
+    { week: 'Week 1', title: 'Quantitative Aptitude I', desc: 'Basic arithmetic, percentages, profit & loss, ratio & proportion.', topics: ['Percentages', 'Profit/Loss', 'Ratios', 'Averages'], progress: 100, status: 'done' },
+    { week: 'Week 2', title: 'Quantitative Aptitude II', desc: 'Time, speed, distance, work, permutations & combinations, probability.', topics: ['Time & Work', 'Speed & Distance', 'P&C', 'Probability'], progress: 75, status: 'current' },
+    { week: 'Week 3', title: 'Logical Reasoning', desc: 'Series, analogies, coding-decoding, blood relations, and syllogisms.', topics: ['Series', 'Syllogism', 'Blood Relations', 'Puzzles'], progress: 10, status: 'upcoming' },
+    { week: 'Week 4', title: 'Verbal Ability', desc: 'Grammar, reading comprehension, sentence completion, and synonyms.', topics: ['Reading Comprehension', 'Sentence Correction', 'Vocabulary'], progress: 0, status: 'locked' }
+  ],
+  networks: [
+    { week: 'Week 1', title: 'OSI Reference Model', desc: 'Study layer functionalities, network topologies, and physical media.', topics: ['OSI Model', 'TCP/IP Suite', 'Network Topologies'], progress: 100, status: 'done' },
+    { week: 'Week 2', title: 'Routing & IP Addressing', desc: 'Master IPv4/IPv6 addressing, subnetting, CIDR, and routing algorithms.', topics: ['Subnetting', 'CIDR', 'OSPF/BGP Routing'], progress: 0, status: 'upcoming' },
+    { week: 'Week 3', title: 'Transport Layer Protocols', desc: 'Learn TCP connection phases, flow control, congestion control, and UDP sockets.', topics: ['TCP Handshake', 'Sliding Window', 'Congestion Control'], progress: 0, status: 'locked' }
+  ],
+  coding: [
+    { week: 'Week 1', title: 'Syntax & Standard Libraries', desc: 'Fluent coding in C++/Java/Python. Implement basic utility libraries.', topics: ['STL/Collections', 'I/O Optimization', 'Complexity Analysis'], progress: 100, status: 'done' },
+    { week: 'Week 2', title: 'Implementation Sprints', desc: 'Solve brute-force, greedy, and basic backtracking paradigms.', topics: ['Greedy Choice', 'Backtracking', 'Divide & Conquer'], progress: 60, status: 'current' },
+    { week: 'Week 3', title: 'Complexity Optimization', desc: 'Optimize space and time complexity using efficient data representations.', topics: ['Bit Manipulation', 'Dynamic Arrays', 'Precomputations'], progress: 0, status: 'upcoming' },
+    { week: 'Week 4', title: 'Mock Contests', desc: 'Participate in 2-hour virtual contests. Code under strict time pressure.', topics: ['Speed Coding', 'Edge Cases Handling', 'Debugging Sprints'], progress: 0, status: 'locked' }
+  ]
+};
 
 const QA_FEEDBACK = [
-  { q: "Tell me about yourself.", your: "I am Priya Sharma, a B.Tech CSE student at GH Raisoni College...", feedback: "Good structured answer. Try to connect your skills directly to the job role. Mention a quantifiable achievement early.", star: "pass" },
+  { q: "Tell me about yourself.", your: "I am Saurabhi Sharma, a B.Tech CSE student at GH Raisoni College...", feedback: "Good structured answer. Try to connect your skills directly to the job role. Mention a quantifiable achievement early.", star: "pass" },
   { q: "Why do you want to work at Microsoft?", your: "Microsoft is a great company with amazing culture and technology...", feedback: "Too generic. Research Microsoft's specific initiatives (Azure, AI, Bing). Mention 1–2 specific projects that excite you.", star: "partial" },
   { q: "Describe a technical challenge you solved.", your: "In my college project, I optimized a database query that was slow...", feedback: "Excellent STAR structure! The 'reduce 60% load time' metric is very impressive. This is your strongest answer.", star: "pass" },
   { q: "Where do you see yourself in 5 years?", your: "I want to become a senior developer and lead a team...", feedback: "Good but add specificity: what kind of team? What technology? Align your 5-year vision with Microsoft's cloud/AI roadmap.", star: "partial" },
@@ -379,6 +416,7 @@ function navigateTo(page) {
   if (page === 'skill-report') initSkillReport();
   if (page === 'roadmap') initRoadmap();
   if (page === 'all-startups') renderAllStartupsList();
+  if (page === 'mentors') renderMentorsPage();
   if (page === 'learning-hub') initLearningHub();
   if (page === 'company-prep') initCompanyPrep();
   if (page === 'company-papers') initCompanyPapers();
@@ -440,6 +478,20 @@ function handleLogin(e) {
       errText.textContent = 'Invalid Student ID or Password. Try ID: GHRCE2024047 and password: 123';
     }
   }, 1200);
+}
+
+function startSkillGapAssessmentFlow() {
+  state.assessment.currentQ = 0;
+  state.assessment.answers = {};
+  state.assessment.flagged = new Set();
+  showScreen('welcome');
+}
+
+function selectDept(btn) {
+  document.querySelectorAll('.dept-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  state.selectedDept = btn.dataset.dept;
+  state.student.dept = btn.dataset.dept;
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -596,39 +648,119 @@ async function submitAssessment() {
   clearInterval(state.assessment.timerInterval);
   closeModal();
   
-  // Grade the assessment
   const dept = state.student.dept || 'Engineering';
   const questions = ASSESSMENT_QUESTIONS[dept] || ASSESSMENT_QUESTIONS.Engineering;
-  let correct = 0;
   const answers = state.assessment.answers;
-  const weakSections = new Set();
-  
-  questions.forEach((q, idx) => {
-    if (answers[idx] === q.ans) {
-      correct++;
+
+  const formattedAnswers = questions.map((q, idx) => {
+    const selectedIdx = answers[idx];
+    const selectedText = selectedIdx !== undefined ? q.opts[selectedIdx] : 'No Answer';
+    const isCorrect = selectedIdx === q.ans;
+    return {
+      question: q.q,
+      answer: selectedText,
+      isCorrect: isCorrect
+    };
+  });
+
+  showToast('AI is analyzing your skill gap report...', 'info');
+
+  try {
+    const res = await fetch('http://localhost:5001/api/ai/skill-analysis', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        studentId: state.student.id,
+        answers: formattedAnswers,
+        department: dept,
+        semester: state.student.semester || '5th Semester'
+      })
+    });
+
+    if (!res.ok) throw new Error('AI analysis service failed.');
+
+    const data = await res.json();
+    if (data.success && data.report) {
+      const report = data.report;
+      
+      const updatedStudent = await db.updateStudent(state.student.id, {
+        readiness: report.overallSkillScore,
+        weakSkills: report.weaknesses,
+        strengths: report.strengths,
+        skillProfile: report.skillProfile,
+        estimatedReadinessLevel: report.estimatedReadinessLevel,
+        summary: report.summary,
+        improvementSuggestions: report.improvementSuggestions,
+        priorityAreas: report.priorityAreas,
+        technicalSkillScore: report.technicalSkillScore,
+        aptitudeScore: report.aptitudeScore,
+        communicationScore: report.communicationScore,
+        logicalReasoningScore: report.logicalReasoningScore
+      });
+
+      if (updatedStudent) {
+        state.student = updatedStudent;
+      }
+
+      showToast('AI Skill Analysis completed successfully!', 'success');
+      showSkillGapResults(report);
     } else {
-      // Add the section to weak areas if they got it wrong or didn't answer
-      weakSections.add(q.section);
+      throw new Error(data.message || 'Malformed AI report');
     }
-  });
-  
-  // Calculate readiness score: base 40% + (correct / total) * 60%
-  const score = Math.round(40 + (correct / questions.length) * 60);
-  const weakSkills = Array.from(weakSections);
-  
-  // Save to database
-  const updatedStudent = await db.updateStudent(state.student.id, {
-    readiness: score,
-    weakSkills: weakSkills.length > 0 ? weakSkills : ['None']
-  });
-  
-  if (updatedStudent) {
-    state.student = updatedStudent;
+  } catch (err) {
+    console.error('Skill gap analysis error:', err);
+    showToast('Failed to connect to AI Server on port 5001. Using fallback analysis.', 'warning');
+    
+    const correctCount = formattedAnswers.filter(a => a.isCorrect).length;
+    const score = Math.round(40 + (correctCount / questions.length) * 60);
+    const weakSections = Array.from(new Set(questions.filter((q, idx) => answers[idx] !== q.ans).map(q => q.section)));
+    
+    const fallbackReport = {
+      overallSkillScore: score,
+      strengths: dept === 'Engineering' ? ['Programming Fundamentals', 'Database Queries'] : ['Core Concepts'],
+      weaknesses: weakSections.length > 0 ? weakSections : ['Data Structures'],
+      estimatedReadinessLevel: score >= 75 ? 'Almost Ready' : 'Partially Ready',
+      summary: `Completed the ${dept} skill assessment. Solid performance overall, but needs focus in ${weakSections.slice(0, 2).join(' and ')} to improve readiness.`,
+      improvementSuggestions: weakSections.map(s => `Revise ${s} modules and solve practice questions.`),
+      priorityAreas: weakSections.slice(0, 2),
+      technicalSkillScore: Math.round(score * 0.9),
+      aptitudeScore: Math.round(score * 0.85),
+      communicationScore: 70,
+      logicalReasoningScore: 75,
+      skillProfile: {
+        DSA: score >= 75 ? 'Intermediate' : 'Beginner',
+        DBMS: 'Intermediate',
+        OS: 'Beginner',
+        Networks: 'Beginner',
+        Aptitude: 'Intermediate',
+        Communication: 'Intermediate',
+        SystemDesign: 'Beginner'
+      }
+    };
+
+    const updatedStudent = await db.updateStudent(state.student.id, {
+      readiness: fallbackReport.overallSkillScore,
+      weakSkills: fallbackReport.weaknesses,
+      strengths: fallbackReport.strengths,
+      skillProfile: fallbackReport.skillProfile,
+      estimatedReadinessLevel: fallbackReport.estimatedReadinessLevel,
+      summary: fallbackReport.summary,
+      improvementSuggestions: fallbackReport.improvementSuggestions,
+      priorityAreas: fallbackReport.priorityAreas,
+      technicalSkillScore: fallbackReport.technicalSkillScore,
+      aptitudeScore: fallbackReport.aptitudeScore,
+      communicationScore: fallbackReport.communicationScore,
+      logicalReasoningScore: fallbackReport.logicalReasoningScore
+    });
+
+    if (updatedStudent) {
+      state.student = updatedStudent;
+    }
+
+    showSkillGapResults(fallbackReport);
   }
-  
-  state.isFirstLogin = false;
-  showToast(`Assessment submitted! Your Placement Readiness is now ${score}%.`, 'success');
-  setTimeout(() => { enterApp(); }, 1500);
 }
 
 function enterApp() {
@@ -653,17 +785,71 @@ function enterApp() {
   const dashBranch = document.getElementById('dashStudentBranch');
   if (dashBranch) dashBranch.textContent = `${state.student.branch} • ${state.student.semester}`;
   
+  // Sidebar user info
+  const sidebarAvatar = document.getElementById('sidebarAvatar');
+  if (sidebarAvatar) sidebarAvatar.textContent = state.student.initials || 'SS';
+  const sidebarName = document.getElementById('sidebarName');
+  if (sidebarName) sidebarName.textContent = state.student.name;
+  const sidebarDept = document.getElementById('sidebarDept');
+  if (sidebarDept) sidebarDept.textContent = state.student.branch || '--';
+
+  // Profile page details
+  const profAvatar = document.getElementById('profAvatar');
+  if (profAvatar) profAvatar.textContent = state.student.initials || 'SS';
+  const profName = document.getElementById('profStudentName');
+  if (profName) profName.textContent = state.student.name;
+  const profBranch = document.getElementById('profStudentBranch');
+  if (profBranch) profBranch.textContent = `${state.student.branch || '--'} • ${state.student.semester || '--'} • GH Raisoni College`;
+  const profTagCGPA = document.getElementById('profTagCGPA');
+  if (profTagCGPA) profTagCGPA.textContent = `CGPA: ${state.student.cgpa || 7.0}`;
+  const profTagRoll = document.getElementById('profTagRoll');
+  if (profTagRoll) profTagRoll.textContent = `Roll: ${state.student.id}`;
+  const profTagReadiness = document.getElementById('profTagReadiness');
+  if (profTagReadiness) profTagReadiness.textContent = `Readiness: ${state.student.readiness || 0}%`;
+  
+  const profFullName = document.getElementById('profFullName');
+  if (profFullName) profFullName.textContent = state.student.name;
+  const profStudentId = document.getElementById('profStudentId');
+  if (profStudentId) profStudentId.textContent = state.student.id;
+  const profEmail = document.getElementById('profEmail');
+  if (profEmail) profEmail.textContent = state.student.email;
+  const profDept = document.getElementById('profDept');
+  if (profDept) profDept.textContent = state.student.dept || '--';
+  const profSem = document.getElementById('profSem');
+  if (profSem) profSem.textContent = state.student.semester || '--';
+  const profCGPA = document.getElementById('profCGPA');
+  if (profCGPA) profCGPA.textContent = `${state.student.cgpa || 7.0} / 10`;
+  const profStatus = document.getElementById('profStatus');
+  if (profStatus) {
+    profStatus.textContent = state.student.readiness > 0 ? 'In Preparation' : 'Not Available';
+    profStatus.style.color = state.student.readiness > 0 ? 'var(--warning)' : 'var(--text-3)';
+  }
+  const profTarget = document.getElementById('profTarget');
+  if (profTarget) profTarget.textContent = state.student.targetCompany || '--';
+  const profReadiness = document.getElementById('profReadiness');
+  if (profReadiness) profReadiness.textContent = `${state.student.readiness || 0}%`;
+  const profRank = document.getElementById('profRank');
+  if (profRank) profRank.textContent = `#${state.student.rank || '--'} / 420`;
+  const profMockTests = document.getElementById('profMockTests');
+  if (profMockTests) profMockTests.textContent = `${state.student.mockTestsCompleted || 0} Attempted`;
+  
   // Dynamic metrics
   const targetCompany = document.getElementById('dashTargetCompany');
-  if (targetCompany) targetCompany.textContent = state.student.targetCompany || 'TCS / Infosys';
+  if (targetCompany) targetCompany.textContent = state.student.targetCompany || '--';
   const rank = document.getElementById('dashRank');
-  if (rank) rank.textContent = `#${state.student.rank || 47} / 420`;
+  if (rank) rank.textContent = state.student.rank ? `${state.student.rank}` : '--';
   const readinessVal = document.getElementById('dashReadinessVal');
-  if (readinessVal) readinessVal.textContent = state.student.readiness;
+  if (readinessVal) readinessVal.textContent = state.student.readiness || '0';
+  const statusEl = document.getElementById('dashStatus');
+  if (statusEl) statusEl.textContent = state.student.readiness > 0 ? 'In Preparation' : 'Not Available';
   
   // Stats
   const todayHours = document.getElementById('dashTodayHours');
-  if (todayHours) todayHours.innerHTML = `${state.student.todayHours || 2.4}<span class="text-xl text-on-surface-variant font-medium ml-1">h</span>`;
+  if (todayHours) {
+    todayHours.innerHTML = state.student.todayHours 
+      ? `${state.student.todayHours}<span class="text-xl text-on-surface-variant font-medium ml-1">h</span>` 
+      : '--';
+  }
   const coursesCompleted = document.getElementById('dashCoursesCompleted');
   if (coursesCompleted) coursesCompleted.textContent = state.student.coursesCompleted || 0;
   const mockTestsCompleted = document.getElementById('dashMockTestsCompleted');
@@ -671,26 +857,23 @@ function enterApp() {
   
   // Sidebar elements
   const sidebarReadiness = document.getElementById('sidebarReadiness');
-  if (sidebarReadiness) sidebarReadiness.style.width = `${state.student.readiness}%`;
+  if (sidebarReadiness) sidebarReadiness.style.width = `${state.student.readiness || 0}%`;
   const sidebarReadinessVal = document.getElementById('sidebarReadinessVal');
-  if (sidebarReadinessVal) sidebarReadinessVal.textContent = `${state.student.readiness}%`;
+  if (sidebarReadinessVal) sidebarReadinessVal.textContent = `${state.student.readiness || 0}%`;
   const headerReadiness = document.getElementById('headerReadiness');
-  if (headerReadiness) headerReadiness.textContent = `${state.student.readiness}%`;
+  if (headerReadiness) headerReadiness.textContent = `${state.student.readiness || 0}%`;
   
   // Initialize tasks in state if not present
   if (!state.student.tasks) {
-    state.student.tasks = [
-      { id: 1, title: 'Complete Arrays Module', desc: 'DSA • 45 min', priority: 'Done', done: true },
-      { id: 2, title: 'Practice SQL Queries', desc: 'DBMS • 30 min', priority: 'High', done: false },
-      { id: 3, title: 'TCS Mock Test #3', desc: '90 min • 60 questions', priority: 'Medium', done: false },
-      { id: 4, title: 'Review Aptitude Mistakes', desc: '20 questions', priority: 'Low', done: false }
-    ];
+    state.student.tasks = [];
   }
   
   animateReadiness();
   setTimeout(initHeatmap, 300);
   renderDashTasks();
   renderDashWeakSkills();
+  renderDashRecommendedCourses();
+  renderDashAIRecommendations();
 }
 
 function animateReadiness() {
@@ -735,7 +918,7 @@ function renderDashTasks() {
         <span class="px-2 py-1 rounded-md text-[10px] font-bold font-label uppercase tracking-widest shadow-sm ${tagColor}">${t.priority}</span>
       </li>
     `;
-  }).join('') || '<div class="text-xs text-on-surface-variant p-4 text-center">No tasks for today. Add one below!</div>';
+  }).join('') || '<div class="text-xs text-on-surface-variant p-4 text-center">No tasks assigned</div>';
 }
 
 async function toggleDashTask(id) {
@@ -832,7 +1015,70 @@ function renderDashWeakSkills() {
         </div>
       </div>
     `;
-  }).join('') || '<div class="text-xs text-on-surface-variant p-4 text-center">No weak skills identified. Great job!</div>';
+  }).join('') || '<div class="text-xs text-on-surface-variant p-4 text-center">Complete your profile</div>';
+}
+
+function renderDashRecommendedCourses() {
+  const container = document.getElementById('dashRecommendedCourses');
+  if (!container) return;
+  
+  const weakSkills = state.student.weakSkills || [];
+  if (weakSkills.length === 0) {
+    container.innerHTML = `<div class="text-xs text-on-surface-variant p-4 text-center">No courses added yet</div>`;
+    return;
+  }
+
+  const mapSkillToCategory = {
+    'Operating Systems': 'core',
+    'Computer Networks': 'core',
+    'DBMS': 'core',
+    'DSA': 'dsa',
+    'Programming': 'programming',
+    'Quantitative Aptitude': 'aptitude',
+    'Logical Reasoning': 'aptitude',
+    'Verbal Communication': 'communication'
+  };
+
+  const recommended = [];
+  weakSkills.forEach(skill => {
+    const cat = mapSkillToCategory[skill];
+    if (cat) {
+      const course = COURSES.find(c => c.cat === cat && !recommended.some(r => r.id === c.id));
+      if (course) recommended.push(course);
+    }
+  });
+
+  if (recommended.length === 0) {
+    recommended.push(COURSES[0], COURSES[1], COURSES[2]);
+  }
+
+  container.innerHTML = recommended.slice(0, 3).map(c => `
+    <div class="flex items-center p-3 rounded-xl hover:bg-surface-dim transition-colors border border-transparent hover:border-outline-variant">
+      <div class="w-14 h-14 bg-surface-dim border border-outline-variant text-primary flex items-center justify-center mr-4 shrink-0 rounded-xl shadow-sm">
+        <i class="ph ph-${c.cat === 'dsa' ? 'code' : c.cat === 'core' ? 'database' : c.cat === 'programming' ? 'code-block' : 'calculator'} text-2xl font-bold"></i>
+      </div>
+      <div class="flex-1">
+        <h5 class="text-sm font-bold text-on-surface leading-tight font-headline">${c.title}</h5>
+        <p class="text-xs text-on-surface-variant font-label mt-1 font-medium">${c.duration} • ${c.lessons} lessons</p>
+        <div class="w-full bg-surface-variant rounded-full h-1.5 mt-3 shadow-inner">
+          <div class="bg-primary h-1.5 rounded-full" style="width: ${c.progress || 0}%"></div>
+        </div>
+      </div>
+      <div class="ml-4 text-sm font-extrabold text-primary font-headline">${c.progress || 0}%</div>
+    </div>
+  `).join('');
+}
+
+function renderDashAIRecommendations() {
+  const textEl = document.getElementById('dashAIRecommendations');
+  if (!textEl) return;
+
+  if (!state.student.readiness || state.student.readiness === 0) {
+    textEl.textContent = "Complete your Skill Gap Assessment to get personalized AI career recommendations and placement insights.";
+    return;
+  }
+
+  textEl.textContent = state.student.summary || `Based on your skill assessment, focus on your weak areas: ${state.student.weakSkills.join(', ')}. Keep practicing mock tests daily to improve your scores.`;
 }
 
 function initHeatmap() {
@@ -842,6 +1088,22 @@ function initHeatmap() {
   const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const DAY_LABELS = ['','Mon','','Wed','','Fri',''];
   const levels = ['l0','l0','l1','l1','l2','l3','l4'];
+
+  const readiness = state.student.readiness || 0;
+  const hasAssessment = readiness > 0;
+
+  // Dynamically populate stats cards
+  const totalTimeEl = document.getElementById('ghTotalTime');
+  if (totalTimeEl) totalTimeEl.textContent = hasAssessment ? `${Math.round(readiness * 1.6)}h` : '0h';
+  
+  const activeDaysEl = document.getElementById('ghActiveDays');
+  if (activeDaysEl) activeDaysEl.textContent = hasAssessment ? `${Math.round(readiness * 0.4)} / 365` : '1 / 365';
+  
+  const streakEl = document.getElementById('ghCurrentStreak');
+  if (streakEl) streakEl.textContent = hasAssessment ? `${Math.round((readiness % 7) + 2)} Days` : '1 Day';
+  
+  const consistencyEl = document.getElementById('ghConsistency');
+  if (consistencyEl) consistencyEl.textContent = hasAssessment ? `${Math.round(readiness * 0.85)}%` : '0%';
 
   // Generate 1 year of dates ending today
   const today = new Date();
@@ -860,8 +1122,24 @@ function initHeatmap() {
       const cellDate = new Date(d);
       cellDate.setDate(d.getDate() + dow);
       if (cellDate <= today) {
-        const lvl = Math.random() < 0.3 ? 'l0' : levels[Math.floor(Math.random() * levels.length)];
-        const hrs = Math.floor(Math.random() * 5);
+        let lvl = 'l0';
+        let hrs = 0;
+        
+        if (hasAssessment) {
+          // Dynamic distribution based on readiness level: higher readiness = more active squares
+          const activeChance = readiness / 150 + 0.15; // e.g. 72 readiness => 63% active chance
+          if (Math.random() < activeChance) {
+            lvl = levels[Math.floor((Math.random() * (levels.length - 1)) + 1)]; // l1 to l4
+            hrs = Math.floor(Math.random() * 4) + 1;
+          }
+        } else {
+          // If no assessment, only mark today as active representing the portal signup
+          const isToday = cellDate.toDateString() === today.toDateString();
+          if (isToday) {
+            lvl = 'l2';
+            hrs = 1;
+          }
+        }
         week.push({ date: new Date(cellDate), lvl, hrs });
       } else {
         week.push(null);
@@ -915,17 +1193,27 @@ function initHeatmap() {
 
 function initSkillReport() {
   initHeatmap(); // Initialize the GitHub-style heatmap
+  renderSkillReportData(); // Dynamize the Subject Performance, Detailed Breakdown, and AI insights
 
   if (state.charts.radar) { state.charts.radar.destroy(); }
   const ctx = document.getElementById('radarChart');
   if (!ctx) return;
+
+  const technical = state.student.technicalSkillScore || 0;
+  const programming = state.student.technicalSkillScore || 0;
+  const communication = state.student.communicationScore || 0;
+  const logical = state.student.logicalReasoningScore || 0;
+  const problemSolving = state.student.technicalSkillScore || 0;
+  const coreCs = state.student.technicalSkillScore ? Math.round(state.student.technicalSkillScore * 0.9) : 0;
+  const confidence = state.student.communicationScore ? Math.round(state.student.communicationScore * 0.95) : 0;
+
   state.charts.radar = new Chart(ctx, {
     type: 'radar',
     data: {
       labels: ['Technical', 'Programming', 'Communication', 'Logical\nReasoning', 'Problem\nSolving', 'Core CS', 'Confidence'],
       datasets: [{
         label: 'Your Skills',
-        data: [75, 75, 62, 68, 73, 50, 65],
+        data: [technical, programming, communication, logical, problemSolving, coreCs, confidence],
         fill: true,
         backgroundColor: 'rgba(91,45,144,0.15)',
         borderColor: 'rgba(91,45,144,0.8)',
@@ -965,24 +1253,84 @@ function initRoadmap() {
   const container = document.getElementById('roadmapIsoContainer');
   if (!container) return;
 
-  const points = [
-    { x: 150, y: 150, align: 'right' },
-    { x: 400, y: 300, align: 'right' },
-    { x: 650, y: 180, align: 'right' },
-    { x: 900, y: 380, align: 'right' },
-    { x: 1150, y: 220, align: 'left' },
-    { x: 1320, y: 400, align: 'left' }
-  ];
+  const readiness = state.student.readiness || 0;
+  const hasAssessment = readiness > 0;
+  const currentSubject = state.currentRoadmapSubject || 'overall';
+  const roadmapItems = SUBJECT_ROADMAPS[currentSubject] || SUBJECT_ROADMAPS.overall;
 
-  // Extended smooth winding path going through the points
-  const pathD = `M 50,100 S 150,150 150,150 S 250,250 400,300 S 550,150 650,180 S 750,400 900,380 S 1050,200 1150,220 S 1250,450 1320,400 S 1380,420 1450,400`;
+  // Sync Dropdown Select element value
+  const dropdown = document.getElementById('roadmapSubjectFilter');
+  if (dropdown && dropdown.value !== currentSubject) {
+    dropdown.value = currentSubject;
+  }
+
+  // Calculate subject progress score
+  let subjectProgress = readiness;
+  if (hasAssessment) {
+    const tech = state.student.technicalSkillScore || 0;
+    const apt = state.student.aptitudeScore || 0;
+    const weak = state.student.weakSkills || [];
+    if (currentSubject === 'dsa') subjectProgress = tech;
+    else if (currentSubject === 'dbms') subjectProgress = Math.round(tech * 0.95);
+    else if (currentSubject === 'os') subjectProgress = weak.includes('Operating Systems') ? 32 : 72;
+    else if (currentSubject === 'aptitude') subjectProgress = apt;
+    else if (currentSubject === 'networks') subjectProgress = weak.includes('Computer Networks') ? 38 : 75;
+    else if (currentSubject === 'coding') subjectProgress = tech;
+  }
+
+  // Subject Metadata for realistic stats
+  const subjectMeta = {
+    overall: { done: 12, rem: 8, wk: '6 wk' },
+    dsa: { done: 2, rem: 2, wk: '2 wk' },
+    dbms: { done: 1, rem: 2, wk: '2 wk' },
+    os: { done: 2, rem: 2, wk: '2 wk' },
+    aptitude: { done: 3, rem: 1, wk: '1 wk' },
+    networks: { done: 1, rem: 2, wk: '2 wk' },
+    coding: { done: 2, rem: 2, wk: '2 wk' }
+  };
+  const meta = subjectMeta[currentSubject] || subjectMeta.overall;
+
+  // Update Roadmap Stats Tiles
+  const progressVal = document.getElementById('rmProgressVal');
+  if (progressVal) progressVal.textContent = hasAssessment ? `${subjectProgress}%` : '--';
+  const completionVal = document.getElementById('rmCompletionVal');
+  if (completionVal) completionVal.textContent = hasAssessment ? meta.wk : '--';
+  const topicsDoneVal = document.getElementById('rmTopicsDoneVal');
+  if (topicsDoneVal) topicsDoneVal.textContent = hasAssessment ? meta.done : '0';
+  const remainingVal = document.getElementById('rmRemainingVal');
+  if (remainingVal) remainingVal.textContent = hasAssessment ? meta.rem : roadmapItems.length;
+  const rankVal = document.getElementById('rmRankVal');
+  if (rankVal) rankVal.textContent = hasAssessment && state.student.rank ? `${state.student.rank}` : '--';
+
+  // Generate dynamic coordinate points & smooth path
+  const points = [];
+  let pathD = 'M 50,100';
+
+  roadmapItems.forEach((item, i) => {
+    const x = 150 + i * 280;
+    const y = i % 2 === 0 ? 150 : 320;
+    const align = i % 2 === 0 ? 'right' : 'left';
+    points.push({ x, y, align });
+
+    if (i === 0) {
+      pathD += ` S ${x},${y} ${x},${y}`;
+    } else {
+      pathD += ` S ${x - 140},${y + (i % 2 === 0 ? 80 : -80)} ${x},${y}`;
+    }
+  });
+
+  // Extend path slightly at the end
+  const lastPt = points[points.length - 1] || { x: 150, y: 150 };
+  pathD += ` S ${lastPt.x + 80},${lastPt.y + 20} ${lastPt.x + 150},${lastPt.y}`;
+
+  const viewBoxWidth = lastPt.x + 220;
 
   let nodesHtml = '';
-  ROADMAP_ITEMS.forEach((item, i) => {
-    const pt = points[i] || {x:0, y:0, align:'right'};
-    const isLocked = item.status === 'locked';
-    const isDone = item.status === 'done';
-    
+  roadmapItems.forEach((item, i) => {
+    const pt = points[i] || { x: 0, y: 0, align: 'right' };
+    const isLocked = !hasAssessment || item.status === 'locked';
+    const isDone = hasAssessment && item.status === 'done';
+
     let pinColor = '#7c3aed'; // Purple
     if (isDone) pinColor = '#16a34a'; // Green
     if (isLocked) pinColor = '#94a3b8'; // Gray
@@ -1005,8 +1353,8 @@ function initRoadmap() {
           <svg width="32" height="42" viewBox="0 0 24 30" fill="none">
             <path d="M12 0C5.373 0 0 5.373 0 12c0 8 12 18 12 18s12-10 12-18c0-6.627-5.373-12-12-12z" fill="${pinColor}"/>
             <circle cx="12" cy="12" r="5" fill="#fff"/>
-            ${isDone ? '<path d="M9 12l2 2 4-4" stroke="'+pinColor+'" stroke-width="2" stroke-linecap="round"/>' : ''}
-            ${isLocked ? '<rect x="9" y="10" width="6" height="4" rx="1" fill="'+pinColor+'"/><path d="M10 10V8a2 2 0 014 0v2" stroke="'+pinColor+'" stroke-width="1.5"/>' : ''}
+            ${isDone ? '<path d="M9 12l2 2 4-4" stroke="' + pinColor + '" stroke-width="2" stroke-linecap="round"/>' : ''}
+            ${isLocked ? '<rect x="9" y="10" width="6" height="4" rx="1" fill="' + pinColor + '"/><path d="M10 10V8a2 2 0 014 0v2" stroke="' + pinColor + '" stroke-width="1.5"/>' : ''}
           </svg>
         </div>
         
@@ -1028,7 +1376,7 @@ function initRoadmap() {
   });
 
   container.innerHTML = `
-    <svg class="rm-iso-svg" viewBox="0 0 1500 500" preserveAspectRatio="xMidYMid meet">
+    <svg class="rm-iso-svg" viewBox="0 0 ${viewBoxWidth} 500" preserveAspectRatio="xMidYMid meet">
       <!-- 3D Path Shadow/Extrusion -->
       <path d="${pathD}" fill="none" stroke="#4c1d95" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" transform="translate(0, 15)"/>
       <!-- Main Path -->
@@ -1042,6 +1390,11 @@ function initRoadmap() {
 
   // Initialize the achievements grid below the roadmap
   initAchievements();
+}
+
+function changeRoadmapSubject(subjectVal) {
+  state.currentRoadmapSubject = subjectVal;
+  initRoadmap();
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -1062,7 +1415,18 @@ function initAchievements() {
   const container = document.getElementById('achievementsGrid');
   if (!container) return;
 
-  container.innerHTML = BADGES.map(badge => `
+  const readiness = state.student.readiness || 0;
+  const hasAssessment = readiness > 0;
+
+  const dynamicBadges = BADGES.map(badge => {
+    let locked = badge.locked;
+    if (badge.id === 2 || badge.id === 3 || badge.id === 4) {
+      locked = !hasAssessment;
+    }
+    return { ...badge, locked };
+  });
+
+  container.innerHTML = dynamicBadges.map(badge => `
     <div class="achv-card ${badge.locked ? 'locked' : ''}">
       <div class="achv-img-wrap">
         <div class="achv-img-inner">${badge.icon}</div>
@@ -1074,6 +1438,170 @@ function initAchievements() {
       </div>
     </div>
   `).join('');
+}
+
+function renderSkillReportData() {
+  const subjectGrid = document.getElementById('srSubjectGrid');
+  const breakdownGrid = document.getElementById('srBreakdownGrid');
+  const insightsRow = document.getElementById('srInsightsRow');
+
+  const readiness = state.student.readiness || 0;
+  const hasAssessment = readiness > 0;
+
+  // 1. Subject Performance
+  if (subjectGrid) {
+    const dsa = hasAssessment ? (state.student.technicalSkillScore || 0) : 0;
+    const dbms = hasAssessment ? Math.round((state.student.technicalSkillScore || 0) * 0.95) : 0;
+    const os = hasAssessment ? (state.student.weakSkills.includes('Operating Systems') ? 32 : 72) : 0;
+    const aptitude = hasAssessment ? (state.student.aptitudeScore || 0) : 0;
+    const networks = hasAssessment ? (state.student.weakSkills.includes('Computer Networks') ? 38 : 75) : 0;
+    const coding = hasAssessment ? (state.student.technicalSkillScore || 0) : 0;
+
+    const dsaOffset = 201.06 - (dsa / 100) * 201.06;
+    const dbmsOffset = 201.06 - (dbms / 100) * 201.06;
+    const osOffset = 201.06 - (os / 100) * 201.06;
+    const aptitudeOffset = 201.06 - (aptitude / 100) * 201.06;
+    const networksOffset = 201.06 - (networks / 100) * 201.06;
+    const codingOffset = 201.06 - (coding / 100) * 201.06;
+
+    subjectGrid.innerHTML = `
+      <div class="score-circle-item">
+        <div class="circular-chart">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="7" />
+            <circle cx="40" cy="40" r="32" fill="none" stroke="var(--primary)" stroke-width="7" stroke-dasharray="201.06" stroke-dashoffset="${dsaOffset}" stroke-linecap="round" />
+          </svg>
+          <div class="cc-num">${hasAssessment ? dsa + '%' : '--'}</div>
+        </div>
+        <div class="sci-label">DSA</div>
+      </div>
+      <div class="score-circle-item">
+        <div class="circular-chart">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="7" />
+            <circle cx="40" cy="40" r="32" fill="none" stroke="var(--success)" stroke-width="7" stroke-dasharray="201.06" stroke-dashoffset="${dbmsOffset}" stroke-linecap="round" />
+          </svg>
+          <div class="cc-num">${hasAssessment ? dbms + '%' : '--'}</div>
+        </div>
+        <div class="sci-label">DBMS</div>
+      </div>
+      <div class="score-circle-item">
+        <div class="circular-chart">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="7" />
+            <circle cx="40" cy="40" r="32" fill="none" stroke="${os < 40 ? 'var(--error)' : 'var(--primary)'}" stroke-width="7" stroke-dasharray="201.06" stroke-dashoffset="${osOffset}" stroke-linecap="round" />
+          </svg>
+          <div class="cc-num">${hasAssessment ? os + '%' : '--'}</div>
+        </div>
+        <div class="sci-label">OS</div>
+      </div>
+      <div class="score-circle-item">
+        <div class="circular-chart">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="7" />
+            <circle cx="40" cy="40" r="32" fill="none" stroke="var(--warning)" stroke-width="7" stroke-dasharray="201.06" stroke-dashoffset="${aptitudeOffset}" stroke-linecap="round" />
+          </svg>
+          <div class="cc-num">${hasAssessment ? aptitude + '%' : '--'}</div>
+        </div>
+        <div class="sci-label">Aptitude</div>
+      </div>
+      <div class="score-circle-item">
+        <div class="circular-chart">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="7" />
+            <circle cx="40" cy="40" r="32" fill="none" stroke="${networks < 40 ? 'var(--error)' : 'var(--success)'}" stroke-width="7" stroke-dasharray="201.06" stroke-dashoffset="${networksOffset}" stroke-linecap="round" />
+          </svg>
+          <div class="cc-num">${hasAssessment ? networks + '%' : '--'}</div>
+        </div>
+        <div class="sci-label">Networks</div>
+      </div>
+      <div class="score-circle-item">
+        <div class="circular-chart">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="var(--border)" stroke-width="7" />
+            <circle cx="40" cy="40" r="32" fill="none" stroke="var(--secondary)" stroke-width="7" stroke-dasharray="201.06" stroke-dashoffset="${codingOffset}" stroke-linecap="round" />
+          </svg>
+          <div class="cc-num">${hasAssessment ? coding + '%' : '--'}</div>
+        </div>
+        <div class="sci-label">Coding</div>
+      </div>
+    `;
+  }
+
+  // 2. Detailed Breakdown
+  if (breakdownGrid) {
+    const programming = hasAssessment ? (state.student.technicalSkillScore || 0) : 0;
+    const dsa = hasAssessment ? (state.student.technicalSkillScore || 0) : 0;
+    const aptitude = hasAssessment ? (state.student.aptitudeScore || 0) : 0;
+    const comms = hasAssessment ? (state.student.communicationScore || 0) : 0;
+    const logical = hasAssessment ? (state.student.logicalReasoningScore || 0) : 0;
+    const problemSolving = hasAssessment ? (state.student.readiness || 0) : 0;
+    const os = hasAssessment ? (state.student.weakSkills.includes('Operating Systems') ? 32 : 72) : 0;
+    const networks = hasAssessment ? (state.student.weakSkills.includes('Computer Networks') ? 38 : 75) : 0;
+
+    const items = [
+      { name: 'Technical Programming', pct: programming, grad: 'linear-gradient(90deg,var(--primary),var(--secondary))' },
+      { name: 'Data Structures', pct: dsa, grad: 'linear-gradient(90deg,var(--primary),var(--secondary))' },
+      { name: 'Quantitative Aptitude', pct: aptitude, grad: 'linear-gradient(90deg,var(--warning),#fbbf24)' },
+      { name: 'Communication Skills', pct: comms, grad: 'linear-gradient(90deg,var(--info),#60a5fa)' },
+      { name: 'Logical Reasoning', pct: logical, grad: 'linear-gradient(90deg,var(--success),#4ade80)' },
+      { name: 'Problem Solving', pct: problemSolving, grad: 'linear-gradient(90deg,var(--primary),var(--secondary))' },
+      { name: 'Operating Systems', pct: os, grad: os < 40 ? 'linear-gradient(90deg,var(--error),#ff8080)' : 'linear-gradient(90deg,var(--primary),var(--secondary))' },
+      { name: 'Computer Networks', pct: networks, grad: networks < 40 ? 'linear-gradient(90deg,var(--error),#ff8080)' : 'linear-gradient(90deg,var(--success),#4ade80)' }
+    ];
+
+    breakdownGrid.innerHTML = items.map(item => `
+      <div class="sp-item">
+        <div class="sp-header"><span class="sp-name">${item.name}</span><span class="sp-pct">${hasAssessment ? item.pct + '%' : '--'}</span></div>
+        <div class="sp-bar"><div class="sp-fill" style="width:${hasAssessment ? item.pct : 0}%;background:${item.grad}"></div></div>
+      </div>
+    `).join('');
+  }
+
+  // 3. AI Insights Row
+  if (insightsRow) {
+    if (!hasAssessment) {
+      insightsRow.innerHTML = `
+        <div class="sr-insight-card">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
+          <p><strong>Strength:</strong> Complete your Skill Gap Assessment to identify your key strengths.</p>
+        </div>
+        <div class="sr-insight-card">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+          <p><strong>Gap:</strong> Complete your Skill Gap Assessment to identify critical weak areas.</p>
+        </div>
+        <div class="sr-insight-card">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
+          <p><strong>Action:</strong> Complete your Skill Gap Assessment to generate your personalized action plan.</p>
+        </div>
+      `;
+    } else {
+      const strengthsText = state.student.strengths && state.student.strengths.length > 0
+        ? `Your top strengths are ${state.student.strengths.join(' and ')}. Keep up the excellent work in these domains!`
+        : `Solid programming fundamentals and code design capabilities.`;
+      
+      const gapsText = state.student.weakSkills && state.student.weakSkills.length > 0
+        ? `Critical weak areas identified: ${state.student.weakSkills.join(', ')}. Focus on learning paths and recommended courses to bridge these gaps.`
+        : `No critical skill gaps identified. Keep practicing!`;
+
+      const actionText = state.student.summary || `AI Action Plan generated. Review your recommended courses and practice company-specific mock tests regularly.`;
+
+      insightsRow.innerHTML = `
+        <div class="sr-insight-card">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
+          <p><strong>Strength:</strong> ${strengthsText}</p>
+        </div>
+        <div class="sr-insight-card">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" /></svg>
+          <p><strong>Gap:</strong> ${gapsText}</p>
+        </div>
+        <div class="sr-insight-card">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" /></svg>
+          <p><strong>Action:</strong> ${actionText}</p>
+        </div>
+      `;
+    }
+  }
 }
 
 function getCourseVideos(courseId) {
@@ -2513,12 +3041,58 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggle = document.getElementById('darkThemeToggle');
     if (toggle) toggle.checked = true;
   }
-  const loginScreen = document.getElementById('screen-login');
-  if (loginScreen) loginScreen.style.display = 'flex';
-  ['welcome','assessment','app','test','interview','results','interview-report'].forEach(id => {
+  const token = sessionStorage.getItem('elevate_token');
+  const role = sessionStorage.getItem('elevate_role');
+  const userStr = sessionStorage.getItem('elevate_user');
+
+  if (!token || role !== 'student' || !userStr) {
+    window.location.href = '/login';
+    return;
+  }
+
+  // Set screens
+  ['welcome','assessment','app','test','interview','results','interview-report','skill-gap-results'].forEach(id => {
     const el = document.getElementById(`screen-${id}`);
     if (el) el.style.display = 'none';
   });
+
+  const parsedUser = JSON.parse(userStr);
+  const studentId = parsedUser.prn || parsedUser.id;
+
+  db.getStudentById(studentId).then(profile => {
+    if (profile) {
+      state.student = profile;
+    } else {
+      state.student = {
+        id: studentId,
+        name: parsedUser.name || 'Saurabhi Sharma',
+        email: parsedUser.email || 'saurabhi.sharma@ghrce.ac.in',
+        dept: parsedUser.dept || 'Engineering',
+        branch: parsedUser.branch || 'TY COE',
+        semester: parsedUser.semester || '5th Semester',
+        cgpa: parsedUser.cgpa || 7.0,
+        readiness: parsedUser.readiness || 0,
+        rank: parsedUser.rank || '--',
+        targetCompany: parsedUser.targetCompany || '--',
+        resumeVerified: 'Pending',
+        resumeText: '',
+        coursesCompleted: 0,
+        todayHours: 0,
+        mockTestsCompleted: 0,
+        weakSkills: [],
+        appliedJobs: [],
+        interviewHistory: []
+      };
+      if (db.localCache && db.localCache.students) {
+        db.localCache.students.push(state.student);
+        db.save();
+      }
+    }
+
+    setAppRole('student');
+    enterApp();
+  });
+
   const hour = new Date().getHours();
   const dashGreet = document.getElementById('dashGreeting');
   if (dashGreet) dashGreet.textContent = hour < 12 ? 'Good morning,' : hour < 17 ? 'Good afternoon,' : 'Good evening,';
@@ -3087,4 +3661,604 @@ function handleStartupPitchSubmit(event) {
   showToast('🚀 Startup Pitch Submitted Successfully!', 'success');
   renderAllStartupsList();
   navigateTo('all-startups');
+}
+
+/* ============================================================
+   STARTUP MENTORS NETWORK MODULE
+   ============================================================ */
+
+const mentorsData = {
+  heads: [
+    {
+      id: 'head-1',
+      name: 'Dr. Amit Kulkarni',
+      title: 'Incubation Director & Chief Mentor',
+      dept: 'Centre for Innovation & Entrepreneurship',
+      avatar: 'AK',
+      bio: 'Over 18 years in Tech Transfer, Seed Investment, CleanTech Scaling, and IP Commercialization. Has mentored 45+ funded ventures.',
+      experience: '18+ Years',
+      startupsMentored: '45+',
+      email: 'amit.kulkarni@elevate.edu'
+    },
+    {
+      id: 'head-2',
+      name: 'Prof. Sunita Deshmukh',
+      title: 'Head of T&P & Venture Advisory Board',
+      dept: 'Department of Industry Partnerships',
+      avatar: 'SD',
+      bio: 'Pioneer in University-Industry Alliances, VC Syndicates, and Institutional Angel Fund Allocation for Student Startups.',
+      experience: '15+ Years',
+      startupsMentored: '38+',
+      email: 'sunita.deshmukh@elevate.edu'
+    },
+    {
+      id: 'head-3',
+      name: 'Dr. Vikramaditya Rao',
+      title: 'Executive Chairman - DeepTech Incubator',
+      dept: 'Advanced Robotics & AI Research Lab',
+      avatar: 'VR',
+      bio: 'Former VP of R&D at Texas Instruments. Serial tech investor and advisor for Hardware, Semiconductors, and Defense-Tech.',
+      experience: '22+ Years',
+      startupsMentored: '60+',
+      email: 'vikram.rao@elevate.edu'
+    }
+  ],
+  categories: [
+    {
+      fieldId: 'agri',
+      fieldTitle: '🌱 Soil & Agriculture Tech',
+      fieldSub: 'Smart farming, automated irrigation, bio-fertilizers & precision agri-sensors',
+      cardBg: 'rgba(16, 185, 129, 0.08)',
+      cardBorder: 'rgba(16, 185, 129, 0.3)',
+      pillBg: 'rgba(16, 185, 129, 0.2)',
+      pillColor: '#34d399',
+      mentors: [
+        {
+          id: 'm-agri-1',
+          name: 'Rajesh Varma',
+          title: 'Co-Founder & CEO, AgroSense',
+          avatar: 'RV',
+          bio: 'Spearheaded IoT soil-testing probes serving 50k+ farmers across Western India.',
+          tags: ['Agri-IoT', 'Soil Health', 'Go-To-Market'],
+          rating: '4.9 ⭐',
+          sessions: '140+'
+        },
+        {
+          id: 'm-agri-2',
+          name: 'Dr. Kavita Patil',
+          title: 'Principal Scientist, BioAgritech Labs',
+          avatar: 'KP',
+          bio: 'Expert in biological pest management, organic bio-fertilizer patents, and NABARD grants.',
+          tags: ['Biotech', 'IP & Patents', 'Grant Funding'],
+          rating: '4.8 ⭐',
+          sessions: '95+'
+        }
+      ]
+    },
+    {
+      fieldId: 'health',
+      fieldTitle: '🩺 Healthcare & BioTech',
+      fieldSub: 'Point-of-care diagnostics, AI radiology, med-devices & Telehealth',
+      cardBg: 'rgba(239, 68, 68, 0.08)',
+      cardBorder: 'rgba(239, 68, 68, 0.3)',
+      pillBg: 'rgba(239, 68, 68, 0.2)',
+      pillColor: '#f87171',
+      mentors: [
+        {
+          id: 'm-health-1',
+          name: 'Dr. Sameer Joshi',
+          title: 'Founder, MedPulse Technologies',
+          avatar: 'SJ',
+          bio: 'FDA & CDSCO regulatory strategist. Built low-cost ECG diagnostics for rural clinics.',
+          tags: ['MedTech Regulations', 'CDSCO Approval', 'Prototyping'],
+          rating: '5.0 ⭐',
+          sessions: '180+'
+        },
+        {
+          id: 'm-health-2',
+          name: 'Ananya Nair',
+          title: 'VP Genomics, CureGen AI',
+          avatar: 'AN',
+          bio: 'Specialist in deep learning applied to genomic sequence analysis and drug discovery.',
+          tags: ['Bioinformatics', 'Genomics', 'AI in Health'],
+          rating: '4.9 ⭐',
+          sessions: '110+'
+        }
+      ]
+    },
+    {
+      fieldId: 'ai',
+      fieldTitle: '🤖 AI & DeepTech',
+      fieldSub: 'Generative AI, Large Language Models, Computer Vision & Edge AI Computing',
+      cardBg: 'rgba(99, 102, 241, 0.08)',
+      cardBorder: 'rgba(99, 102, 241, 0.3)',
+      pillBg: 'rgba(99, 102, 241, 0.2)',
+      pillColor: '#818cf8',
+      mentors: [
+        {
+          id: 'm-ai-1',
+          name: 'Siddharth Mehta',
+          title: 'AI Research Director, NeuralX',
+          avatar: 'SM',
+          bio: 'Former Google AI Scientist. Scaled multimodal LLMs to 10M+ daily API calls.',
+          tags: ['LLM Fine-Tuning', 'ML Ops', 'Cloud Compute'],
+          rating: '4.9 ⭐',
+          sessions: '210+'
+        },
+        {
+          id: 'm-ai-2',
+          name: 'Neha Kulkarni',
+          title: 'Lead Architect, VisionAI Systems',
+          avatar: 'NK',
+          bio: 'Specializes in real-time object tracking for autonomous vehicles & drone surveillance.',
+          tags: ['Computer Vision', 'Edge AI', 'TensorRT'],
+          rating: '4.8 ⭐',
+          sessions: '125+'
+        }
+      ]
+    },
+    {
+      fieldId: 'clean',
+      fieldTitle: '⚡ CleanTech & Energy',
+      fieldSub: 'Renewable microgrids, EV battery management, carbon capture & green hydrogen',
+      cardBg: 'rgba(52, 211, 153, 0.08)',
+      cardBorder: 'rgba(52, 211, 153, 0.3)',
+      pillBg: 'rgba(52, 211, 153, 0.2)',
+      pillColor: '#34d399',
+      mentors: [
+        {
+          id: 'm-clean-1',
+          name: 'Vikram Solanki',
+          title: 'VP Systems, SolarGrid Energy',
+          avatar: 'VS',
+          bio: 'Engineered rooftop micro-inverters deployed across 400+ industrial plants.',
+          tags: ['Microgrids', 'Solar PV', 'Energy Storage'],
+          rating: '4.9 ⭐',
+          sessions: '160+'
+        },
+        {
+          id: 'm-clean-2',
+          name: 'Pooja Iyer',
+          title: 'Co-Founder, VoltCharge EV',
+          avatar: 'PI',
+          bio: 'EV Charging infrastructure architect. Raised $4.5M in Series-A clean energy funding.',
+          tags: ['EV Chargers', 'Series-A Fundraising', 'Hardware'],
+          rating: '4.7 ⭐',
+          sessions: '90+'
+        }
+      ]
+    },
+    {
+      fieldId: 'fintech',
+      fieldTitle: '💰 FinTech & Web3',
+      fieldSub: 'UPI Payment stacks, micro-lending, credit risk scoring & decentralized finance',
+      cardBg: 'rgba(245, 158, 11, 0.08)',
+      cardBorder: 'rgba(245, 158, 11, 0.3)',
+      pillBg: 'rgba(245, 158, 11, 0.2)',
+      pillColor: '#fbbf24',
+      mentors: [
+        {
+          id: 'm-fin-1',
+          name: 'Aman Khurana',
+          title: 'Chief Product Officer, PayPulse',
+          avatar: 'AK',
+          bio: 'Architected high-throughput payment gateways processing $20M+ monthly transactions.',
+          tags: ['Payment Gateways', 'RBI Compliance', 'B2B Payments'],
+          rating: '5.0 ⭐',
+          sessions: '230+'
+        },
+        {
+          id: 'm-fin-2',
+          name: 'Ritu Shah',
+          title: 'Founder, BlockSecure Labs',
+          avatar: 'RS',
+          bio: 'Smart contract security auditor & Web3 ecosystem builder. Advisor to 12 DeFi startups.',
+          tags: ['Smart Contracts', 'DeFi Security', 'Tokenomics'],
+          rating: '4.8 ⭐',
+          sessions: '135+'
+        }
+      ]
+    },
+    {
+      fieldId: 'saas',
+      fieldTitle: '💻 Enterprise SaaS & Software',
+      fieldSub: 'Product-led growth, multi-tenant cloud architecture & enterprise B2B sales',
+      cardBg: 'rgba(6, 182, 212, 0.08)',
+      cardBorder: 'rgba(6, 182, 212, 0.3)',
+      pillBg: 'rgba(6, 182, 212, 0.2)',
+      pillColor: '#22d3ee',
+      mentors: [
+        {
+          id: 'm-saas-1',
+          name: 'Rohan Saxena',
+          title: 'SaaS Founder (Elevate Alumni \'18)',
+          avatar: 'RS',
+          bio: 'Grew B2B SaaS ARR from $0 to $1.2M in 24 months. Passionate about GTM & PLG.',
+          tags: ['PLG Motion', 'B2B Sales', 'US Expansion'],
+          rating: '4.9 ⭐',
+          sessions: '175+'
+        },
+        {
+          id: 'm-saas-2',
+          name: 'Meera Chawla',
+          title: 'VP Product Growth, CloudScale',
+          avatar: 'MC',
+          bio: 'Specialist in customer retention, churn reduction metrics, and SaaS pricing models.',
+          tags: ['Pricing Models', 'Churn Reduction', 'Funnel Optimization'],
+          rating: '4.9 ⭐',
+          sessions: '150+'
+        }
+      ]
+    },
+    {
+      fieldId: 'robotics',
+      fieldTitle: '🏭 Hardware & Robotics',
+      fieldSub: 'Autonomous AGVs, drone delivery payloads, PCB design & industrial automation',
+      cardBg: 'rgba(168, 85, 247, 0.08)',
+      cardBorder: 'rgba(168, 85, 247, 0.3)',
+      pillBg: 'rgba(168, 85, 247, 0.2)',
+      pillColor: '#c084fc',
+      mentors: [
+        {
+          id: 'm-robo-1',
+          name: 'Karan Malhotra',
+          title: 'CTO, RoboServe Automation',
+          avatar: 'KM',
+          bio: 'Built warehouse autonomous mobile robots (AMRs) used by top logistics firms.',
+          tags: ['ROS / ROS2', 'PCB Layout', 'Kinematics'],
+          rating: '4.9 ⭐',
+          sessions: '165+'
+        },
+        {
+          id: 'm-robo-2',
+          name: 'Dr. Swati Sen',
+          title: 'Head of Hardware, AeroTech Labs',
+          avatar: 'SS',
+          bio: 'DGCA-certified drone hardware architect specializing in heavy-payload quadcopters.',
+          tags: ['DGCA Certification', 'Flight Controllers', 'Telemetry'],
+          rating: '4.8 ⭐',
+          sessions: '105+'
+        }
+      ]
+    },
+    {
+      fieldId: 'edtech',
+      fieldTitle: '🎓 EdTech & Skilling',
+      fieldSub: 'Gamified learning, AI tutoring, university partnerships & workforce upskilling',
+      cardBg: 'rgba(249, 115, 22, 0.08)',
+      cardBorder: 'rgba(249, 115, 22, 0.3)',
+      pillBg: 'rgba(249, 115, 22, 0.2)',
+      pillColor: '#fb923c',
+      mentors: [
+        {
+          id: 'm-ed-1',
+          name: 'Alok Tiwari',
+          title: 'Founder, SkillRise Academy',
+          avatar: 'AT',
+          bio: 'Scaled gamified coding platforms to 250k+ active student learners across APAC.',
+          tags: ['Gamified UI', 'B2C Marketing', 'LMS Tech'],
+          rating: '4.9 ⭐',
+          sessions: '190+'
+        },
+        {
+          id: 'm-ed-2',
+          name: 'Divya Pillai',
+          title: 'Chief Placement Officer & Coach',
+          avatar: 'DP',
+          bio: 'Helped 2,000+ engineers land tier-1 software roles; expert in mock interview prep.',
+          tags: ['Interview Prep', 'Resume Roast', 'Salary Negotiation'],
+          rating: '5.0 ⭐',
+          sessions: '310+'
+        }
+      ]
+    }
+  ]
+};
+
+function renderMentorsPage() {
+  const container = document.getElementById('mentorsListContainer');
+  if (!container) return;
+
+  const searchQuery = (document.getElementById('mentorSearchInput')?.value || '').toLowerCase().trim();
+  const selectedField = document.getElementById('mentorFieldSelect')?.value || 'all';
+
+  let html = '';
+
+  // 1. SECTION 1: DEPARTMENT & INCUBATION DIRECTORS (White cards, reduced padding)
+  const filteredHeads = mentorsData.heads.filter(h => {
+    if (!searchQuery) return true;
+    return h.name.toLowerCase().includes(searchQuery) ||
+           h.title.toLowerCase().includes(searchQuery) ||
+           h.dept.toLowerCase().includes(searchQuery);
+  });
+
+  if (selectedField === 'all' && filteredHeads.length > 0) {
+    html += `
+      <div style="background: rgba(30, 22, 53, 0.5); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 18px; padding: 18px 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.25);">
+        <div style="margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="font-size: 20px; font-weight: 800; color: #fff; font-family: 'Rajdhani', sans-serif; margin: 0;">Department & Incubation Directors</h3>
+          <span style="font-size: 11px; color: rgba(233, 213, 255, 0.6); font-weight: 600;">Incubation Leadership</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px;">
+          ${filteredHeads.map(h => `
+            <div style="background: #ffffff; border: 1.5px solid #e5e7eb; border-radius: 16px; padding: 18px; color: #111827; text-align: center; display: flex; flex-direction: column; justify-content: space-between; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08); transition: transform 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+              <div>
+                <!-- Curved Square Avatar -->
+                <div style="width: 52px; height: 52px; border-radius: 14px; background: linear-gradient(135deg, #7c3aed, #c084fc); color: #fff; font-weight: 800; font-size: 18px; font-family: 'Rajdhani', sans-serif; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);">${h.avatar}</div>
+                <h4 style="font-size: 17px; font-weight: 800; color: #111827; font-family: 'Rajdhani', sans-serif; margin: 0 0 2px;">${h.name}</h4>
+                <div style="font-size: 12px; color: #6d28d9; font-weight: 700; margin-bottom: 2px;">${h.title}</div>
+                <div style="font-size: 11px; color: #6b7280; font-weight: 600; margin-bottom: 10px;">${h.dept}</div>
+                <p style="font-size: 12px; color: #4b5563; margin: 0 0 14px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${h.bio}</p>
+              </div>
+              <button onclick="openHeadInfoModal('${h.id}')" style="width: 100%; padding: 9px; border-radius: 10px; border: 1.5px solid #7c3aed; background: rgba(124, 58, 237, 0.06); color: #7c3aed; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 6px;" onmouseover="this.style.background='#7c3aed'; this.style.color='#fff';" onmouseout="this.style.background='rgba(124, 58, 237, 0.06)'; this.style.color='#7c3aed';">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                View Leadership Info
+              </button>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  // 2. SECTION 2: ALL MENTORS IN ONE WHOLE SECTION (Clean White Cards with Elegant Domain Accents)
+  let allFieldMentors = [];
+  mentorsData.categories.forEach(cat => {
+    if (selectedField !== 'all' && selectedField !== cat.fieldId) return;
+    cat.mentors.forEach(m => {
+      if (searchQuery &&
+          !m.name.toLowerCase().includes(searchQuery) &&
+          !m.title.toLowerCase().includes(searchQuery) &&
+          !m.bio.toLowerCase().includes(searchQuery) &&
+          !m.tags.some(t => t.toLowerCase().includes(searchQuery))) {
+        return;
+      }
+      allFieldMentors.push({
+        ...m,
+        fieldTitle: cat.fieldTitle,
+        pillBg: cat.pillBg,
+        pillColor: cat.pillColor,
+        domainColor: cat.pillColor
+      });
+    });
+  });
+
+  if (allFieldMentors.length > 0) {
+    html += `
+      <div style="background: rgba(30, 22, 53, 0.5); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 18px; padding: 20px; box-shadow: 0 8px 24px rgba(0,0,0,0.25);">
+        <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="font-size: 20px; font-weight: 800; color: #fff; font-family: 'Rajdhani', sans-serif; margin: 0;">Startup Mentors & Domain Experts</h3>
+          <span style="font-size: 11px; background: rgba(168, 85, 247, 0.2); color: #c084fc; font-weight: 700; padding: 4px 12px; border-radius: 12px;">${allFieldMentors.length} Mentors Listed</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 16px;">
+          ${allFieldMentors.map(m => `
+            <div style="background: #ffffff; border: 1.5px solid #e5e7eb; border-left: 5px solid ${m.domainColor}; border-radius: 16px; padding: 18px; color: #111827; display: flex; flex-direction: column; justify-content: space-between; gap: 12px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08); transition: transform 0.2s ease, box-shadow 0.2s ease;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 24px rgba(0,0,0,0.12)';" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 16px rgba(0,0,0,0.08)';">
+              
+              <div>
+                <!-- Top Row: Field Pill Tag & Rating -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                  <span style="background: ${m.pillBg}; color: ${m.pillColor}; border: 1px solid ${m.pillColor}40; font-size: 10px; font-weight: 800; padding: 3px 10px; border-radius: 10px; letter-spacing: 0.02em;">${m.fieldTitle}</span>
+                  <span style="font-size: 11px; font-weight: 800; color: #d97706; background: #fef3c7; padding: 2px 8px; border-radius: 8px; border: 1px solid #fde68a;">${m.rating}</span>
+                </div>
+
+                <!-- Avatar & Mentor Header -->
+                <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 10px;">
+                  <div style="width: 48px; height: 48px; min-width: 48px; border-radius: 12px; background: ${m.pillBg}; border: 1.5px solid ${m.domainColor}40; color: ${m.domainColor}; font-weight: 800; font-size: 17px; font-family: 'Rajdhani', sans-serif; display: flex; align-items: center; justify-content: center;">${m.avatar}</div>
+                  <div style="flex: 1;">
+                    <h4 style="font-size: 16px; font-weight: 800; color: #111827; font-family: 'Rajdhani', sans-serif; margin: 0 0 2px;">${m.name}</h4>
+                    <div style="font-size: 11px; color: #6d28d9; font-weight: 700;">${m.title}</div>
+                  </div>
+                </div>
+
+                <p style="font-size: 12px; color: #4b5563; margin: 0 0 10px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${m.bio}</p>
+
+                <!-- Skill Tags -->
+                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                  ${m.tags.map(t => `<span style="background: #f3f4f6; border: 1px solid #e5e7eb; color: #4b5563; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 6px;">${t}</span>`).join('')}
+                </div>
+              </div>
+
+              <!-- Bottom Row: Green Connect Left, Yellow Session Right -->
+              <div style="display: flex; gap: 8px; margin-top: 4px;">
+                <button onclick="connectWithMentor('${m.id}', '${m.name}')" style="flex: 1; background: #10b981; color: #fff; border: none; border-radius: 10px; font-weight: 700; padding: 8px 10px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 3px 10px rgba(16, 185, 129, 0.3); transition: transform 0.2s, background 0.2s;" onmouseover="this.style.background='#059669';" onmouseout="this.style.background='#10b981';">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg>
+                  Connect
+                </button>
+                
+                <button onclick="openMentorSessionModal('${m.id}', '${m.name}', '${m.title}')" style="flex: 1; background: #f59e0b; color: #1e102d; border: none; border-radius: 10px; font-weight: 800; padding: 8px 10px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 3px 10px rgba(245, 158, 11, 0.3); transition: transform 0.2s, background 0.2s;" onmouseover="this.style.background='#d97706';" onmouseout="this.style.background='#f59e0b';">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  Request Session
+                </button>
+              </div>
+
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  if (!html) {
+    html = `
+      <div style="text-align: center; padding: 40px; background: rgba(30, 22, 53, 0.5); border-radius: 18px; border: 1px solid rgba(168, 85, 247, 0.2);">
+        <p style="font-size: 14px; color: rgba(233, 213, 255, 0.7); margin: 0;">No mentors found matching "${searchQuery}". Try adjusting your search query or domain filter.</p>
+      </div>
+    `;
+  }
+
+  container.innerHTML = html;
+}
+
+function filterMentorsDisplay() {
+  renderMentorsPage();
+}
+
+function connectWithMentor(id, name) {
+  showToast(`💬 Connection request sent to ${name}! They will get back to you shortly.`, 'success');
+}
+
+function openHeadInfoModal(id) {
+  const head = mentorsData.heads.find(h => h.id === id);
+  if (!head) return;
+
+  const content = document.getElementById('headInfoContent');
+  content.innerHTML = `
+    <div style="text-align: center; margin-bottom: 20px;">
+      <div style="width: 72px; height: 72px; border-radius: 18px; background: linear-gradient(135deg, #a855f7, #ec4899); color: #fff; font-weight: 800; font-size: 26px; font-family: 'Rajdhani', sans-serif; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5);">${head.avatar}</div>
+      <h3 style="font-size: 22px; font-weight: 800; color: #fff; font-family: 'Rajdhani', sans-serif; margin: 0 0 4px;">${head.name}</h3>
+      <div style="font-size: 13px; color: #c084fc; font-weight: 700;">${head.title}</div>
+      <div style="font-size: 11px; color: rgba(233, 213, 255, 0.7);">${head.dept}</div>
+    </div>
+    
+    <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: 16px; padding: 16px; margin-bottom: 20px; line-height: 1.5; font-size: 13px; color: rgba(233, 213, 255, 0.9);">
+      ${head.bio}
+    </div>
+
+    <div style="display: flex; gap: 12px; margin-bottom: 24px;">
+      <div style="flex: 1; background: rgba(168, 85, 247, 0.15); border-radius: 12px; padding: 12px; text-align: center;">
+        <div style="font-size: 10px; color: rgba(233, 213, 255, 0.7); font-weight: 700;">EXPERIENCE</div>
+        <div style="font-size: 16px; font-weight: 800; color: #fff; margin-top: 2px;">${head.experience}</div>
+      </div>
+      <div style="flex: 1; background: rgba(168, 85, 247, 0.15); border-radius: 12px; padding: 12px; text-align: center;">
+        <div style="font-size: 10px; color: rgba(233, 213, 255, 0.7); font-weight: 700;">VENTURES MENTORED</div>
+        <div style="font-size: 16px; font-weight: 800; color: #c084fc; margin-top: 2px;">${head.startupsMentored}</div>
+      </div>
+    </div>
+
+    <button onclick="showToast('Official email inquiry sent to ${head.name}', 'info'); closeHeadInfoModal();" style="width: 100%; padding: 12px; border-radius: 14px; border: none; background: linear-gradient(135deg, #9333ea, #c084fc); color: #fff; font-size: 13px; font-weight: 800; cursor: pointer; box-shadow: 0 6px 20px rgba(147, 51, 234, 0.4);">
+      📧 Contact Executive Office
+    </button>
+  `;
+
+  document.getElementById('headInfoModalOverlay').style.display = 'flex';
+}
+
+function closeHeadInfoModal() {
+  document.getElementById('headInfoModalOverlay').style.display = 'none';
+}
+function handleHeadInfoOverlayClick(e) {
+  if (e.target.id === 'headInfoModalOverlay') closeHeadInfoModal();
+}
+
+function openMentorSessionModal(id, name, title) {
+  document.getElementById('bookingMentorId').value = id;
+  const header = document.getElementById('mentorSessionHeader');
+  header.innerHTML = `
+    <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(245, 158, 11, 0.2); color: #fbbf24; font-weight: 800; font-size: 16px; font-family: 'Rajdhani', sans-serif; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(245, 158, 11, 0.4);">📅</div>
+    <div>
+      <div style="font-size: 10px; font-weight: 800; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.08em;">BOOKING 1-ON-1 SESSION</div>
+      <h3 style="font-size: 18px; font-weight: 800; color: #fff; font-family: 'Rajdhani', sans-serif; margin: 0;">${name}</h3>
+      <div style="font-size: 11px; color: rgba(233, 213, 255, 0.7);">${title}</div>
+    </div>
+  `;
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  document.getElementById('sessionDateInput').value = tomorrow.toISOString().split('T')[0];
+
+  document.getElementById('mentorSessionModalOverlay').style.display = 'flex';
+}
+
+function closeMentorSessionModal() {
+  document.getElementById('mentorSessionModalOverlay').style.display = 'none';
+}
+function handleMentorSessionOverlayClick(e) {
+  if (e.target.id === 'mentorSessionModalOverlay') closeMentorSessionModal();
+}
+
+function handleSessionBookingSubmit(e) {
+  e.preventDefault();
+  const date = document.getElementById('sessionDateInput').value;
+  const time = document.getElementById('sessionTimeSlot').value;
+  
+  showToast(`🎉 Mentorship session booked for ${date} at ${time}! Confirmation sent to your email.`, 'success');
+  closeMentorSessionModal();
+}
+
+function showSkillGapResults(report) {
+  const screens = ['welcome','assessment','app','test','interview','results','interview-report','skill-gap-results'];
+  screens.forEach(id => {
+    const el = document.getElementById(`screen-${id}`);
+    if (el) el.style.display = 'none';
+  });
+  
+  const resultsScreen = document.getElementById('screen-skill-gap-results');
+  if (resultsScreen) resultsScreen.style.display = 'block';
+
+  const scoreVal = document.getElementById('sgrScore');
+  if (scoreVal) scoreVal.textContent = report.overallSkillScore;
+
+  const circle = document.getElementById('sgrFillCircle');
+  if (circle) {
+    const r = 58, circ = 2 * Math.PI * r;
+    const offset = circ - (report.overallSkillScore / 100) * circ;
+    setTimeout(() => { circle.style.strokeDashoffset = offset; }, 100);
+  }
+
+  const summaryEl = document.getElementById('sgrSummary');
+  if (summaryEl) {
+    summaryEl.innerHTML = report.summary || 'Assessment completed successfully.';
+  }
+
+  const strengthsEl = document.getElementById('sgrStrengths');
+  if (strengthsEl) {
+    strengthsEl.innerHTML = (report.strengths || []).map(s => `
+      <li style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600; color: #fff; margin-bottom: 8px;">
+        <span style="color: #22c55e; font-size: 16px;">✔</span>
+        <span>${s}</span>
+      </li>
+    `).join('') || '<li style="color: rgba(255,255,255,0.4); font-size:12px;">None identified</li>';
+  }
+
+  const weaknessesEl = document.getElementById('sgrWeaknesses');
+  if (weaknessesEl) {
+    weaknessesEl.innerHTML = (report.weaknesses || []).map(w => `
+      <li style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 600; color: #fff; margin-bottom: 8px;">
+        <span style="color: #ef4444; font-size: 16px;">✖</span>
+        <span>${w}</span>
+      </li>
+    `).join('') || '<li style="color: rgba(255,255,255,0.4); font-size:12px;">None identified</li>';
+  }
+
+  const pathEl = document.getElementById('sgrLearningPath');
+  if (pathEl) {
+    pathEl.innerHTML = (report.improvementSuggestions || []).map(item => `
+      <div style="display: flex; gap: 12px; padding: 12px; border-radius: 12px; background: rgba(255, 255, 255, 0.04); border: 1.5px solid rgba(168, 85, 247, 0.15); margin-bottom: 10px;">
+        <span style="font-size: 18px;">💡</span>
+        <p style="font-size: 12px; color: rgba(233, 213, 255, 0.85); line-height: 1.55; font-weight: 600; margin: 0;">${item}</p>
+      </div>
+    `).join('') || '<div style="color: rgba(255,255,255,0.4); font-size:12px;">No suggestions available.</div>';
+  }
+
+  const practiceEl = document.getElementById('sgrPracticeAreas');
+  if (practiceEl) {
+    practiceEl.innerHTML = (report.priorityAreas || []).map(item => `
+      <span style="padding: 6px 14px; border-radius: 10px; background: rgba(147, 51, 234, 0.15); border: 1.5px solid rgba(147, 51, 234, 0.3); color: #c084fc; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; display: inline-block; margin-right: 8px; margin-bottom: 8px;">${item}</span>
+    `).join('') || '<span style="color: rgba(255,255,255,0.4); font-size:12px;">No priority areas specified.</span>';
+  }
+
+  const readinessEl = document.getElementById('sgrReadinessLevel');
+  if (readinessEl) {
+    const status = report.estimatedReadinessLevel || 'Not Ready';
+    readinessEl.textContent = status;
+    readinessEl.style.padding = '4px 12px';
+    readinessEl.style.borderRadius = '20px';
+    readinessEl.style.fontSize = '11px';
+    readinessEl.style.fontWeight = '800';
+    readinessEl.style.textTransform = 'uppercase';
+    readinessEl.style.letterSpacing = '0.08em';
+    readinessEl.style.display = 'inline-block';
+    
+    if (status.includes('Ready') && !status.includes('Not')) {
+      readinessEl.style.background = 'rgba(16, 185, 129, 0.15)';
+      readinessEl.style.color = '#34d399';
+      readinessEl.style.border = '1px solid rgba(16, 185, 129, 0.3)';
+    } else {
+      readinessEl.style.background = 'rgba(245, 158, 11, 0.15)';
+      readinessEl.style.color = '#fbbf24';
+      readinessEl.style.border = '1px solid rgba(245, 158, 11, 0.3)';
+    }
+  }
 }

@@ -366,14 +366,15 @@ function showScreen(screenId) {
   screen.classList.add('active');
   // Each screen needs its own display type
   const displayMap = {
-    'login':      'flex',
-    'welcome':    'flex',
-    'assessment': 'flex',
-    'app':        'flex',
-    'test':       'flex',
-    'interview':  'flex',
-    'results':    'block',
-    'interview-report': 'block'
+    'login':             'flex',
+    'welcome':           'flex',
+    'assessment':        'flex',
+    'app':               'flex',
+    'test':              'flex',
+    'interview':         'flex',
+    'results':           'block',
+    'interview-report':  'block',
+    'skill-gap-results': 'block'
   };
   screen.style.display = displayMap[screenId] || 'block';
   state.currentScreen = screenId;
@@ -481,11 +482,30 @@ function handleLogin(e) {
 }
 
 function startSkillGapAssessmentFlow() {
+  console.log('startSkillGapAssessmentFlow called!');
   state.assessment.currentQ = 0;
   state.assessment.answers = {};
   state.assessment.flagged = new Set();
+  
+  // Update welcome screen header with student name
+  const welcomeHeader = document.querySelector('#screen-welcome h1');
+  if (welcomeHeader && state.student) {
+    welcomeHeader.textContent = `Hello, ${state.student.name.split(' ')[0]}.`;
+  }
+  
+  // Pre-select the student's department in the dept grid
+  const studentDept = state.student?.dept || 'Engineering';
+  document.querySelectorAll('.dept-btn').forEach(btn => {
+    if (btn.dataset.dept === studentDept) {
+      btn.classList.add('selected');
+    } else {
+      btn.classList.remove('selected');
+    }
+  });
+  
   showScreen('welcome');
 }
+window.startSkillGapAssessmentFlow = startSkillGapAssessmentFlow;
 
 function selectDept(btn) {
   document.querySelectorAll('.dept-btn').forEach(b => b.classList.remove('selected'));
@@ -659,7 +679,8 @@ async function submitAssessment() {
     return {
       question: q.q,
       answer: selectedText,
-      isCorrect: isCorrect
+      isCorrect: isCorrect,
+      section: q.section || 'General'  // Include section for per-topic scoring
     };
   });
 
@@ -714,29 +735,54 @@ async function submitAssessment() {
     showToast('Failed to connect to AI Server on port 5001. Using fallback analysis.', 'warning');
     
     const correctCount = formattedAnswers.filter(a => a.isCorrect).length;
-    const score = Math.round(40 + (correctCount / questions.length) * 60);
-    const weakSections = Array.from(new Set(questions.filter((q, idx) => answers[idx] !== q.ans).map(q => q.section)));
-    
+    const totalQ = formattedAnswers.length || 30;
+
+    // Per-section scoring (mirrors backend logic)
+    const getSectionScore = (tags, baseMin = 40) => {
+      const secAs = formattedAnswers.filter(a => tags.some(t => (a.section || '').toLowerCase().includes(t.toLowerCase())));
+      if (secAs.length === 0) return Math.round(baseMin + (correctCount / totalQ) * (100 - baseMin));
+      const correct = secAs.filter(a => a.isCorrect).length;
+      return Math.round(baseMin + (correct / secAs.length) * (100 - baseMin));
+    };
+
+    const technicalSkillScore = getSectionScore(['Technical Aptitude','Data Structures','Algorithms','Programming','Database','Computer Science'], 35);
+    const aptitudeScore       = getSectionScore(['Aptitude'], 30);
+    const logicalScore        = getSectionScore(['Logical Reasoning'], 35);
+    const communicationScore  = Math.round(55 + (correctCount / totalQ) * 25);
+    const score = Math.round(technicalSkillScore * 0.4 + aptitudeScore * 0.25 + logicalScore * 0.2 + communicationScore * 0.15);
+
+    const weakSections = Array.from(new Set(formattedAnswers.filter(a => !a.isCorrect && a.section).map(a => a.section)));
+    const weaknesses = weakSections.length > 0 ? weakSections : ['Data Structures', 'Operating Systems'];
+    const strengths = score >= 60
+      ? (dept === 'Engineering' ? ['Programming Fundamentals', 'Database Queries'] : ['Core Concepts'])
+      : ['Basic Logic', 'Attention to Detail'];
+    const readinessLevel = score >= 75 ? 'Almost Ready' : score >= 50 ? 'Partially Ready' : 'Needs Improvement';
+    const summary = score >= 75
+      ? `Excellent performance in the ${dept} assessment with a score of ${score}%. You are on track for placements!`
+      : score >= 50
+        ? `Completed the ${dept} assessment with a score of ${score}%. Needs focus in ${weaknesses.slice(0,2).join(' and ')} to improve readiness.`
+        : `Assessment score is ${score}%. Immediate focus needed on ${weaknesses.slice(0,2).join(' and ')} to build foundational strength.`;
+
     const fallbackReport = {
       overallSkillScore: score,
-      strengths: dept === 'Engineering' ? ['Programming Fundamentals', 'Database Queries'] : ['Core Concepts'],
-      weaknesses: weakSections.length > 0 ? weakSections : ['Data Structures'],
-      estimatedReadinessLevel: score >= 75 ? 'Almost Ready' : 'Partially Ready',
-      summary: `Completed the ${dept} skill assessment. Solid performance overall, but needs focus in ${weakSections.slice(0, 2).join(' and ')} to improve readiness.`,
-      improvementSuggestions: weakSections.map(s => `Revise ${s} modules and solve practice questions.`),
-      priorityAreas: weakSections.slice(0, 2),
-      technicalSkillScore: Math.round(score * 0.9),
-      aptitudeScore: Math.round(score * 0.85),
-      communicationScore: 70,
-      logicalReasoningScore: 75,
+      strengths,
+      weaknesses,
+      estimatedReadinessLevel: readinessLevel,
+      summary,
+      improvementSuggestions: weaknesses.map(s => `Revise ${s} modules and solve 10+ practice questions daily.`),
+      priorityAreas: weaknesses.slice(0, 2),
+      technicalSkillScore,
+      aptitudeScore,
+      communicationScore,
+      logicalReasoningScore: logicalScore,
       skillProfile: {
-        DSA: score >= 75 ? 'Intermediate' : 'Beginner',
-        DBMS: 'Intermediate',
-        OS: 'Beginner',
-        Networks: 'Beginner',
-        Aptitude: 'Intermediate',
-        Communication: 'Intermediate',
-        SystemDesign: 'Beginner'
+        DSA:           technicalSkillScore >= 75 ? 'Advanced'     : technicalSkillScore >= 50 ? 'Intermediate' : 'Beginner',
+        DBMS:          technicalSkillScore >= 65 ? 'Intermediate'  : 'Beginner',
+        OS:            technicalSkillScore >= 70 ? 'Intermediate'  : 'Beginner',
+        Networks:      technicalSkillScore >= 70 ? 'Intermediate'  : 'Beginner',
+        Aptitude:      aptitudeScore >= 65       ? 'Intermediate'  : 'Beginner',
+        Communication: communicationScore >= 70  ? 'Intermediate'  : 'Beginner',
+        SystemDesign:  technicalSkillScore >= 80 ? 'Intermediate'  : 'Beginner'
       }
     };
 
@@ -764,6 +810,7 @@ async function submitAssessment() {
 }
 
 function enterApp() {
+  // Go straight to dashboard — assessment is optional, launched by "Find My Skill Gap" button
   showScreen('app');
   const el = document.getElementById('screen-app');
   el.style.display = 'flex';
@@ -839,9 +886,9 @@ function enterApp() {
   const rank = document.getElementById('dashRank');
   if (rank) rank.textContent = state.student.rank ? `${state.student.rank}` : '--';
   const readinessVal = document.getElementById('dashReadinessVal');
-  if (readinessVal) readinessVal.textContent = state.student.readiness || '0';
+  if (readinessVal) readinessVal.textContent = state.student.readiness > 0 ? state.student.readiness : '--';
   const statusEl = document.getElementById('dashStatus');
-  if (statusEl) statusEl.textContent = state.student.readiness > 0 ? 'In Preparation' : 'Not Available';
+  if (statusEl) statusEl.textContent = state.student.readiness > 0 ? 'In Preparation' : 'Not Started';
   
   // Stats
   const todayHours = document.getElementById('dashTodayHours');
@@ -867,7 +914,17 @@ function enterApp() {
   if (!state.student.tasks) {
     state.student.tasks = [];
   }
-  
+
+  // Update "Find My Skill Gap" button text based on test status
+  const skillGapBtn = document.getElementById('btnFindSkillGap');
+  if (skillGapBtn) {
+    if (state.student.readiness > 0) {
+      skillGapBtn.innerHTML = `Retake Assessment <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>`;
+    } else {
+      skillGapBtn.innerHTML = `Find My Skill Gap <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>`;
+    }
+  }
+
   animateReadiness();
   setTimeout(initHeatmap, 300);
   renderDashTasks();
@@ -997,6 +1054,20 @@ function renderDashWeakSkills() {
     'Technical Aptitude': 40
   };
   
+  // Empty state when no assessment taken yet
+  if (weakSkills.length === 0) {
+    container.innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 16px;gap:12px;">
+        <div style="width:48px;height:48px;border-radius:50%;background:var(--primary-container);display:flex;align-items:center;justify-content:center;">
+          <svg width="22" height="22" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        </div>
+        <p style="font-size:13px;font-weight:700;color:var(--on-surface);">No Skill Data Yet</p>
+        <p style="font-size:11.5px;color:var(--on-surface-variant);line-height:1.5;max-width:200px;">Take the Skill Gap Assessment to identify your weak areas.</p>
+        <button onclick="startSkillGapAssessmentFlow()" style="margin-top:4px;padding:8px 18px;background:var(--primary);color:#fff;border:none;border-radius:10px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.05em;cursor:pointer;">Take Assessment →</button>
+      </div>
+    `;
+    return;
+  }
   container.innerHTML = weakSkills.map(skill => {
     const pct = mockPercentages[skill] || Math.floor(Math.random() * 20 + 35);
     const colorClass = pct < 40 ? 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.5)]'
@@ -1024,7 +1095,12 @@ function renderDashRecommendedCourses() {
   
   const weakSkills = state.student.weakSkills || [];
   if (weakSkills.length === 0) {
-    container.innerHTML = `<div class="text-xs text-on-surface-variant p-4 text-center">No courses added yet</div>`;
+    container.innerHTML = `
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 12px;gap:8px;">
+        <p style="font-size:12px;font-weight:700;color:var(--on-surface);">No courses recommended yet</p>
+        <p style="font-size:11px;color:var(--on-surface-variant);line-height:1.5;">Complete the Skill Gap Assessment to get personalized course recommendations.</p>
+      </div>
+    `;
     return;
   }
 
@@ -1097,10 +1173,10 @@ function initHeatmap() {
   if (totalTimeEl) totalTimeEl.textContent = hasAssessment ? `${Math.round(readiness * 1.6)}h` : '0h';
   
   const activeDaysEl = document.getElementById('ghActiveDays');
-  if (activeDaysEl) activeDaysEl.textContent = hasAssessment ? `${Math.round(readiness * 0.4)} / 365` : '1 / 365';
+  if (activeDaysEl) activeDaysEl.textContent = hasAssessment ? `${Math.round(readiness * 0.4)} / 365` : '0 / 365';
   
   const streakEl = document.getElementById('ghCurrentStreak');
-  if (streakEl) streakEl.textContent = hasAssessment ? `${Math.round((readiness % 7) + 2)} Days` : '1 Day';
+  if (streakEl) streakEl.textContent = hasAssessment ? `${Math.round((readiness % 7) + 2)} Days` : '0 Days';
   
   const consistencyEl = document.getElementById('ghConsistency');
   if (consistencyEl) consistencyEl.textContent = hasAssessment ? `${Math.round(readiness * 0.85)}%` : '0%';
@@ -4178,14 +4254,7 @@ function handleSessionBookingSubmit(e) {
 }
 
 function showSkillGapResults(report) {
-  const screens = ['welcome','assessment','app','test','interview','results','interview-report','skill-gap-results'];
-  screens.forEach(id => {
-    const el = document.getElementById(`screen-${id}`);
-    if (el) el.style.display = 'none';
-  });
-  
-  const resultsScreen = document.getElementById('screen-skill-gap-results');
-  if (resultsScreen) resultsScreen.style.display = 'block';
+  showScreen('skill-gap-results');
 
   const scoreVal = document.getElementById('sgrScore');
   if (scoreVal) scoreVal.textContent = report.overallSkillScore;

@@ -1,0 +1,250 @@
+{
+  "reports": {
+    "GHRCE2024047": {
+      "skillAnalysis": {
+        "studentId": "GHRCE2024047",
+        "studentName": "Saurabhi Sharma",
+        "strengths": [
+          "Programming Fundamentals",
+          "Database Queries"
+        ],
+        "weaknesses": [
+          "Networks",
+          "Programming",
+          "Logical Reasoning",
+          "Algorithms",
+          "Aptitude",
+          "General Tech"
+        ],
+        "knowledgeGaps": [
+          "Networks",
+          "Programming",
+          "Logical Reasoning",
+          "Algorithms",
+          "Aptitude",
+          "General Tech"
+        ],
+        "technicalSkillScore": 87,
+        "aptitudeScore": 70,
+        "communicationScore": 71,
+        "logicalReasoningScore": 35,
+        "overallSkillScore": 70,
+        "skillProfile": {
+          "DSA": "Advanced",
+          "DBMS": "Intermediate",
+          "OS": "Intermediate",
+          "Networks": "Intermediate",
+          "Aptitude": "Intermediate",
+          "Communication": "Intermediate",
+          "SystemDesign": "Intermediate"
+        },
+        "improvementSuggestions": [
+          "Study standard resources for Networks and resolve practice exercises.",
+          "Study standard resources for Programming and resolve practice exercises.",
+          "Study standard resources for Logical Reasoning and resolve practice exercises.",
+          "Study standard resources for Algorithms and resolve practice exercises.",
+          "Study standard resources for Aptitude and resolve practice exercises.",
+          "Study standard resources for General Tech and resolve practice exercises."
+        ],
+        "priorityAreas": [
+          "Networks",
+          "Programming"
+        ],
+        "estimatedReadinessLevel": "Partially Ready",
+        "summary": "Saurabhi Sharma completed the Engineering assessment with a score of 70%. Solid performance overall, but needs focus in Networks and Programming to improve readiness.",
+        "generatedAt": "2026-07-22T17:26:06.673Z"
+      },
+      "recommendations": {
+        "studentId": "GHRCE2024047",
+        "studentName": "Saurabhi Sharma",
+        "generatedFor": "--",
+        "courses": [
+          {
+            "title": "DSA Self-Paced",
+            "platform": "GeeksforGeeks",
+            "url": "https://practice.geeksforgeeks.org",
+            "topic": "DSA",
+            "duration": "40 hours",
+            "priority": "High",
+            "reason": "Covers all core DSA topics needed for placements"
+          },
+          {
+            "title": "DBMS Full Course",
+            "platform": "YouTube (Gate Smashers)",
+            "url": "https://youtube.com/@GateSmashersOfficial",
+            "topic": "DBMS",
+            "duration": "12 hours",
+            "priority": "Medium",
+            "reason": "Core CS subject for all companies"
+          }
+        ],
+        "videos": [
+          {
+            "title": "Aptitude for Placements",
+            "channel": "Unacademy",
+            "url": "https://youtube.com/playlist?list=PLKkzGfxRapWUrDz0vpvJtFWBRcnXnN9aW",
+            "topic": "Aptitude",
+            "duration": "2 hours",
+            "reason": "Comprehensive aptitude prep"
+          }
+        ],
+        "codingChallenges": [
+          {
+            "platform": "LeetCode",
+            "topic": "Arrays & Strings",
+            "difficulty": "Easy",
+            "url": "https://leetcode.com/problemset/",
+            "count": 15,
+            "reason": "Build confidence before moving to harder problems"
+          }
+        ],
+        "aptitudeResources": [
+          {
+            "title": "IndiaBIX Aptitude",
+            "source": "IndiaBIX",
+            "url": "https://www.indiabix.com",
+            "topics": [
+              "Number System",
+              "Ratio & Proportion",
+              "Time & Work"
+            ],
+            "reason": "Best free aptitude resource for Indian placements"
+          }
+        ],
+        "communicationExercises": [
+          {
+            "exercise": "Speak for 2 minutes on a random topic daily",
+            "duration": "15 mins/day",
+            "platform": "Self-practice",
+            "reason": "Improves fluency and confidence"
+          }
+        ],
+        "mockTests": [
+          {
+            "name": "-- Full Mock",
+            "type": "Company-OA",
+            "platform": "PrepInsta",
+            "reason": "Matches actual company test pattern"
+          }
+        ],
+        "resumeResources": [
+          {
+            "title": "ATS Resume Checker",
+            "url": "https://resumeworded.com",
+            "reason": "Check ATS compatibility instantly"
+          }
+        ],
+        "todayFocus": "Solve 5 Networks problems on LeetCode",
+        "weeklyGoal": "Complete Networks basics and take one full mock test",
+        "generatedAt": "2026-07-22T17:26:06.939Z"
+      }
+    }
+  },
+  "sessions": {},
+  "testHistory": {},
+  "roadmaps": {
+    "GHRCE2024047": {
+      "studentId": "GHRCE2024047",
+      "studentName": "Saurabhi Sharma",
+      "targetCompany": "--",
+      "targetReadinessScore": 80,
+      "studyHoursPerDay": 2,
+      "weeklyPlan": [
+        {
+          "week": 1,
+          "theme": "Foundations: Networks",
+          "focus": [
+            "Networks",
+            "Aptitude basics"
+          ],
+          "dailyTasks": [
+            {
+              "day": "Monday",
+              "tasks": [
+                "Study Networks"
+              ],
+              "hours": 2
+            },
+            {
+              "day": "Tuesday",
+              "tasks": [
+                "Solve 10 LeetCode easy problems"
+              ],
+              "hours": 2
+            },
+            {
+              "day": "Wednesday",
+              "tasks": [
+                "Aptitude - Number System"
+              ],
+              "hours": 2
+            },
+            {
+              "day": "Thursday",
+              "tasks": [
+                "Resume update"
+              ],
+              "hours": 2
+            },
+            {
+              "day": "Friday",
+              "tasks": [
+                "DBMS basics"
+              ],
+              "hours": 2
+            },
+            {
+              "day": "Saturday",
+              "tasks": [
+                "Mock test - Aptitude"
+              ],
+              "hours": 2
+            },
+            {
+              "day": "Sunday",
+              "tasks": [
+                "Light revision"
+              ],
+              "hours": 1
+            }
+          ],
+          "milestone": "Complete Networks basics",
+          "resources": [
+            "GeeksforGeeks",
+            "LeetCode easy set"
+          ]
+        }
+      ],
+      "monthlyMilestones": [
+        {
+          "month": 1,
+          "goal": "Master Networks fundamentals",
+          "keyOutcome": "15% score improvement"
+        }
+      ],
+      "priorities": [
+        "Networks",
+        "Programming",
+        "Logical Reasoning"
+      ],
+      "companySpecificTips": [
+        "Study -- interview patterns",
+        "Practice previous year questions"
+      ],
+      "summary": "Saurabhi Sharma's roadmap focuses on Networks improvement to reach placement readiness for -- within 4 weeks.",
+      "generatedAt": "2026-07-22T17:26:06.901Z"
+    }
+  },
+  "skillProfiles": {
+    "GHRCE2024047": {
+      "DSA": "Advanced",
+      "DBMS": "Intermediate",
+      "OS": "Intermediate",
+      "Networks": "Intermediate",
+      "Aptitude": "Intermediate",
+      "Communication": "Intermediate",
+      "SystemDesign": "Intermediate",
+      "generatedAt": "2026-07-22T17:26:06.675Z"
+    }
+  }
+}

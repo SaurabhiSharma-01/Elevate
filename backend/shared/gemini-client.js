@@ -37,7 +37,7 @@ const JSON_CONFIG = {
  * @param {string} modelName - Model name (default: gemini-1.5-flash)
  * @param {object} config - Generation config override
  */
-function getModel(modelName = 'gemini-1.5-flash', config = DEFAULT_CONFIG) {
+function getModel(modelName = 'gemini-2.0-flash', config = DEFAULT_CONFIG) {
   if (!genAI) return null;
   return genAI.getGenerativeModel({
     model: modelName,
@@ -59,7 +59,7 @@ async function generateText(prompt, options = {}) {
 
   try {
     const config = { ...DEFAULT_CONFIG, ...(options.temperature ? { temperature: options.temperature } : {}) };
-    const model = getModel(options.modelName || 'gemini-1.5-flash', config);
+    const model = getModel(options.modelName || 'gemini-2.0-flash', config);
     const result = await model.generateContent(prompt);
     const response = await result.response;
     return response.text();
@@ -83,7 +83,7 @@ async function generateJSON(prompt, options = {}) {
   }
 
   try {
-    const model = getModel(options.modelName || 'gemini-1.5-flash', JSON_CONFIG);
+    const model = getModel(options.modelName || 'gemini-2.0-flash', JSON_CONFIG);
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
@@ -101,7 +101,12 @@ async function generateJSON(prompt, options = {}) {
       if (options.fallback) return options.fallback;
       throw new Error('AI returned malformed JSON. Please retry.');
     }
+    // For API errors (quota exceeded, rate limits, model errors), use fallback if provided
     console.error('[GeminiClient] generateJSON error:', error.message);
+    if (options.fallback) {
+      console.warn('[GeminiClient] Returning fallback due to API error.');
+      return options.fallback;
+    }
     throw new Error(`Gemini API error: ${error.message}`);
   }
 }
@@ -125,7 +130,7 @@ function startChat(history = [], options = {}) {
   }
 
   const model = genAI.getGenerativeModel({
-    model: options.modelName || 'gemini-1.5-flash',
+    model: options.modelName || 'gemini-2.0-flash',
     generationConfig: DEFAULT_CONFIG,
     ...(options.systemInstruction ? { systemInstruction: options.systemInstruction } : {}),
   });

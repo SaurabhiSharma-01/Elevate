@@ -1901,33 +1901,40 @@ async function updateCandidateStage() {
 // ──────────────────────────────────────────────────────────────
 // INIT
 // ──────────────────────────────────────────────────────────────
+function logoutInstitute() {
+  sessionStorage.removeItem('elevate_token');
+  sessionStorage.removeItem('elevate_user');
+  sessionStorage.removeItem('elevate_role');
+  window.location.href = '/login';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-  const loginScreen = document.getElementById('screen-login');
-  if (loginScreen) loginScreen.style.display = 'flex';
-  ['welcome','assessment','app','test','interview','results','interview-report'].forEach(id => {
-    const el = document.getElementById(`screen-${id}`);
-    if (el) el.style.display = 'none';
-  });
+  // Read session user if available
+  const userStr = sessionStorage.getItem('elevate_user');
+  if (userStr) {
+    try {
+      const user = JSON.parse(userStr);
+      if (user && user.name) {
+        state.officerName = user.name;
+        state.officerEmail = user.email;
+        const nameEls = document.querySelectorAll('#sidebarName, #headerUserName');
+        nameEls.forEach(el => el.textContent = user.name);
+        const initials = user.name.split(' ').map(n=>n[0]).join('').toUpperCase();
+        const avatarEls = document.querySelectorAll('#sidebarAvatar, #headerAvatar');
+        avatarEls.forEach(el => el.textContent = initials || 'PS');
+      }
+    } catch(e) {}
+  }
+
+  // Display app screen directly
+  showScreen('app');
+  navigateTo('college-dashboard');
+
   const hour = new Date().getHours();
   const dashGreet = document.getElementById('dashGreeting');
   if (dashGreet) dashGreet.textContent = hour < 12 ? 'Good morning,' : hour < 17 ? 'Good afternoon,' : 'Good evening,';
-  state.selectedDept = 'Engineering';
-  document.querySelectorAll('.iv-radio-item').forEach(item => {
-    item.addEventListener('change', () => {
-      document.querySelectorAll('.iv-radio-item').forEach(i => i.style.borderColor = 'var(--border)');
-      item.style.borderColor = 'var(--primary)';
-      item.style.background = 'var(--primary-lighter)';
-    });
-  });
-
-  // ── INSTITUTE PORTAL: hide Student and Recruiter tabs, lock to T&P Officer role ──
-  document.querySelectorAll('.login-tab[data-role="student"], .login-tab[data-role="company"]').forEach(tab => {
-    tab.style.display = 'none';
-  });
-  setLoginRole('college');
-
+  
   console.log('%cElevate Institute (T&P) Portal — GH Raisoni College', 'font-size:16px;font-weight:bold;color:#5B2D90');
-  console.log('%cLogin with tp@ghrce.ac.in / admin', 'font-size:12px;color:#6B7280');
 });
 
 // ──────────────────────────────────────────────────────────────

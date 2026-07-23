@@ -294,8 +294,7 @@
           Welcome to Elevate
         </div>
         <h1>Hello, Priya.</h1>
-        <p>Welcome to your AI-powered career preparation journey. Before accessing the portal, you must complete a
-          mandatory Skill Gap Assessment to personalize your experience.</p>
+        <p>Take your AI-powered Skill Gap Assessment to get a personalized roadmap, weak area analysis, and company-readiness score. You can skip this and explore the portal first.</p>
       </div>
       <div class="welcome-body">
         <div class="assessment-info-grid">
@@ -343,8 +342,8 @@
               </svg>
             </div>
             <div>
-              <h4>Compulsory</h4>
-              <p>You must complete this before accessing any portal feature</p>
+              <h4>AI-Powered</h4>
+              <p>Powered by Google Gemini AI — generates your personalized roadmap instantly</p>
             </div>
           </div>
         </div>
@@ -376,6 +375,9 @@
           </svg>
           Start Skill Gap Assessment
         </button>
+        <div style="text-align:center; margin-top: 16px;">
+          <button onclick="enterApp()" style="background:none;border:none;color:var(--primary);font-size:13px;font-weight:700;cursor:pointer;text-decoration:underline;">← Back to Dashboard</button>
+        </div>
       </div>
     </div>
   </div>
@@ -704,7 +706,7 @@
   <div class="lg:col-span-8 space-y-8">
     <!-- Primary Readiness Card -->
     <div class="bg-gradient-to-br from-primary to-secondary rounded-2xl p-8 md:p-10 text-on-primary relative overflow-hidden shadow-lg border border-primary-fixed-dim">
-      <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] opacity-30"></div>
+      <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] opacity-30 pointer-events-none"></div>
       <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between">
         <div class="mb-6 md:mb-0">
           <p class="text-primary-fixed text-xs font-bold uppercase tracking-widest mb-3 font-label">Placement Readiness</p>
@@ -741,9 +743,9 @@
         </div>
       </div>
       <!-- CTA Button at the bottom of the card -->
-      <div class="mt-6 pt-4 border-t border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div class="relative z-20 mt-6 pt-4 border-t border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <p class="text-xs text-primary-fixed-dim font-medium max-w-md">Discover your core strengths, weak areas, and company-readiness level with our AI Skill Gap report.</p>
-        <button id="btnFindSkillGap" class="px-5 py-2.5 rounded-xl text-white border border-white/30 text-xs font-bold font-label uppercase tracking-widest transition-all shadow-md flex items-center gap-2 shrink-0" style="background: var(--primary, #5B2D90);" onmouseover="this.style.filter='brightness(1.15)';" onmouseout="this.style.filter='brightness(1.0)';" onclick="startSkillGapAssessmentFlow()">
+        <button id="btnFindSkillGap" class="relative z-30 cursor-pointer px-5 py-2.5 rounded-xl text-white border border-white/30 text-xs font-bold font-label uppercase tracking-widest transition-all shadow-md flex items-center gap-2 shrink-0" style="background: var(--primary, #5B2D90);" onmouseover="this.style.filter='brightness(1.15)';" onmouseout="this.style.filter='brightness(1.0)';" onclick="startSkillGapAssessmentFlow()">
           Find My Skill Gap
           <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
         </button>
@@ -2602,7 +2604,7 @@
 
       <!-- View Dashboard CTA Button -->
       <div style="text-align: center;">
-        <button class="px-8 py-3 rounded-xl text-white font-bold text-sm uppercase tracking-widest shadow-lg hover:shadow-xl transition-all" style="background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); border: none; cursor: pointer;" onmouseover="this.style.transform='translateY(-1px)';" onmouseout="this.style.transform='translateY(0)';" onclick="navigateTo('dashboard')">
+        <button class="px-8 py-3 rounded-xl text-white font-bold text-sm uppercase tracking-widest shadow-lg hover:shadow-xl transition-all" style="background: linear-gradient(135deg, #7c3aed 0%, #c084fc 100%); border: none; cursor: pointer;" onmouseover="this.style.transform='translateY(-1px)';" onmouseout="this.style.transform='translateY(0)';" onclick="showScreen('app'); navigateTo('dashboard')">
           View My Dashboard
         </button>
       </div>

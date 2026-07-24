@@ -1908,6 +1908,14 @@ function logoutInstitute() {
   window.location.href = '/login';
 }
 
+function toggleSidebarCollapse() {
+  const sidebar = document.getElementById('mainSidebar');
+  const appMain = document.querySelector('.app-main');
+  if (sidebar) sidebar.classList.toggle('collapsed');
+  if (appMain) appMain.classList.toggle('sidebar-collapsed');
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
   // Read session user if available
   const userStr = sessionStorage.getItem('elevate_user');

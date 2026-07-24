@@ -792,6 +792,77 @@ ul { list-style: none; }
 .user-info .u-name { font-size: 13px; font-weight: 600; color: var(--text); }
 .user-info .u-dept { font-size: 11px; color: var(--text-3); }
 
+/* ─── Floating Circular Arrow Sidebar Toggle Button (Image 2 style) ─── */
+.sidebar-arrow-toggle {
+  position: absolute;
+  top: 24px;
+  right: -14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #1E1A34;
+  border: 2px solid #5B2D90;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 300;
+  box-shadow: 0 4px 12px rgba(91, 45, 144, 0.35);
+  transition: all 0.3s cubic-bezier(.4,0,.2,1);
+}
+.sidebar-arrow-toggle:hover {
+  background: #5B2D90;
+  transform: scale(1.12);
+  box-shadow: 0 6px 18px rgba(91, 45, 144, 0.5);
+}
+.sidebar-arrow-toggle .arrow-icon {
+  transition: transform 0.3s ease;
+}
+
+/* ─── Sidebar Collapsed State ─── */
+.sidebar.collapsed {
+  width: 72px !important;
+}
+.sidebar.collapsed .sb-name-wrapper,
+.sidebar.collapsed .nav-text,
+.sidebar.collapsed .nav-section-label,
+.sidebar.collapsed .user-info,
+.sidebar.collapsed .notif-panel {
+  display: none !important;
+}
+.sidebar.collapsed .sidebar-user {
+  justify-content: center;
+  padding: 12px 8px;
+}
+.sidebar.collapsed .nav-item {
+  justify-content: center;
+  padding: 10px 0;
+}
+.sidebar.collapsed .sb-section-box {
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+.sidebar.collapsed .sidebar-arrow-toggle .arrow-icon {
+  transform: rotate(180deg);
+}
+.app-main.sidebar-collapsed {
+  padding-left: 72px !important;
+}
+
+/* ─── White & Purple Contrasting KPI Cards Hover Animation ─── */
+.purple-gradient-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 12px 28px rgba(155, 117, 199, 0.35) !important;
+}
+.white-contrast-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 10px 24px rgba(220, 120, 120, 0.08) !important;
+}
+
+
+
 /* ─── Main Content Area ─── */
 .app-main {
   padding-left: var(--sidebar-w);

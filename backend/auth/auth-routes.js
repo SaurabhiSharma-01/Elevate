@@ -23,6 +23,7 @@ const {
 } = require('./auth-utils');
 
 const { sendStudentCredentials } = require('./email-service');
+const { isMySQLConnected, query } = require('../db/mysql');
 
 const router = express.Router();
 
@@ -66,11 +67,6 @@ const upload = multer({
 
 // ─── CSV Parser ───────────────────────────────────────────────────────────────
 
-/**
- * Parse a simple CSV buffer into an array of objects.
- * First row is treated as headers.
- * Handles quoted fields and trims whitespace.
- */
 function parseCSV(buffer) {
   const text   = buffer.toString('utf8');
   const lines  = text.split(/\r?\n/).filter(l => l.trim() !== '');
@@ -79,7 +75,6 @@ function parseCSV(buffer) {
   const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, ''));
 
   return lines.slice(1).map(line => {
-    // Basic CSV parse — handles quoted fields
     const values = [];
     let current = '';
     let inQuotes = false;
@@ -97,9 +92,6 @@ function parseCSV(buffer) {
   });
 }
 
-// ─── Field mapping helpers ────────────────────────────────────────────────────
-
-// Accept flexible header names for the import CSV
 function extractField(row, ...keys) {
   for (const key of keys) {
     const k = key.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
@@ -125,13 +117,6 @@ router.post('/tnp/register', async (req, res) => {
       });
     }
 
-    const db = ensureCollections(readDB());
-
-    const exists = db.tnpOfficers.find(o => o.email.toLowerCase() === email.toLowerCase());
-    if (exists) {
-      return res.status(409).json({ success: false, message: 'An account with this email already exists.' });
-    }
-
     const passwordHash = await hashPassword(password);
     const officer = {
       id:           uuidv4(),
@@ -143,11 +128,27 @@ router.post('/tnp/register', async (req, res) => {
       createdAt:    new Date().toISOString(),
     };
 
-    db.tnpOfficers.push(officer);
+    if (isMySQLConnected()) {
+      const existing = await query('SELECT * FROM tnp_officers WHERE LOWER(email) = ?', [email.toLowerCase().trim()]);
+      if (existing && existing.length > 0) {
+        return res.status(409).json({ success: false, message: 'An account with this email already exists.' });
+      }
+      await query(
+        'INSERT INTO tnp_officers (id, name, email, passwordHash, college, role, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [officer.id, officer.name, officer.email, officer.passwordHash, officer.college, officer.role, officer.createdAt]
+      );
+    }
+
+    // Sync local DB file
+    const db = ensureCollections(readDB());
+    const exists = db.tnpOfficers.find(o => o.email.toLowerCase() === email.toLowerCase());
+    if (!isMySQLConnected() && exists) {
+      return res.status(409).json({ success: false, message: 'An account with this email already exists.' });
+    }
+    if (!exists) db.tnpOfficers.push(officer);
     writeDB(db);
 
     const token = generateToken({ id: officer.id, role: 'tnp', email: officer.email, name: officer.name });
-
     const { passwordHash: _, ...safeOfficer } = officer;
     res.status(201).json({ success: true, token, user: safeOfficer });
   } catch (err) {
@@ -170,8 +171,16 @@ router.post('/tnp/login', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Only @raisoni.net accounts can use this login.' });
     }
 
-    const db = ensureCollections(readDB());
-    const officer = db.tnpOfficers.find(o => o.email.toLowerCase() === email.toLowerCase());
+    let officer = null;
+    if (isMySQLConnected()) {
+      const rows = await query('SELECT * FROM tnp_officers WHERE LOWER(email) = ?', [email.toLowerCase().trim()]);
+      if (rows && rows.length > 0) officer = rows[0];
+    }
+
+    if (!officer) {
+      const db = ensureCollections(readDB());
+      officer = db.tnpOfficers.find(o => o.email.toLowerCase() === email.toLowerCase());
+    }
 
     if (!officer) {
       return res.status(401).json({ success: false, message: 'No T&P Officer account found with this email.' });
@@ -196,16 +205,24 @@ router.post('/tnp/login', async (req, res) => {
 
 router.post('/student/login', async (req, res) => {
   try {
-    const { username, password } = req.body; // username = PRN
+    const { username, password } = req.body;
 
     if (!username || !password) {
       return res.status(400).json({ success: false, message: 'Username (PRN) and password are required.' });
     }
 
-    const db = ensureCollections(readDB());
-    const account = db.studentAccounts.find(
-      s => s.prn.toLowerCase() === username.toLowerCase().trim()
-    );
+    let account = null;
+    if (isMySQLConnected()) {
+      const rows = await query('SELECT * FROM student_accounts WHERE LOWER(prn) = ?', [username.toLowerCase().trim()]);
+      if (rows && rows.length > 0) account = rows[0];
+    }
+
+    if (!account) {
+      const db = ensureCollections(readDB());
+      account = db.studentAccounts.find(
+        s => s.prn.toLowerCase() === username.toLowerCase().trim()
+      );
+    }
 
     if (!account) {
       return res.status(401).json({
@@ -226,9 +243,14 @@ router.post('/student/login', async (req, res) => {
       name: account.name,
     });
 
-    // Update last login
+    const now = new Date().toISOString();
+    if (isMySQLConnected()) {
+      await query('UPDATE student_accounts SET lastLogin = ? WHERE prn = ?', [now, account.prn]);
+    }
+
+    const db = ensureCollections(readDB());
     const idx = db.studentAccounts.findIndex(s => s.prn === account.prn);
-    db.studentAccounts[idx].lastLogin = new Date().toISOString();
+    if (idx !== -1) db.studentAccounts[idx].lastLogin = now;
     writeDB(db);
 
     const { passwordHash: _, ...safeAccount } = account;
@@ -249,12 +271,6 @@ router.post('/company/register', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Company name, email, and password are required.' });
     }
 
-    const db = ensureCollections(readDB());
-    const exists = db.companyAccounts.find(c => c.email.toLowerCase() === email.toLowerCase());
-    if (exists) {
-      return res.status(409).json({ success: false, message: 'A company account with this email already exists.' });
-    }
-
     const passwordHash = await hashPassword(password);
     const company = {
       id:            uuidv4(),
@@ -267,7 +283,23 @@ router.post('/company/register', async (req, res) => {
       createdAt:     new Date().toISOString(),
     };
 
-    db.companyAccounts.push(company);
+    if (isMySQLConnected()) {
+      const existing = await query('SELECT * FROM company_accounts WHERE LOWER(email) = ?', [email.toLowerCase().trim()]);
+      if (existing && existing.length > 0) {
+        return res.status(409).json({ success: false, message: 'A company account with this email already exists.' });
+      }
+      await query(
+        'INSERT INTO company_accounts (id, name, email, passwordHash, industry, contactPerson, role, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+        [company.id, company.name, company.email, company.passwordHash, company.industry, company.contactPerson, company.role, company.createdAt]
+      );
+    }
+
+    const db = ensureCollections(readDB());
+    const exists = db.companyAccounts.find(c => c.email.toLowerCase() === email.toLowerCase());
+    if (!isMySQLConnected() && exists) {
+      return res.status(409).json({ success: false, message: 'A company account with this email already exists.' });
+    }
+    if (!exists) db.companyAccounts.push(company);
     writeDB(db);
 
     const token = generateToken({ id: company.id, role: 'company', email: company.email, name: company.name });
@@ -290,8 +322,16 @@ router.post('/company/login', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Email and password are required.' });
     }
 
-    const db = ensureCollections(readDB());
-    const company = db.companyAccounts.find(c => c.email.toLowerCase() === email.toLowerCase());
+    let company = null;
+    if (isMySQLConnected()) {
+      const rows = await query('SELECT * FROM company_accounts WHERE LOWER(email) = ?', [email.toLowerCase().trim()]);
+      if (rows && rows.length > 0) company = rows[0];
+    }
+
+    if (!company) {
+      const db = ensureCollections(readDB());
+      company = db.companyAccounts.find(c => c.email.toLowerCase() === email.toLowerCase());
+    }
 
     if (!company) {
       return res.status(401).json({ success: false, message: 'No company account found with this email. Please register first.' });
@@ -326,15 +366,9 @@ router.post('/import-students', requireAuth, requireRole('tnp'), upload.single('
     }
 
     const db = ensureCollections(readDB());
-
-    const results = {
-      imported:  [],
-      skipped:   [],
-      errors:    [],
-    };
+    const results = { imported: [], skipped: [], errors: [] };
 
     for (const row of rows) {
-      // Accept flexible column names
       const prn         = extractField(row, 'prn', 'registration_number', 'registration number', 'reg_no', 'roll_no');
       const name        = extractField(row, 'name', 'student_name', 'full_name', 'full name');
       const email       = extractField(row, 'email', 'email_address', 'student_email');
@@ -346,16 +380,20 @@ router.post('/import-students', requireAuth, requireRole('tnp'), upload.single('
         continue;
       }
 
-      // Skip if already imported
-      const alreadyExists = db.studentAccounts.find(
-        s => s.prn.toLowerCase() === prn.toLowerCase()
-      );
+      let alreadyExists = false;
+      if (isMySQLConnected()) {
+        const existing = await query('SELECT * FROM student_accounts WHERE LOWER(prn) = ?', [prn.toLowerCase().trim()]);
+        if (existing && existing.length > 0) alreadyExists = true;
+      }
+      if (!alreadyExists) {
+        alreadyExists = Boolean(db.studentAccounts.find(s => s.prn.toLowerCase() === prn.toLowerCase().trim()));
+      }
+
       if (alreadyExists) {
         results.skipped.push({ prn, name, reason: 'Already exists in system.' });
         continue;
       }
 
-      // Generate credentials
       const plainPassword = generateStudentPassword(name, passingYear || new Date().getFullYear());
       const passwordHash  = await hashPassword(plainPassword);
 
@@ -373,9 +411,20 @@ router.post('/import-students', requireAuth, requireRole('tnp'), upload.single('
         lastLogin:    null,
       };
 
+      if (isMySQLConnected()) {
+        await query(
+          'INSERT INTO student_accounts (prn, name, email, dob, passingYear, passwordHash, role, firstLogin, importedBy, createdAt, lastLogin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+          [account.prn, account.name, account.email, account.dob, account.passingYear, account.passwordHash, account.role, account.firstLogin, account.importedBy, account.createdAt, account.lastLogin]
+        );
+
+        await query(
+          'INSERT IGNORE INTO students (id, name, email, passingYear) VALUES (?, ?, ?, ?)',
+          [account.prn, account.name, account.email, account.passingYear || 2028]
+        );
+      }
+
       db.studentAccounts.push(account);
 
-      // Also update (or create) the student profile in db.students for the main portal
       const existingStudentIdx = db.students
         ? db.students.findIndex(s => (s.id || '').toLowerCase() === prn.toLowerCase())
         : -1;
@@ -406,7 +455,6 @@ router.post('/import-students', requireAuth, requireRole('tnp'), upload.single('
         });
       }
 
-      // Send credentials email (async, don't await to not block response)
       sendStudentCredentials({ name, email }, prn.trim(), plainPassword)
         .catch(err => console.error('[Auth] Email error for', email, err.message));
 
@@ -428,16 +476,31 @@ router.post('/import-students', requireAuth, requireRole('tnp'), upload.single('
 
 // ─── VERIFY TOKEN — Current User ──────────────────────────────────────────────
 
-router.get('/me', requireAuth, (req, res) => {
-  const db = ensureCollections(readDB());
+router.get('/me', requireAuth, async (req, res) => {
   let user = null;
 
-  if (req.user.role === 'tnp') {
-    user = db.tnpOfficers.find(o => o.id === req.user.id);
-  } else if (req.user.role === 'student') {
-    user = db.studentAccounts.find(s => s.prn === req.user.prn);
-  } else if (req.user.role === 'company') {
-    user = db.companyAccounts.find(c => c.id === req.user.id);
+  if (isMySQLConnected()) {
+    if (req.user.role === 'tnp') {
+      const rows = await query('SELECT * FROM tnp_officers WHERE id = ?', [req.user.id]);
+      if (rows && rows.length > 0) user = rows[0];
+    } else if (req.user.role === 'student') {
+      const rows = await query('SELECT * FROM student_accounts WHERE prn = ?', [req.user.prn || req.user.id]);
+      if (rows && rows.length > 0) user = rows[0];
+    } else if (req.user.role === 'company') {
+      const rows = await query('SELECT * FROM company_accounts WHERE id = ?', [req.user.id]);
+      if (rows && rows.length > 0) user = rows[0];
+    }
+  }
+
+  if (!user) {
+    const db = ensureCollections(readDB());
+    if (req.user.role === 'tnp') {
+      user = db.tnpOfficers.find(o => o.id === req.user.id);
+    } else if (req.user.role === 'student') {
+      user = db.studentAccounts.find(s => s.prn === req.user.prn);
+    } else if (req.user.role === 'company') {
+      user = db.companyAccounts.find(c => c.id === req.user.id);
+    }
   }
 
   if (!user) {
@@ -450,7 +513,14 @@ router.get('/me', requireAuth, (req, res) => {
 
 // ─── GET imported students list (T&P only) ────────────────────────────────────
 
-router.get('/students', requireAuth, requireRole('tnp'), (req, res) => {
+router.get('/students', requireAuth, requireRole('tnp'), async (req, res) => {
+  if (isMySQLConnected()) {
+    const rows = await query('SELECT prn, name, email, dob, passingYear, role, firstLogin, importedBy, createdAt, lastLogin FROM student_accounts');
+    if (rows) {
+      return res.json({ success: true, students: rows, total: rows.length });
+    }
+  }
+
   const db = ensureCollections(readDB());
   const safeAccounts = db.studentAccounts.map(({ passwordHash: _, ...s }) => s);
   res.json({ success: true, students: safeAccounts, total: safeAccounts.length });

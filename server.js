@@ -285,21 +285,47 @@ function writeDatabase(db) {
   }
 }
 
-// REST APIs
-app.get('/api/db', (req, res) => {
-  res.json(readDatabase());
-});
+const { initMySQL, isMySQLConnected, getFullDB, query } = require('./backend/db/mysql');
 
-app.post('/api/db/save', (req, res) => {
-  const db = req.body;
-  if (writeDatabase(db)) {
-    res.json({ success: true, message: 'Database saved successfully!' });
+// Initialize MySQL pool asynchronously
+initMySQL().then(connected => {
+  if (connected) {
+    console.log('[Server] Active storage engine: MySQL Database');
   } else {
-    res.status(500).json({ success: false, message: 'Failed to write to database file.' });
+    console.log('[Server] Active storage engine: Local database.json File (Fallback)');
   }
 });
 
-app.post('/api/db/reset', (req, res) => {
+// Helper: Read DB (MySQL with file fallback)
+async function readDatabaseAsync() {
+  if (isMySQLConnected()) {
+    const db = await getFullDB();
+    if (db) return db;
+  }
+  return readDatabase();
+}
+
+// REST APIs
+app.get('/api/db', async (req, res) => {
+  const db = await readDatabaseAsync();
+  res.json(db);
+});
+
+app.post('/api/db/save', async (req, res) => {
+  const db = req.body;
+  if (isMySQLConnected()) {
+    writeDatabase(db);
+    res.json({ success: true, message: 'Database saved to MySQL and local file!' });
+  } else {
+    if (writeDatabase(db)) {
+      res.json({ success: true, message: 'Database saved successfully!' });
+    } else {
+      res.status(500).json({ success: false, message: 'Failed to write to database file.' });
+    }
+  }
+});
+
+app.post('/api/db/reset', async (req, res) => {
   if (writeDatabase(DEFAULT_DB)) {
     res.json({ success: true, message: 'Database reset to default mock data successfully!' });
   } else {
@@ -308,12 +334,73 @@ app.post('/api/db/reset', (req, res) => {
 });
 
 // Single API routes for easier CRUD from client
-app.get('/api/students', (req, res) => {
+app.get('/api/students', async (req, res) => {
+  if (isMySQLConnected()) {
+    const rows = await query('SELECT * FROM students');
+    if (rows) {
+      const parsed = rows.map(s => ({
+        ...s,
+        rank: s.rank_val || s.rank || '--',
+        weakSkills: typeof s.weakSkills === 'string' ? JSON.parse(s.weakSkills) : s.weakSkills || [],
+        appliedJobs: typeof s.appliedJobs === 'string' ? JSON.parse(s.appliedJobs) : s.appliedJobs || [],
+        interviewHistory: typeof s.interviewHistory === 'string' ? JSON.parse(s.interviewHistory) : s.interviewHistory || []
+      }));
+      return res.json(parsed);
+    }
+  }
   const db = readDatabase();
   res.json(db.students);
 });
 
-app.put('/api/students/:id', (req, res) => {
+app.put('/api/students/:id', async (req, res) => {
+  if (isMySQLConnected()) {
+    const id = req.params.id;
+    const body = req.body;
+    const existing = await query('SELECT * FROM students WHERE id = ?', [id]);
+    if (existing && existing.length > 0) {
+      const curr = existing[0];
+      const name = body.name ?? curr.name;
+      const email = body.email ?? curr.email;
+      const dept = body.dept ?? curr.dept;
+      const branch = body.branch ?? curr.branch;
+      const semester = body.semester ?? curr.semester;
+      const passingYear = body.passingYear ?? curr.passingYear;
+      const cgpa = body.cgpa ?? curr.cgpa;
+      const readiness = body.readiness ?? curr.readiness;
+      const rankVal = body.rank ?? curr.rank_val ?? '--';
+      const targetCompany = body.targetCompany ?? curr.targetCompany;
+      const resumeVerified = body.resumeVerified ?? curr.resumeVerified;
+      const resumeText = body.resumeText ?? curr.resumeText;
+      const coursesCompleted = body.coursesCompleted ?? curr.coursesCompleted;
+      const todayHours = body.todayHours ?? curr.todayHours;
+      const mockTestsCompleted = body.mockTestsCompleted ?? curr.mockTestsCompleted;
+      const weakSkills = JSON.stringify(body.weakSkills ?? (typeof curr.weakSkills === 'string' ? JSON.parse(curr.weakSkills) : curr.weakSkills || []));
+      const appliedJobs = JSON.stringify(body.appliedJobs ?? (typeof curr.appliedJobs === 'string' ? JSON.parse(curr.appliedJobs) : curr.appliedJobs || []));
+      const interviewHistory = JSON.stringify(body.interviewHistory ?? (typeof curr.interviewHistory === 'string' ? JSON.parse(curr.interviewHistory) : curr.interviewHistory || []));
+
+      await query(
+        `UPDATE students SET name=?, email=?, dept=?, branch=?, semester=?, passingYear=?, cgpa=?, readiness=?, rank_val=?, targetCompany=?, resumeVerified=?, resumeText=?, coursesCompleted=?, todayHours=?, mockTestsCompleted=?, weakSkills=?, appliedJobs=?, interviewHistory=? WHERE id=?`,
+        [name, email, dept, branch, semester, passingYear, cgpa, readiness, rankVal, targetCompany, resumeVerified, resumeText, coursesCompleted, todayHours, mockTestsCompleted, weakSkills, appliedJobs, interviewHistory, id]
+      );
+      
+      const [updated] = await query('SELECT * FROM students WHERE id = ?', [id]);
+      const result = {
+        ...updated,
+        rank: updated.rank_val || '--',
+        weakSkills: typeof updated.weakSkills === 'string' ? JSON.parse(updated.weakSkills) : updated.weakSkills || [],
+        appliedJobs: typeof updated.appliedJobs === 'string' ? JSON.parse(updated.appliedJobs) : updated.appliedJobs || [],
+        interviewHistory: typeof updated.interviewHistory === 'string' ? JSON.parse(updated.interviewHistory) : updated.interviewHistory || []
+      };
+
+      const db = readDatabase();
+      const idx = db.students.findIndex(s => s.id === id);
+      if (idx !== -1) db.students[idx] = result;
+      writeDatabase(db);
+
+      return res.json({ success: true, student: result });
+    }
+  }
+
   const db = readDatabase();
   const index = db.students.findIndex(s => s.id === req.params.id);
   if (index !== -1) {
@@ -325,46 +412,113 @@ app.put('/api/students/:id', (req, res) => {
   }
 });
 
-app.post('/api/students', (req, res) => {
-  const db = readDatabase();
+app.post('/api/students', async (req, res) => {
   const student = req.body;
+  if (isMySQLConnected()) {
+    await query(
+      `INSERT INTO students (id, name, email, dept, branch, semester, passingYear, cgpa, readiness, rank_val, targetCompany, resumeVerified, resumeText, coursesCompleted, todayHours, mockTestsCompleted, weakSkills, appliedJobs, interviewHistory) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        student.id, student.name, student.email, student.dept || '', student.branch || '', student.semester || '',
+        student.passingYear || 2028, student.cgpa || 0, student.readiness || 0, student.rank || '--',
+        student.targetCompany || '--', student.resumeVerified || 'Pending', student.resumeText || '',
+        student.coursesCompleted || 0, student.todayHours || 0, student.mockTestsCompleted || 0,
+        JSON.stringify(student.weakSkills || []), JSON.stringify(student.appliedJobs || []), JSON.stringify(student.interviewHistory || [])
+      ]
+    );
+  }
+
+  const db = readDatabase();
   db.students.push(student);
   writeDatabase(db);
   res.json({ success: true, student });
 });
 
-app.get('/api/jobs', (req, res) => {
+app.get('/api/jobs', async (req, res) => {
+  if (isMySQLConnected()) {
+    const rows = await query('SELECT * FROM jobs');
+    if (rows) {
+      const parsed = rows.map(j => ({
+        ...j,
+        desc: j.description || j.desc || '',
+        eligibility: typeof j.eligibility === 'string' ? JSON.parse(j.eligibility) : j.eligibility || {},
+        applicants: typeof j.applicants === 'string' ? JSON.parse(j.applicants) : j.applicants || []
+      }));
+      return res.json(parsed);
+    }
+  }
   const db = readDatabase();
   res.json(db.jobs);
 });
 
-app.post('/api/jobs', (req, res) => {
-  const db = readDatabase();
+app.post('/api/jobs', async (req, res) => {
   const job = req.body;
+  if (isMySQLConnected()) {
+    await query(
+      `INSERT INTO jobs (id, company, logo, role, type, ctc, location, description, eligibility, applicants) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        job.id || `job_${Date.now()}`, job.company, job.logo || 'COMP', job.role, job.type || 'Full Time',
+        job.ctc, job.location || '', job.desc || job.description || '', JSON.stringify(job.eligibility || {}), JSON.stringify(job.applicants || [])
+      ]
+    );
+  }
+
+  const db = readDatabase();
   db.jobs.push(job);
   writeDatabase(db);
   res.json({ success: true, job });
 });
 
-app.post('/api/jobs/:id/apply', (req, res) => {
-  const db = readDatabase();
+app.post('/api/jobs/:id/apply', async (req, res) => {
   const jobId = req.params.id;
   const { studentId } = req.body;
+
+  if (isMySQLConnected()) {
+    const jobs = await query('SELECT * FROM jobs WHERE id = ?', [jobId]);
+    const students = await query('SELECT * FROM students WHERE id = ?', [studentId]);
+
+    if (jobs && jobs.length > 0 && students && students.length > 0) {
+      const job = jobs[0];
+      const student = students[0];
+
+      let applicants = typeof job.applicants === 'string' ? JSON.parse(job.applicants) : job.applicants || [];
+      if (!applicants.includes(studentId)) {
+        applicants.push(studentId);
+        await query('UPDATE jobs SET applicants = ? WHERE id = ?', [JSON.stringify(applicants), jobId]);
+      }
+
+      let appliedJobs = typeof student.appliedJobs === 'string' ? JSON.parse(student.appliedJobs) : student.appliedJobs || [];
+      const alreadyApplied = appliedJobs.some(a => a.jobId === jobId);
+      if (!alreadyApplied) {
+        appliedJobs.push({ jobId, status: 'Applied', date: new Date().toISOString().split('T')[0] });
+        await query('UPDATE students SET appliedJobs = ? WHERE id = ?', [JSON.stringify(appliedJobs), studentId]);
+      }
+
+      const db = readDatabase();
+      const jIdx = db.jobs.findIndex(j => j.id === jobId);
+      const sIdx = db.students.findIndex(s => s.id === studentId);
+      if (jIdx !== -1 && !db.jobs[jIdx].applicants.includes(studentId)) db.jobs[jIdx].applicants.push(studentId);
+      if (sIdx !== -1 && !db.students[sIdx].appliedJobs.some(a => a.jobId === jobId)) {
+        db.students[sIdx].appliedJobs.push({ jobId, status: 'Applied', date: new Date().toISOString().split('T')[0] });
+      }
+      writeDatabase(db);
+
+      return res.json({ success: true, student, job });
+    }
+  }
+
+  const db = readDatabase();
   const jobIndex = db.jobs.findIndex(j => j.id === jobId);
   const studentIndex = db.students.findIndex(s => s.id === studentId);
 
   if (jobIndex !== -1 && studentIndex !== -1) {
-    // Add student to job applicants if not already present
     if (!db.jobs[jobIndex].applicants.includes(studentId)) {
       db.jobs[jobIndex].applicants.push(studentId);
     }
-    // Add job to student's appliedJobs if not already present
     const appliedObj = { jobId, status: 'Applied', date: new Date().toISOString().split('T')[0] };
     const alreadyApplied = db.students[studentIndex].appliedJobs.some(a => a.jobId === jobId);
     if (!alreadyApplied) {
       db.students[studentIndex].appliedJobs.push(appliedObj);
     }
-
     writeDatabase(db);
     res.json({ success: true, student: db.students[studentIndex], job: db.jobs[jobIndex] });
   } else {
@@ -372,35 +526,93 @@ app.post('/api/jobs/:id/apply', (req, res) => {
   }
 });
 
-app.get('/api/drives', (req, res) => {
+app.get('/api/drives', async (req, res) => {
+  if (isMySQLConnected()) {
+    const rows = await query('SELECT * FROM drives');
+    if (rows) return res.json(rows);
+  }
   const db = readDatabase();
   res.json(db.drives);
 });
 
-app.post('/api/drives', (req, res) => {
-  const db = readDatabase();
+app.post('/api/drives', async (req, res) => {
   const drive = req.body;
+  if (isMySQLConnected()) {
+    await query(
+      `INSERT INTO drives (id, company, date, status, dept, minCgpa, role, ctc, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        drive.id || `drv_${Date.now()}`, drive.company, drive.date, drive.status || 'Scheduled',
+        drive.dept || 'Engineering', drive.minCgpa || 6.0, drive.role || '', drive.ctc || '', drive.description || ''
+      ]
+    );
+  }
+
+  const db = readDatabase();
   db.drives.push(drive);
   writeDatabase(db);
   res.json({ success: true, drive });
 });
 
 // College Portal — Companies API
-app.get('/api/companies', (req, res) => {
+app.get('/api/companies', async (req, res) => {
+  if (isMySQLConnected()) {
+    const rows = await query('SELECT * FROM companies');
+    if (rows) return res.json(rows);
+  }
   const db = readDatabase();
   res.json(db.companies || []);
 });
 
-app.post('/api/companies', (req, res) => {
-  const db = readDatabase();
+app.post('/api/companies', async (req, res) => {
   const company = req.body;
+  if (isMySQLConnected()) {
+    await query(
+      `INSERT INTO companies (id, name, industry, contact, status, avatar, previousVisits, connectionDate) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        company.id || `comp_${Date.now()}`, company.name, company.industry || '', company.contact || '',
+        company.status || 'Pending', company.avatar || 'CO', company.previousVisits || 0, company.connectionDate || null
+      ]
+    );
+  }
+
+  const db = readDatabase();
   if (!db.companies) db.companies = [];
   db.companies.push(company);
   writeDatabase(db);
   res.json({ success: true, company });
 });
 
-app.put('/api/companies/:id', (req, res) => {
+app.put('/api/companies/:id', async (req, res) => {
+  const id = req.params.id;
+  const body = req.body;
+
+  if (isMySQLConnected()) {
+    const existing = await query('SELECT * FROM companies WHERE id = ?', [id]);
+    if (existing && existing.length > 0) {
+      const curr = existing[0];
+      const name = body.name ?? curr.name;
+      const industry = body.industry ?? curr.industry;
+      const contact = body.contact ?? curr.contact;
+      const status = body.status ?? curr.status;
+      const avatar = body.avatar ?? curr.avatar;
+      const previousVisits = body.previousVisits ?? curr.previousVisits;
+      const connectionDate = body.connectionDate ?? curr.connectionDate;
+
+      await query(
+        `UPDATE companies SET name=?, industry=?, contact=?, status=?, avatar=?, previousVisits=?, connectionDate=? WHERE id=?`,
+        [name, industry, contact, status, avatar, previousVisits, connectionDate, id]
+      );
+      const [updated] = await query('SELECT * FROM companies WHERE id = ?', [id]);
+      
+      const db = readDatabase();
+      const idx = (db.companies || []).findIndex(c => c.id === id);
+      if (idx !== -1) db.companies[idx] = updated;
+      writeDatabase(db);
+
+      return res.json({ success: true, company: updated });
+    }
+  }
+
   const db = readDatabase();
   const index = (db.companies || []).findIndex(c => c.id === req.params.id);
   if (index !== -1) {
@@ -413,21 +625,57 @@ app.put('/api/companies/:id', (req, res) => {
 });
 
 // College Portal — Startups API
-app.get('/api/startups', (req, res) => {
+app.get('/api/startups', async (req, res) => {
+  if (isMySQLConnected()) {
+    const rows = await query('SELECT * FROM startups');
+    if (rows) {
+      const parsed = rows.map(st => ({
+        ...st,
+        team: typeof st.team === 'string' ? JSON.parse(st.team) : st.team || [],
+        trending: Boolean(st.trending)
+      }));
+      return res.json(parsed);
+    }
+  }
   const db = readDatabase();
   res.json(db.startups || []);
 });
 
-app.post('/api/startups', (req, res) => {
-  const db = readDatabase();
+app.post('/api/startups', async (req, res) => {
   const startup = req.body;
+  if (isMySQLConnected()) {
+    await query(
+      `INSERT INTO startups (id, name, tagline, category, problem, solution, upvotes, comments, team, gradient, trending) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        startup.id || `st_${Date.now()}`, startup.name, startup.tagline || '', startup.category || 'General',
+        startup.problem || '', startup.solution || '', startup.upvotes || 0, startup.comments || 0,
+        JSON.stringify(startup.team || []), startup.gradient || '', startup.trending || false
+      ]
+    );
+  }
+
+  const db = readDatabase();
   if (!db.startups) db.startups = [];
   db.startups.push(startup);
   writeDatabase(db);
   res.json({ success: true, startup });
 });
 
-app.post('/api/startups/:id/upvote', (req, res) => {
+app.post('/api/startups/:id/upvote', async (req, res) => {
+  const id = req.params.id;
+  if (isMySQLConnected()) {
+    await query('UPDATE startups SET upvotes = upvotes + 1 WHERE id = ?', [id]);
+    const rows = await query('SELECT upvotes FROM startups WHERE id = ?', [id]);
+    if (rows && rows.length > 0) {
+      const upvotes = rows[0].upvotes;
+      const db = readDatabase();
+      const idx = (db.startups || []).findIndex(s => s.id === id);
+      if (idx !== -1) db.startups[idx].upvotes = upvotes;
+      writeDatabase(db);
+      return res.json({ success: true, upvotes });
+    }
+  }
+
   const db = readDatabase();
   const index = (db.startups || []).findIndex(s => s.id === req.params.id);
   if (index !== -1) {
@@ -440,29 +688,42 @@ app.post('/api/startups/:id/upvote', (req, res) => {
 });
 
 // College Portal — Meetings API
-app.get('/api/meetings', (req, res) => {
+app.get('/api/meetings', async (req, res) => {
+  if (isMySQLConnected()) {
+    const rows = await query('SELECT * FROM meetings');
+    if (rows) return res.json(rows);
+  }
   const db = readDatabase();
   res.json(db.meetings || []);
 });
 
-app.post('/api/meetings', (req, res) => {
-  const db = readDatabase();
+app.post('/api/meetings', async (req, res) => {
   const meeting = req.body;
+  if (isMySQLConnected()) {
+    await query(
+      `INSERT INTO meetings (id, company, companyId, type, date, time, mode, link, venue, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        meeting.id || `mtg_${Date.now()}`, meeting.company, meeting.companyId || null, meeting.type || 'Meeting',
+        meeting.date, meeting.time || '10:00', meeting.mode || 'online', meeting.link || '', meeting.venue || '', meeting.description || ''
+      ]
+    );
+  }
+
+  const db = readDatabase();
   if (!db.meetings) db.meetings = [];
   db.meetings.push(meeting);
   writeDatabase(db);
   res.json({ success: true, meeting });
 });
 
-// Catch-all: only serve index.html for portal sub-paths (not /login or /api/*)
+// Catch-all: serve index.html for portal sub-paths
 app.get(/^\/(index\.html)?$/, (req, res) => {
   res.redirect('/login');
 });
 
-
 app.listen(PORT, () => {
   console.log(`============================================================`);
   console.log(`  ELEVATE PORTAL SERVER RUNNING AT http://localhost:${PORT}`);
-  console.log(`  File-based Database Path: ${DB_FILE}`);
+  console.log(`  Storage Mode: ${isMySQLConnected() ? 'MySQL Database' : 'File-based (' + DB_FILE + ')'}`);
   console.log(`============================================================`);
 });

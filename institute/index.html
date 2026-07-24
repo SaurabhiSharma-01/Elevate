@@ -158,15 +158,14 @@
     <nav class="sidebar" id="mainSidebar" style="position: fixed; top: 0; left: 0; height: 100vh; z-index: 200;">
 
       <!-- Floating Circular Arrow Sidebar Toggle Button (Image 2 style) -->
-      <button class="sidebar-arrow-toggle" onclick="toggleSidebarCollapse()" id="sidebarArrowToggleBtn" title="Toggle Sidebar">
-        <svg class="arrow-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-          <polyline points="15 18 9 12 15 6"></polyline>
-        </svg>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="appSidebar">
+      <!-- Big Centered Overlapping Sidebar Toggle Button -->
+      <button class="sidebar-arrow-toggle" onclick="toggleSidebar()" title="Toggle Sidebar">
+        <svg class="arrow-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
       </button>
 
-      <!-- Sidebar Brand Header + Quick Notification Icon -->
       <div class="sidebar-brand">
-        <!-- Brand Logo & Name -->
         <div style="display: flex; align-items: center; gap: 10px;">
           <div class="sb-logo">E</div>
           <div class="sb-name-wrapper">
@@ -175,7 +174,6 @@
           </div>
         </div>
 
-        <!-- Controls: Notification Button -->
         <div style="display: flex; align-items: center; gap: 6px;">
           <div class="icon-btn" onclick="toggleNotifications()" id="notifBtn" style="position: relative; cursor: pointer; color: var(--text-2); display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border);">
             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -186,7 +184,6 @@
           </div>
         </div>
 
-        <!-- Notifications Dropdown Panel -->
         <div class="notif-panel" id="notifPanel" style="display:none; position: absolute; top: 60px; right: 10px; width: 320px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-lg); z-index: 300; padding: 16px;">
           <div class="notif-panel-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border);">
             <h4 style="font-size: 14px; font-weight: 700; margin: 0; color: var(--text);">T&P Cell Notifications</h4>
@@ -200,81 +197,118 @@
                 <p style="font-size: 11px; color: var(--text-2); margin-top: 2px;">Synthetix Cloud sent a campus drive request.</p>
               </div>
             </div>
-            <div class="np-item" style="display: flex; gap: 10px; font-size: 12px;">
-              <div style="font-size: 16px;">🎓</div>
-              <div>
-                <strong style="color: var(--text);">Cohort Progress Alert</strong>
-                <p style="font-size: 11px; color: var(--text-2); margin-top: 2px;">86 students completed mock tests this week.</p>
-              </div>
-            </div>
           </div>
         </div>
       </div>
 
-      <!-- Navigation Section Boxes -->
-      <nav class="sidebar-nav" style="padding: 14px 12px; display: flex; flex-direction: column; gap: 14px;">
-        
-        <!-- SECTION BOX 1: T&P MANAGEMENT -->
-        <div class="sb-section-box">
-          <div class="nav-section-label" style="padding: 4px 8px 6px; font-size: 10px; font-weight: 800; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em;">T&P Management</div>
-          
-          <div class="nav-item active" data-page="college-dashboard" onclick="navigateTo('college-dashboard')">
-            <div class="nav-icon-circle">
-              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <rect x="3" y="3" width="7" height="7" rx="1.5"/>
-                <rect x="14" y="3" width="7" height="7" rx="1.5"/>
-                <rect x="14" y="14" width="7" height="7" rx="1.5"/>
-                <rect x="3" y="14" width="7" height="7" rx="1.5"/>
-              </svg>
-            </div>
-            <span class="nav-text">Dashboard</span>
-          </div>
-
-          <div class="nav-item" data-page="college-students" onclick="navigateTo('college-students')">
-            <div class="nav-icon-circle">
-              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-              </svg>
-            </div>
-            <span class="nav-text">Student Monitoring</span>
-          </div>
-
-          <div class="nav-item" data-page="college-innovation" onclick="navigateTo('college-innovation')">
-            <div class="nav-icon-circle">
-              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-              </svg>
-            </div>
-            <span class="nav-text">Innovation Hub</span>
-          </div>
-
-          <div class="nav-item" data-page="college-companies" onclick="navigateTo('college-companies')">
-            <div class="nav-icon-circle">
-              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"/>
-                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
-              </svg>
-            </div>
-            <span class="nav-text">Company Relations</span>
-          </div>
+      <!-- Navigation Section Hierarchy -->
+      <nav class="sidebar-nav" style="padding: 14px 12px; display: flex; flex-direction: column; gap: 4px;">
+        <!-- 🏠 DASHBOARD -->
+        <div class="nav-item active" data-page="college-dashboard" onclick="navigateTo('college-dashboard')">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span class="nav-text">Dashboard</span>
         </div>
 
-        <!-- SECTION BOX 2: ACCOUNT & SYSTEM -->
-        <div class="sb-section-box">
-          <div class="nav-section-label" style="padding: 4px 8px 6px; font-size: 10px; font-weight: 800; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em;">Account & System</div>
-
-          <div class="nav-item" data-page="settings" onclick="navigateTo('settings')">
-            <div class="nav-icon-circle">
-              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-              </svg>
-            </div>
-            <span class="nav-text">Settings</span>
-          </div>
+        <!-- 👨‍🎓 STUDENT MONITORING -->
+        <div class="nav-section-label">👨‍🎓 Student Monitoring</div>
+        <div class="nav-sub-item" data-page="institute-details" onclick="navigateTo('institute-details')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          <span class="nav-text">Institute Details</span>
+        </div>
+        <div class="nav-sub-item" data-page="resource-management" onclick="navigateTo('resource-management')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg>
+          <span class="nav-text">Resource Management</span>
         </div>
 
+        <!-- 💼 PLACEMENT MANAGEMENT -->
+        <div class="nav-section-label">💼 Placement Management</div>
+        <div class="nav-sub-item" data-page="placement-drives" onclick="navigateTo('placement-drives')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          <span class="nav-text">Placement Drives</span>
+        </div>
+        <div class="nav-sub-item" data-page="company-management" onclick="navigateTo('company-management')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          <span class="nav-text">Company Management</span>
+        </div>
+        <div class="nav-sub-item" data-page="applications" onclick="navigateTo('applications')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+          <span class="nav-text">Applications</span>
+        </div>
+
+        <!-- 🚀 INNOVATION HUB -->
+        <div class="nav-section-label">🚀 Innovation Hub</div>
+        <div class="nav-sub-item" data-page="startup-showcase" onclick="navigateTo('startup-showcase')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+          <span class="nav-text">Startup Showcase</span>
+        </div>
+        <div class="nav-sub-item" data-page="mentor-management" onclick="navigateTo('mentor-management')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span class="nav-text">Mentor Management</span>
+        </div>
+        <div class="nav-sub-item" data-page="startup-analytics" onclick="navigateTo('startup-analytics')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span class="nav-text">Startup Analytics</span>
+        </div>
+
+        <!-- 🤝 COMPANY RELATIONS -->
+        <div class="nav-section-label">🤝 Company Relations</div>
+        <div class="nav-sub-item" data-page="recruiter-network" onclick="navigateTo('recruiter-network')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          <span class="nav-text">Recruiter Network</span>
+        </div>
+        <div class="nav-sub-item" data-page="partnership-requests" onclick="navigateTo('partnership-requests')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+          <span class="nav-text">Partnership Requests</span>
+        </div>
+        <div class="nav-sub-item" data-page="mentorship-programs" onclick="navigateTo('mentorship-programs')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          <span class="nav-text">Mentorship Programs</span>
+        </div>
+
+        <!-- 📢 COMMUNICATION CENTER -->
+        <div class="nav-section-label">📢 Communication Center</div>
+        <div class="nav-sub-item" data-page="announcements" onclick="navigateTo('announcements')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/></svg>
+          <span class="nav-text">Announcements</span>
+        </div>
+        <div class="nav-sub-item" data-page="notifications" onclick="navigateTo('notifications')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span class="nav-text">Notifications</span>
+        </div>
+        <div class="nav-sub-item" data-page="email-messaging" onclick="navigateTo('email-messaging')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <span class="nav-text">Email & Messaging</span>
+        </div>
+
+        <!-- 📂 DOCUMENTS -->
+        <div class="nav-section-label">📂 Documents</div>
+        <div class="nav-sub-item" data-page="student-documents" onclick="navigateTo('student-documents')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+          <span class="nav-text">Student Documents</span>
+        </div>
+        <div class="nav-sub-item" data-page="company-documents" onclick="navigateTo('company-documents')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/></svg>
+          <span class="nav-text">Company Documents</span>
+        </div>
+        <div class="nav-sub-item" data-page="resource-library" onclick="navigateTo('resource-library')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span class="nav-text">Resource Library</span>
+        </div>
+
+        <!-- ⚙️ SETTINGS -->
+        <div class="nav-section-label">⚙️ Settings</div>
+        <div class="nav-sub-item" data-page="institute-settings" onclick="navigateTo('institute-settings')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <span class="nav-text">Institute Settings</span>
+        </div>
+        <div class="nav-sub-item" data-page="user-management" onclick="navigateTo('user-management')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+          <span class="nav-text">User Management</span>
+        </div>
+        <div class="nav-sub-item" data-page="system-settings" onclick="navigateTo('system-settings')">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/></svg>
+          <span class="nav-text">System Settings</span>
+        </div>
       </nav>
 
       <!-- Sidebar User Profile & Sign Out (Matching Student Footer Style) -->
@@ -562,121 +596,277 @@
       </div>
 
       <!-- ============================================================
-         PAGE 2: STUDENT MONITORING
+         PAGE 2: STUDENT MONITORING & PLACEMENT LMS PORTAL
          ============================================================ -->
       <div class="app-page fade-in" id="page-college-students" style="padding: 32px 36px;">
-        <div class="dashboard-greeting" style="margin-bottom: 24px;">
-          <h1 style="font-size: 24px; font-weight: 800; color: var(--text); font-family: 'Rajdhani', sans-serif;">Student Monitoring & AI Interventions</h1>
-          <p style="font-size: 13px; color: var(--text-2); margin-top: 4px;">Track every student's placement readiness, verify resumes, evaluate AI test scores, and dispatch support plans.</p>
+        
+        <!-- Page Header -->
+        <div class="dashboard-greeting" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+          <div>
+            <h1 style="font-size: 26px; font-weight: 800; color: var(--text); font-family: 'Rajdhani', 'Montserrat', sans-serif; letter-spacing: -0.01em; margin: 0;">Student Monitoring & Placement LMS</h1>
+            <p style="font-size: 13px; color: var(--text-2); margin-top: 4px;">Enterprise placement intelligence, hierarchical analytics, and automated Learning Management System.</p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn-primary" onclick="openCreateClassModal()" style="padding: 9px 16px; font-size: 12px; font-weight: 700; border-radius: 10px;">+ Create Class & Import Excel</button>
+            <button class="btn-outline" onclick="openAddStudyMaterialModal()" style="padding: 9px 16px; font-size: 12px; font-weight: 700; border-radius: 10px; background: #fff;">+ Add Study Material</button>
+            <button class="btn-outline" onclick="openCreateTestModal()" style="padding: 9px 16px; font-size: 12px; font-weight: 700; border-radius: 10px; background: #fff;">+ Create Test</button>
+          </div>
         </div>
 
-        <div class="sm-layout" style="display: grid; grid-template-columns: 280px 1fr; gap: 24px;">
-          
-          <!-- Filter Panel Left -->
-          <div class="sm-filter-panel" style="display: flex; flex-direction: column; gap: 16px;">
-            <div class="sm-filter-card" style="background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px;">
-              <div class="sm-filter-title" style="font-size: 11px; font-weight: 800; color: var(--text-3); text-transform: uppercase; margin-bottom: 8px;">Search Student</div>
-              <input type="text" class="sm-filter-select" id="smSearchInput" placeholder="Name or Roll No..." oninput="renderStudentCards()" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); color: var(--text); font-size: 12px;" />
-            </div>
-
-            <div class="sm-filter-card" style="background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px;">
-              <div class="sm-filter-title" style="font-size: 11px; font-weight: 800; color: var(--text-3); text-transform: uppercase; margin-bottom: 8px;">Department</div>
-              <select class="sm-filter-select" id="smDeptFilter" onchange="renderStudentCards()" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); color: var(--text); font-size: 12px;">
-                <option value="All">All Departments</option>
-                <option value="Computer Science">Computer Science</option>
-                <option value="Information Technology">Information Technology</option>
-                <option value="Electronics">Electronics</option>
-                <option value="MBA Finance">MBA Finance</option>
-                <option value="Mechanical">Mechanical</option>
-              </select>
-            </div>
-
-            <div class="sm-filter-card" style="background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px;">
-              <div class="sm-filter-title" style="font-size: 11px; font-weight: 800; color: var(--text-3); text-transform: uppercase; margin-bottom: 8px;">Academic Year</div>
-              <div class="sm-year-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
-                <button class="sm-year-btn active" data-year="All" onclick="selectSmYear(this, 'All')" style="padding: 6px; font-size: 11px; border-radius: 6px; border: 1px solid var(--border); background: var(--primary); color: white; cursor: pointer;">All</button>
-                <button class="sm-year-btn" data-year="1" onclick="selectSmYear(this, '1')" style="padding: 6px; font-size: 11px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-2); cursor: pointer;">1st</button>
-                <button class="sm-year-btn" data-year="2" onclick="selectSmYear(this, '2')" style="padding: 6px; font-size: 11px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-2); cursor: pointer;">2nd</button>
-                <button class="sm-year-btn" data-year="3" onclick="selectSmYear(this, '3')" style="padding: 6px; font-size: 11px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text-2); cursor: pointer;">3rd</button>
-              </div>
-            </div>
-
-            <div class="sm-filter-card" style="background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px;">
-              <div class="sm-filter-title" style="font-size: 11px; font-weight: 800; color: var(--text-3); text-transform: uppercase; margin-bottom: 8px;">Readiness Status</div>
-              <div class="sm-checkbox-group" style="display: flex; flex-direction: column; gap: 8px; font-size: 12px; color: var(--text-2);">
-                <label class="sm-checkbox" style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" id="chkReady" checked onchange="renderStudentCards()"><span class="sm-checkbox-label">✅ Placement Ready</span></label>
-                <label class="sm-checkbox" style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" id="chkImproving" checked onchange="renderStudentCards()"><span class="sm-checkbox-label">📈 Actively Improving</span></label>
-                <label class="sm-checkbox" style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" id="chkAttention" checked onchange="renderStudentCards()"><span class="sm-checkbox-label">⚠️ Needs Attention</span></label>
-                <label class="sm-checkbox" style="display: flex; align-items: center; gap: 8px; cursor: pointer;"><input type="checkbox" id="chkInactive" onchange="renderStudentCards()"><span class="sm-checkbox-label">💤 Inactive</span></label>
-              </div>
-            </div>
-
-            <div class="sm-filter-card" style="background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px;">
-              <div class="sm-filter-title" style="font-size: 11px; font-weight: 800; color: var(--text-3); text-transform: uppercase; margin-bottom: 8px;">Min CGPA</div>
-              <input type="number" class="sm-filter-select" id="smCgpaFilter" placeholder="e.g. 7.0" min="0" max="10" step="0.1" oninput="renderStudentCards()" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); color: var(--text); font-size: 12px;" />
-            </div>
-
-            <button class="sm-ai-btn" onclick="showToast('AI Intervention Roadmap generated for lagging students.', 'success')" style="padding: 12px; border-radius: 12px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; font-weight: 800; font-size: 12px; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
-              ⚡ Generate AI Support Plan
-            </button>
+        <!-- Sub-Navigation Tabs: 1. Institute Details | 2. Resource Management (LMS) -->
+        <div class="sm-subnav-bar">
+          <div class="sm-subnav-tab active" id="tabBtn-institute-details" onclick="switchSmTab('institute-details')">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+            1. Institute Details (Analytics)
           </div>
+          <div class="sm-subnav-tab" id="tabBtn-resource-management" onclick="switchSmTab('resource-management')">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            2. Resource Management (LMS)
+          </div>
+        </div>
 
-          <!-- Right Panel (Cohort Stats + Trend Chart + Student Grid) -->
-          <div class="sm-right" style="display: flex; flex-direction: column; gap: 24px;">
-            
-            <!-- Cohort Quick Stats Row -->
-            <div class="sm-top-row" id="smStatsRow" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
-              <div class="sm-stat ready" style="background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px;">
-                <div class="sm-stat-label" style="font-size: 11px; color: var(--text-2); font-weight: 600;">Placement Ready</div>
-                <div class="sm-stat-value" id="smStatReady" style="font-size: 24px; font-weight: 900; color: var(--success); font-family: 'Rajdhani', sans-serif;">—</div>
-                <div class="sm-stat-delta up" style="font-size: 10px; color: var(--success);">↑ Ready for hiring</div>
+        <!-- SUB-PAGE 1: INSTITUTE DETAILS (ANALYTICS & HIERARCHICAL FILTERING) -->
+        <div class="sm-tab-content active" id="sm-subpage-institute-details">
+          
+          <!-- Hierarchical Filter Bar Card -->
+          <div class="hierarchical-filter-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                <h3 style="font-size: 15px; font-weight: 800; color: var(--primary); font-family: 'Rajdhani', sans-serif; margin: 0;">Hierarchical Institute Filter Chain</h3>
               </div>
-              <div class="sm-stat improving" style="background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px;">
-                <div class="sm-stat-label" style="font-size: 11px; color: var(--text-2); font-weight: 600;">Improving</div>
-                <div class="sm-stat-value" id="smStatImproving" style="font-size: 24px; font-weight: 900; color: var(--warning); font-family: 'Rajdhani', sans-serif;">—</div>
-                <div class="sm-stat-delta" style="font-size: 10px; color: var(--text-3);">Active practice</div>
-              </div>
-              <div class="sm-stat attention" style="background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px;">
-                <div class="sm-stat-label" style="font-size: 11px; color: var(--text-2); font-weight: 600;">Need Attention</div>
-                <div class="sm-stat-value" id="smStatAttention" style="font-size: 24px; font-weight: 900; color: var(--error); font-family: 'Rajdhani', sans-serif;">—</div>
-                <div class="sm-stat-delta down" style="font-size: 10px; color: var(--error);">Below 55% score</div>
-              </div>
-              <div class="sm-stat" style="background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 16px;">
-                <div class="sm-stat-label" style="font-size: 11px; color: var(--text-2); font-weight: 600;">Avg Readiness</div>
-                <div class="sm-stat-value" id="smStatAvg" style="font-size: 24px; font-weight: 900; color: var(--primary); font-family: 'Rajdhani', sans-serif;">—%</div>
-                <div class="sm-stat-delta" style="font-size: 10px; color: var(--text-3);">Cohort average</div>
-              </div>
+              <span id="hFilterStatusBadge" style="font-size: 11px; font-weight: 700; color: #D97706; background: #FEF3C7; border: 1px solid #FDE68A; padding: 4px 12px; border-radius: 99px;">
+                🔒 Select all 4 filters sequentially to unlock cohort intelligence
+              </span>
             </div>
 
-            <!-- Trend Chart -->
-            <div class="card" style="background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 20px;">
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-                <h3 style="font-size: 15px; font-weight: 800; color: var(--text); font-family: 'Rajdhani', sans-serif;">Cohort Readiness Improvement Trends</h3>
-                <span style="font-size: 11px; color: var(--text-3);">Last 6 months</span>
-              </div>
-              <div style="position: relative; height: 180px;">
-                <canvas id="cohortTrendChart"></canvas>
-              </div>
-            </div>
-
-            <!-- Student Profiles Header & Grid -->
-            <div>
-              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;">
-                <h3 style="font-size: 16px; font-weight: 800; color: var(--text); font-family: 'Rajdhani', sans-serif;">Student Profiles <span id="smStudentCount" style="font-size: 13px; color: var(--text-2); font-weight: 500;"></span></h3>
-                <select class="chart-period-select" id="smSortSelect" onchange="renderStudentCards()" style="padding: 6px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); font-size: 12px; outline: none; cursor: pointer;">
-                  <option value="readiness">Sort by Readiness</option>
-                  <option value="cgpa">Sort by CGPA</option>
-                  <option value="name">Sort by Name</option>
+            <!-- 4-Level Cascading Filter Grid -->
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;">
+              <!-- Level 1: Academic Year -->
+              <div>
+                <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase; margin-bottom: 4px; display: block;">1. Academic Year</label>
+                <select class="h-filter-select" id="hFilterAcadYear" onchange="onHFilterChange(1)">
+                  <option value="">Select Academic Year...</option>
+                  <option value="2025-2026">2025 - 2026</option>
+                  <option value="2024-2025">2024 - 2025</option>
+                  <option value="2023-2024">2023 - 2024</option>
                 </select>
               </div>
 
-              <!-- Student Cards Grid -->
-              <div class="student-cards-grid" id="studentCardsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px;">
-                <!-- Populated via JS -->
+              <!-- Level 2: Department / Branch (Disabled until Level 1 selected) -->
+              <div>
+                <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase; margin-bottom: 4px; display: block;">2. Department / Branch</label>
+                <select class="h-filter-select" id="hFilterDept" disabled onchange="onHFilterChange(2)">
+                  <option value="">Select Department...</option>
+                  <option value="Computer Science">Computer Science</option>
+                  <option value="Information Technology">Information Technology</option>
+                  <option value="Electronics">Electronics</option>
+                  <option value="Mechanical">Mechanical</option>
+                  <option value="MBA Finance">MBA Finance</option>
+                </select>
+              </div>
+
+              <!-- Level 3: Year of Study (Disabled until Level 2 selected) -->
+              <div>
+                <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase; margin-bottom: 4px; display: block;">3. Year of Study</label>
+                <select class="h-filter-select" id="hFilterYear" disabled onchange="onHFilterChange(3)">
+                  <option value="">Select Year of Study...</option>
+                  <option value="FY">FY (First Year)</option>
+                  <option value="SY">SY (Second Year)</option>
+                  <option value="TY">TY (Third Year)</option>
+                  <option value="Final Year">Final Year</option>
+                </select>
+              </div>
+
+              <!-- Level 4: Division / Class (Disabled until Level 3 selected) -->
+              <div>
+                <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase; margin-bottom: 4px; display: block;">4. Division / Class</label>
+                <select class="h-filter-select" id="hFilterDivision" disabled onchange="onHFilterChange(4)">
+                  <option value="">Select Division...</option>
+                  <option value="Div A">Division A</option>
+                  <option value="Div B">Division B</option>
+                  <option value="Div C">Division C</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Analytics Dashboard Cards (Visible always, values shown as 0 / -- until all 4 filters selected) -->
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
+            
+            <div class="card" style="background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 18px;">
+              <div style="font-size: 11px; color: var(--text-2); font-weight: 700; text-transform: uppercase;">Overall Cohort Readiness</div>
+              <div id="hMetricReadiness" style="font-size: 28px; font-weight: 900; color: var(--primary); font-family: 'Rajdhani', sans-serif; margin: 4px 0;">--%</div>
+              <div style="font-size: 10px; color: var(--text-3);" id="hMetricReadinessSub">Select all 4 filters</div>
+            </div>
+
+            <div class="card" style="background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 18px;">
+              <div style="font-size: 11px; color: var(--text-2); font-weight: 700; text-transform: uppercase;">Placement Ready</div>
+              <div id="hMetricReady" style="font-size: 28px; font-weight: 900; color: var(--success); font-family: 'Rajdhani', sans-serif; margin: 4px 0;">0</div>
+              <div style="font-size: 10px; color: var(--success);" id="hMetricReadySub">Students (≥ 75% Score)</div>
+            </div>
+
+            <div class="card" style="background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 18px;">
+              <div style="font-size: 11px; color: var(--text-2); font-weight: 700; text-transform: uppercase;">Need Intervention</div>
+              <div id="hMetricAttention" style="font-size: 28px; font-weight: 900; color: var(--error); font-family: 'Rajdhani', sans-serif; margin: 4px 0;">0</div>
+              <div style="font-size: 10px; color: var(--error);" id="hMetricAttentionSub">Students (< 55% Score)</div>
+            </div>
+
+            <div class="card" style="background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 18px;">
+              <div style="font-size: 11px; color: var(--text-2); font-weight: 700; text-transform: uppercase;">Resume Completion %</div>
+              <div id="hMetricResume" style="font-size: 28px; font-weight: 900; color: var(--text); font-family: 'Rajdhani', sans-serif; margin: 4px 0;">--%</div>
+              <div style="font-size: 10px; color: var(--text-3);">Verified AI Resumes</div>
+            </div>
+
+          </div>
+
+          <!-- Analytics Charts Row (Funnel & Skill Distribution) -->
+          <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px; margin-bottom: 28px;">
+            
+            <!-- Placement Funnel & Progress -->
+            <div class="card" style="background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 24px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-size: 16px; font-weight: 800; color: var(--text); font-family: 'Rajdhani', sans-serif; margin: 0;">Placement Funnel & Prediction Engine</h3>
+                <span style="font-size: 11px; color: var(--primary); font-weight: 700;">AI Forecasted</span>
+              </div>
+              <div style="position: relative; height: 210px;">
+                <canvas id="hPlacementFunnelChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Skill Gap Distribution -->
+            <div class="card" style="background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 24px; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <h3 style="font-size: 16px; font-weight: 800; color: var(--text); font-family: 'Rajdhani', sans-serif; margin-bottom: 4px;">Weak vs. Strong Skill Distribution</h3>
+                <p style="font-size: 11px; color: var(--text-2); margin-bottom: 14px;">Identified via AI Skill Gap evaluations</p>
+                <div id="hSkillDistList" style="display: flex; flex-direction: column; gap: 10px;">
+                  <div style="font-size: 12px; color: var(--text-3); text-align: center; padding: 30px 0;">Select all 4 filters to unlock skill breakdown.</div>
+                </div>
               </div>
             </div>
 
           </div>
+
+          <!-- Student Roster Table Container (Masked until all 4 filters are selected) -->
+          <div class="card" style="background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+              <div>
+                <h3 style="font-size: 16px; font-weight: 800; color: var(--text); font-family: 'Rajdhani', sans-serif; margin: 0;">Cohort Student Profiles</h3>
+                <p style="font-size: 12px; color: var(--text-2); margin-top: 2px;">Filtered list of enrolled students for the selected class division.</p>
+              </div>
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <input type="text" id="hStudentSearchInput" placeholder="Search student name..." oninput="renderHStudentRoster()" style="padding: 7px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface-2); font-size: 12px; width: 200px;" disabled />
+              </div>
+            </div>
+
+            <div id="hStudentRosterContainer" style="min-height: 180px; display: flex; align-items: center; justify-content: center; border: 1px dashed var(--border); border-radius: 12px; background: var(--surface-2); color: var(--text-2); font-size: 13px; font-weight: 600; text-align: center; padding: 40px;">
+              🔒 Student-level information is masked.<br><span style="font-size: 11px; font-weight: 400; color: var(--text-3); margin-top: 6px; display: block;">Select Academic Year ➔ Department ➔ Year of Study ➔ Division to view student roster.</span>
+            </div>
+          </div>
+
+        </div>
+
+
+        <!-- SUB-PAGE 2: RESOURCE MANAGEMENT (PLACEMENT LEARNING MANAGEMENT SYSTEM / LMS) -->
+        <div class="sm-tab-content" id="sm-subpage-resource-management" style="display: none;">
+          
+          <!-- LMS Control Center Top Cards (3 Modules: Class Management, Study Materials, Test Management) -->
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 28px;">
+            
+            <!-- Module 1: Class Management -->
+            <div class="lms-module-card">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <div style="background: rgba(91, 45, 144, 0.1); width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 20px;">🏫</div>
+                <span style="font-size: 11px; font-weight: 700; color: var(--primary); background: var(--primary-light); padding: 3px 10px; border-radius: 99px;">18 Active Classes</span>
+              </div>
+              <h3 style="font-size: 18px; font-weight: 800; color: var(--text); font-family: 'Rajdhani', sans-serif; margin: 0;">Class Management</h3>
+              <p style="font-size: 12px; color: var(--text-2); margin-top: 4px; margin-bottom: 16px;">Import student batches via Excel (.xlsx / .csv) and organize divisions.</p>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn-primary" onclick="openCreateClassModal()" style="padding: 7px 12px; font-size: 11px; font-weight: 700; border-radius: 8px;">+ Create Class</button>
+                <button class="btn-outline" onclick="openCreateClassModal()" style="padding: 7px 12px; font-size: 11px; font-weight: 700; border-radius: 8px; background: #fff;">Upload Excel</button>
+              </div>
+            </div>
+
+            <!-- Module 2: Study Materials CMS -->
+            <div class="lms-module-card">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <div style="background: rgba(34, 197, 94, 0.1); width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #15803D; font-size: 20px;">📚</div>
+                <span style="font-size: 11px; font-weight: 700; color: #15803D; background: #DCFCE7; padding: 3px 10px; border-radius: 99px;">142 Resources</span>
+              </div>
+              <h3 style="font-size: 18px; font-weight: 800; color: var(--text); font-family: 'Rajdhani', sans-serif; margin: 0;">Study Materials (CMS)</h3>
+              <p style="font-size: 12px; color: var(--text-2); margin-top: 4px; margin-bottom: 16px;">Manage video courses, PDFs, PYQs, coding sheets & YouTube materials.</p>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn-primary" onclick="openAddStudyMaterialModal()" style="padding: 7px 12px; font-size: 11px; font-weight: 700; border-radius: 8px;">+ Add Resource</button>
+                <button class="btn-outline" onclick="filterLmsResources('All')" style="padding: 7px 12px; font-size: 11px; font-weight: 700; border-radius: 8px; background: #fff;">Content CMS</button>
+              </div>
+            </div>
+
+            <!-- Module 3: Test & Assessment Management -->
+            <div class="lms-module-card">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <div style="background: rgba(245, 158, 11, 0.1); width: 42px; height: 42px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #D97706; font-size: 20px;">📝</div>
+                <span style="font-size: 11px; font-weight: 700; color: #B45309; background: #FEF3C7; padding: 3px 10px; border-radius: 99px;">36 Active Tests</span>
+              </div>
+              <h3 style="font-size: 18px; font-weight: 800; color: var(--text); font-family: 'Rajdhani', sans-serif; margin: 0;">Test Management</h3>
+              <p style="font-size: 12px; color: var(--text-2); margin-top: 4px; margin-bottom: 16px;">Create & assign aptitude, technical, coding tests & mock interviews.</p>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button class="btn-primary" onclick="openCreateTestModal()" style="padding: 7px 12px; font-size: 11px; font-weight: 700; border-radius: 8px;">+ Create Test</button>
+                <button class="btn-outline" onclick="showToast('Assessment analytics loaded.', 'success')" style="padding: 7px 12px; font-size: 11px; font-weight: 700; border-radius: 8px; background: #fff;">Test Analytics</button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Active LMS Content & Target Audience Assignment Grid -->
+          <div style="display: grid; grid-template-columns: 1fr 340px; gap: 24px;">
+            
+            <!-- Left Column: Published Study Materials & Tests Feed -->
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-size: 16px; font-weight: 800; color: var(--text); font-family: 'Rajdhani', sans-serif; margin: 0;">Published Placement Resources & Assessments</h3>
+                <div style="display: flex; gap: 6px;">
+                  <button class="ih-filter-chip active" id="lmsFilter-All" onclick="filterLmsResources('All')" style="padding: 5px 12px; font-size: 11px; border-radius: 99px; border: 1px solid var(--border); background: var(--primary); color: white; cursor: pointer;">All</button>
+                  <button class="ih-filter-chip" id="lmsFilter-Video" onclick="filterLmsResources('Video')" style="padding: 5px 12px; font-size: 11px; border-radius: 99px; border: 1px solid var(--border); background: #fff; color: var(--text-2); cursor: pointer;">📹 Videos</button>
+                  <button class="ih-filter-chip" id="lmsFilter-PDF" onclick="filterLmsResources('PDF')" style="padding: 5px 12px; font-size: 11px; border-radius: 99px; border: 1px solid var(--border); background: #fff; color: var(--text-2); cursor: pointer;">📄 PDFs & PYQs</button>
+                  <button class="ih-filter-chip" id="lmsFilter-Test" onclick="filterLmsResources('Test')" style="padding: 5px 12px; font-size: 11px; border-radius: 99px; border: 1px solid var(--border); background: #fff; color: var(--text-2); cursor: pointer;">📝 Tests</button>
+                </div>
+              </div>
+
+              <div id="lmsResourceFeedContainer" style="display: flex; flex-direction: column; gap: 14px;">
+                <!-- Populated dynamically via JS -->
+              </div>
+            </div>
+
+            <!-- Right Column: Future Ready AI & Class Roster Side Panel -->
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+              
+              <!-- AI Automated Learning Path & Recommendation Engine -->
+              <div class="card" style="background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%); border-radius: 20px; padding: 20px; color: white;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                  <span style="color: #FBBF24; font-size: 18px;">✦</span>
+                  <h4 style="font-size: 15px; font-weight: 800; color: #fff; font-family: 'Rajdhani', sans-serif; margin: 0;">AI Automated Resource Delivery</h4>
+                </div>
+                <p style="font-size: 11px; color: #C4B5FD; line-height: 1.5; margin-bottom: 12px;">Resources & tests are dynamically routed to eligible students' Learning Hub based on targeted division and readiness criteria.</p>
+                <div style="font-size: 11px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 8px 12px; border-radius: 10px; color: #34D399; font-weight: 600;">
+                  ✓ Auto-notifications active
+                </div>
+              </div>
+
+              <!-- Created Classes List Panel -->
+              <div class="card" style="background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                  <h4 style="font-size: 15px; font-weight: 800; color: var(--text); font-family: 'Rajdhani', sans-serif; margin: 0;">Active Class Divisions</h4>
+                  <span style="font-size: 11px; color: var(--primary); font-weight: 700; cursor: pointer;" onclick="openCreateClassModal()">+ Add</span>
+                </div>
+                <div id="lmsClassesList" style="display: flex; flex-direction: column; gap: 10px;">
+                  <!-- Populated via JS -->
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
         </div>
 
         <!-- Student Detail Panel Overlay & Slide-over -->
@@ -692,82 +882,559 @@
             <!-- Populated via JS -->
           </div>
         </div>
+
       </div>
 
+      <!-- Modal 1: Create Class & Excel Import -->
+      <div class="modal-overlay" id="modalCreateClassOverlay" style="z-index: 1200;">
+        <div class="modal-box" style="max-width: 520px;">
+          <h3 style="color:var(--primary); font-family: 'Rajdhani', sans-serif; font-size: 22px; font-weight: 800;">Create Class Division & Import Excel</h3>
+          <p style="font-size:12px;color:var(--text-2);margin-bottom:16px;">Create a new class division and automatically import student roster via Excel/CSV file.</p>
+          <form id="createClassForm" onsubmit="handleCreateClass(event)">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; text-align: left;">
+              <div>
+                <label style="font-size: 11px; font-weight: 700; color: var(--text-2); display: block; margin-bottom: 4px;">Academic Year</label>
+                <select id="ccAcadYear" required style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); font-size: 12px;">
+                  <option value="2025-2026">2025 - 2026</option>
+                  <option value="2024-2025">2024 - 2025</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size: 11px; font-weight: 700; color: var(--text-2); display: block; margin-bottom: 4px;">Department</label>
+                <select id="ccDept" required style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); font-size: 12px;">
+                  <option value="Computer Science">Computer Science</option>
+                  <option value="Information Technology">Information Technology</option>
+                  <option value="Electronics">Electronics</option>
+                  <option value="Mechanical">Mechanical</option>
+                  <option value="MBA Finance">MBA Finance</option>
+                </select>
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; text-align: left;">
+              <div>
+                <label style="font-size: 11px; font-weight: 700; color: var(--text-2); display: block; margin-bottom: 4px;">Year of Study</label>
+                <select id="ccYear" required style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); font-size: 12px;">
+                  <option value="TY">TY (Third Year)</option>
+                  <option value="Final Year">Final Year</option>
+                  <option value="SY">SY (Second Year)</option>
+                  <option value="FY">FY (First Year)</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size: 11px; font-weight: 700; color: var(--text-2); display: block; margin-bottom: 4px;">Division / Class Name</label>
+                <input type="text" id="ccDivision" placeholder="e.g. Div A" required style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); font-size: 12px;" />
+              </div>
+            </div>
+
+            <!-- Drag & Drop Excel Dropzone -->
+            <div style="border: 2px dashed var(--primary-light); border-radius: 12px; background: rgba(91,45,144,0.03); padding: 24px; text-align: center; margin-bottom: 16px; cursor: pointer;" onclick="document.getElementById('ccFile').click()">
+              <div style="font-size: 28px; margin-bottom: 4px;">📊</div>
+              <div style="font-size: 13px; font-weight: 700; color: var(--primary);">Upload Student Roster Excel (.xlsx / .csv)</div>
+              <div style="font-size: 11px; color: var(--text-3); margin-top: 2px;" id="ccFileLabel">Drag and drop spreadsheet file or click to browse</div>
+              <input type="file" id="ccFile" accept=".xlsx, .csv" style="display: none;" onchange="document.getElementById('ccFileLabel').textContent = this.files[0]?.name || 'File selected!'" />
+            </div>
+
+            <div class="modal-actions">
+              <button type="button" class="btn-outline" onclick="closeCreateClassModal()">Cancel</button>
+              <button type="submit" class="btn-primary">Create Class & Import Students</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Modal 2: Add Study Material (CMS) -->
+      <div class="modal-overlay" id="modalAddStudyMaterialOverlay" style="z-index: 1200;">
+        <div class="modal-box" style="max-width: 620px; text-align: left;">
+          <h3 style="color:var(--primary); font-family: 'Rajdhani', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 4px;">Add Placement Study Material (CMS)</h3>
+          <p style="font-size:12px;color:var(--text-2);margin-bottom:16px;">Publish learning content with intelligent audience targeting across divisions.</p>
+          
+          <form id="addStudyMaterialForm" onsubmit="handleAddStudyMaterial(event)" style="display: flex; flex-direction: column; gap: 12px;">
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div>
+                <label style="font-size: 11px; font-weight: 700; color: var(--text-2); display: block; margin-bottom: 4px;">Resource Type</label>
+                <select id="smResType" required onchange="onResourceTypeChange()" style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); font-size: 12px;">
+                  <option value="Video Course">Video Course</option>
+                  <option value="PDF Notes">PDF Notes</option>
+                  <option value="PPT Presentation">PPT Presentation</option>
+                  <option value="Previous Year Paper">Previous Year Paper (PYQ)</option>
+                  <option value="Interview Questions">Interview Questions Sheet</option>
+                  <option value="Coding Sheet">Coding Practice Sheet</option>
+                  <option value="YouTube Video">YouTube Video Course</option>
+                  <option value="External Link">External Reference Link</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size: 11px; font-weight: 700; color: var(--text-2); display: block; margin-bottom: 4px;">Title</label>
+                <input type="text" id="smTitle" placeholder="e.g. Data Structures & Algorithms Mastery" required style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); font-size: 12px;" />
+              </div>
+            </div>
+
+            <div>
+              <label style="font-size: 11px; font-weight: 700; color: var(--text-2); display: block; margin-bottom: 4px;">Description</label>
+              <textarea id="smDesc" rows="2" placeholder="Brief summary of skills and topics covered..." style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); font-size: 12px; resize: none;"></textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+              <div>
+                <label style="font-size: 11px; font-weight: 700; color: var(--text-2); display: block; margin-bottom: 4px;">Author / Instructor</label>
+                <input type="text" id="smAuthor" value="T&P Cell / Expert Faculty" style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); font-size: 12px;" />
+              </div>
+              <div>
+                <label style="font-size: 11px; font-weight: 700; color: var(--text-2); display: block; margin-bottom: 4px;">Est. Duration</label>
+                <input type="text" id="smDuration" placeholder="e.g. 2h 30m" style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); font-size: 12px;" />
+              </div>
+              <div>
+                <label style="font-size: 11px; font-weight: 700; color: var(--text-2); display: block; margin-bottom: 4px;">Difficulty Level</label>
+                <select id="smDifficulty" style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); font-size: 12px;">
+                  <option value="Beginner">Beginner</option>
+                  <option value="Intermediate">Intermediate</option>
+                  <option value="Advanced">Advanced</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Dynamic Content Input Area -->
+            <div id="smDynamicInputZone" style="border: 1px dashed var(--border); padding: 14px; border-radius: 10px; background: var(--surface-2);">
+              <label style="font-size: 11px; font-weight: 700; color: var(--primary); display: block; margin-bottom: 4px;">Upload Video File / Thumbnail</label>
+              <input type="file" id="smFileField" accept="video/*, .mp4, image/*" style="font-size: 12px;" />
+            </div>
+
+            <!-- Advanced Target Audience Engine -->
+            <div style="border-top: 1px solid var(--border); padding-top: 12px; margin-top: 4px;">
+              <label style="font-size: 12px; font-weight: 800; color: var(--primary); font-family: 'Rajdhani', sans-serif; display: block; margin-bottom: 6px;">🎯 Advanced Target Audience Visibility</label>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                <div>
+                  <label style="font-size: 10px; font-weight: 700; color: var(--text-3); display: block;">Target Scope</label>
+                  <select id="smTargetScope" style="width: 100%; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); background: #fff; font-size: 11px;">
+                    <option value="Entire Institute">Entire Institute</option>
+                    <option value="Specific Division">Specific Division / Class</option>
+                    <option value="Readiness Threshold">Students < 60% Readiness</option>
+                    <option value="Company Prep">TCS / Amazon Aspirants</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 10px; font-weight: 700; color: var(--text-3); display: block;">Department</label>
+                  <select id="smTargetDept" style="width: 100%; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); background: #fff; font-size: 11px;">
+                    <option value="All">All Departments</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Information Technology">Information Technology</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Mechanical">Mechanical</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 10px; font-weight: 700; color: var(--text-3); display: block;">Year of Study</label>
+                  <select id="smTargetYear" style="width: 100%; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); background: #fff; font-size: 11px;">
+                    <option value="All">All Years</option>
+                    <option value="TY">TY (Third Year)</option>
+                    <option value="Final Year">Final Year</option>
+                    <option value="SY">SY (Second Year)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-actions" style="margin-top: 10px;">
+              <button type="button" class="btn-outline" onclick="closeAddStudyMaterialModal()">Cancel</button>
+              <button type="submit" class="btn-primary">Publish Resource to Students</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Modal 3: Create Test & Assessment -->
+      <div class="modal-overlay" id="modalCreateTestOverlay" style="z-index: 1200;">
+        <div class="modal-box" style="max-width: 580px; text-align: left;">
+          <h3 style="color:var(--primary); font-family: 'Rajdhani', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 4px;">Create Placement Assessment Test</h3>
+          <p style="font-size:12px;color:var(--text-2);margin-bottom:16px;">Schedule tests with automated evaluation & student dashboard auto-delivery.</p>
+          
+          <form id="createTestForm" onsubmit="handleCreateTest(event)" style="display: flex; flex-direction: column; gap: 12px;">
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div>
+                <label style="font-size: 11px; font-weight: 700; color: var(--text-2); display: block; margin-bottom: 4px;">Test Name</label>
+                <input type="text" id="ctTestName" placeholder="e.g. TCS NQT National Aptitude Mock" required style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); font-size: 12px;" />
+              </div>
+              <div>
+                <label style="font-size: 11px; font-weight: 700; color: var(--text-2); display: block; margin-bottom: 4px;">Test Category</label>
+                <select id="ctCategory" required style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); font-size: 12px;">
+                  <option value="Aptitude Test">Aptitude Test</option>
+                  <option value="Technical Test">Technical Test</option>
+                  <option value="Coding Test">Coding Test</option>
+                  <option value="Subject Test">Subject Test</option>
+                  <option value="Mock Interview">Mock Interview Simulation</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;">
+              <div>
+                <label style="font-size: 11px; font-weight: 700; color: var(--text-2); display: block; margin-bottom: 4px;">Duration (mins)</label>
+                <input type="number" id="ctDuration" value="60" required style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); font-size: 12px;" />
+              </div>
+              <div>
+                <label style="font-size: 11px; font-weight: 700; color: var(--text-2); display: block; margin-bottom: 4px;">Total Questions</label>
+                <input type="number" id="ctTotalQ" value="30" required style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); font-size: 12px;" />
+              </div>
+              <div>
+                <label style="font-size: 11px; font-weight: 700; color: var(--text-2); display: block; margin-bottom: 4px;">Pass Score %</label>
+                <input type="number" id="ctPassScore" value="70" required style="width: 100%; padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); font-size: 12px;" />
+              </div>
+            </div>
+
+            <!-- Advanced Target Audience Engine -->
+            <div style="border-top: 1px solid var(--border); padding-top: 12px; margin-top: 4px;">
+              <label style="font-size: 12px; font-weight: 800; color: var(--primary); font-family: 'Rajdhani', sans-serif; display: block; margin-bottom: 6px;">🎯 Assign Test to Student Cohort</label>
+              <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                <div>
+                  <label style="font-size: 10px; font-weight: 700; color: var(--text-3); display: block;">Target Scope</label>
+                  <select id="ctTargetScope" style="width: 100%; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); background: #fff; font-size: 11px;">
+                    <option value="Entire Institute">Entire Institute</option>
+                    <option value="Specific Division">Specific Division / Class</option>
+                    <option value="Readiness Threshold">Lagging Students (< 55%)</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 10px; font-weight: 700; color: var(--text-3); display: block;">Department</label>
+                  <select id="ctTargetDept" style="width: 100%; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); background: #fff; font-size: 11px;">
+                    <option value="All">All Departments</option>
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Information Technology">Information Technology</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 10px; font-weight: 700; color: var(--text-3); display: block;">Year of Study</label>
+                  <select id="ctTargetYear" style="width: 100%; padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); background: #fff; font-size: 11px;">
+                    <option value="All">All Years</option>
+                    <option value="TY">TY (Third Year)</option>
+                    <option value="Final Year">Final Year</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-actions" style="margin-top: 10px;">
+              <button type="button" class="btn-outline" onclick="closeCreateTestModal()">Cancel</button>
+              <button type="submit" class="btn-primary">Publish Test Assessment</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+
       <!-- ============================================================
-         PAGE 3: INNOVATION HUB
+         PAGE 3: INNOVATION & STARTUP ECOSYSTEM MANAGEMENT PORTAL
          ============================================================ -->
       <div class="app-page fade-in" id="page-college-innovation" style="padding: 32px 36px;">
-        <div class="dashboard-greeting" style="margin-bottom: 24px;">
-          <h1 style="font-size: 24px; font-weight: 800; color: var(--text); font-family: 'Rajdhani', sans-serif;">Innovation & Startup Showcase</h1>
-          <p style="font-size: 13px; color: var(--text-2); margin-top: 4px;">Discover, evaluate, and nurture student startup projects. Connect promising teams with mentors and campus funding.</p>
+        
+        <!-- Page Header -->
+        <div class="dashboard-greeting" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+          <div>
+            <h1 style="font-size: 26px; font-weight: 800; color: var(--text); font-family: 'Rajdhani', 'Montserrat', sans-serif; letter-spacing: -0.01em; margin: 0;">Startup Ecosystem Management Portal</h1>
+            <p style="font-size: 13px; color: var(--text-2); margin-top: 4px;">T&P & Innovation Cell Command Center for student ventures, mentor allocations, and incubation analytics.</p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn-primary" onclick="openAddMentorModal()" style="padding: 9px 16px; font-size: 12px; font-weight: 700; border-radius: 10px;">+ Add Ecosystem Mentor</button>
+            <button class="btn-outline" onclick="showToast('Startup submission workflow active.', 'success')" style="padding: 9px 16px; font-size: 12px; font-weight: 700; border-radius: 10px; background: #fff;">+ Submit Venture Idea</button>
+          </div>
         </div>
 
-        <div class="innovation-layout" style="display: grid; grid-template-columns: 1fr 340px; gap: 24px;">
+        <!-- Innovation Sub-Navigation Tabs: 1. Startup Showcase & Review | 2. Mentor Management | 3. Executive Analytics -->
+        <div class="sm-subnav-bar">
+          <div class="sm-subnav-tab active" id="tabBtn-startup-showcase" onclick="switchIhTab('startup-showcase')">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            1. Startup Showcase & Review
+          </div>
+          <div class="sm-subnav-tab" id="tabBtn-mentor-management" onclick="switchIhTab('mentor-management')">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            2. Mentor Management
+          </div>
+          <div class="sm-subnav-tab" id="tabBtn-startup-analytics" onclick="switchIhTab('startup-analytics')">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            3. Executive Startup Analytics
+          </div>
+        </div>
+
+        <!-- SUB-PAGE 1: STARTUP SHOWCASE & REVIEW -->
+        <div class="sm-tab-content active" id="ih-subpage-startup-showcase">
           
-          <!-- Left Column (Feed) -->
-          <div class="innovation-feed" style="display: flex; flex-direction: column; gap: 20px;">
-            <div class="ih-feed-header" style="display: flex; justify-content: space-between; align-items: center;">
+          <!-- Comprehensive Admin Filter Bar -->
+          <div class="card" style="background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <h3 style="font-size: 14px; font-weight: 800; color: var(--primary); font-family: 'Rajdhani', sans-serif; margin: 0;">🔍 Admin Venture Filter Engine</h3>
+              <span style="font-size: 11px; color: var(--text-3);" id="ihFilteredCountBadge">Showing all ventures</span>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px;">
               <div>
-                <h2 style="font-size: 18px; font-weight: 800; color: var(--text); font-family: 'Rajdhani', sans-serif;">Student Startup Ventures</h2>
-                <p style="font-size: 12px; color: var(--text-2);">Submitted by student founders across departments</p>
+                <label style="font-size: 10px; font-weight: 700; color: var(--text-3); display: block; margin-bottom: 3px;">Department</label>
+                <select id="ihFilterDept" onchange="renderAdminStartupFeed()" style="width:100%; padding:7px 10px; border-radius:8px; border:1px solid var(--border); background:var(--surface-2); font-size:11px;">
+                  <option value="All">All Departments</option>
+                  <option value="Computer Science">Computer Science</option>
+                  <option value="Information Technology">Information Technology</option>
+                  <option value="Electronics">Electronics</option>
+                  <option value="Mechanical">Mechanical</option>
+                </select>
               </div>
-              <button class="btn-primary" style="padding: 9px 18px; font-size: 12px; font-weight: 700; border-radius: 10px;" onclick="showToast('Startup submission workflow opened.', 'success')">
-                + Submit Startup Project
-              </button>
-            </div>
 
-            <!-- Category Filters -->
-            <div class="ih-category-filters" id="ihCategoryFilters" style="display: flex; gap: 8px; flex-wrap: wrap;">
-              <button class="ih-filter-chip active" data-cat="All" onclick="filterInnovationFeed(this, 'All')" style="padding: 6px 14px; border-radius: 99px; border: 1px solid var(--border); background: var(--primary); color: white; font-size: 12px; font-weight: 600; cursor: pointer;">All Projects</button>
-              <button class="ih-filter-chip" data-cat="Sustainability" onclick="filterInnovationFeed(this, 'Sustainability')" style="padding: 6px 14px; border-radius: 99px; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); font-size: 12px; font-weight: 600; cursor: pointer;">🌿 Sustainability</button>
-              <button class="ih-filter-chip" data-cat="EduTech" onclick="filterInnovationFeed(this, 'EduTech')" style="padding: 6px 14px; border-radius: 99px; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); font-size: 12px; font-weight: 600; cursor: pointer;">📚 EduTech</button>
-              <button class="ih-filter-chip" data-cat="AI & ML" onclick="filterInnovationFeed(this, 'AI & ML')" style="padding: 6px 14px; border-radius: 99px; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); font-size: 12px; font-weight: 600; cursor: pointer;">🤖 AI & ML</button>
-              <button class="ih-filter-chip" data-cat="FinTech" onclick="filterInnovationFeed(this, 'FinTech')" style="padding: 6px 14px; border-radius: 99px; border: 1px solid var(--border); background: var(--surface); color: var(--text-2); font-size: 12px; font-weight: 600; cursor: pointer;">💳 FinTech</button>
-            </div>
+              <div>
+                <label style="font-size: 10px; font-weight: 700; color: var(--text-3); display: block; margin-bottom: 3px;">Category</label>
+                <select id="ihFilterCategory" onchange="renderAdminStartupFeed()" style="width:100%; padding:7px 10px; border-radius:8px; border:1px solid var(--border); background:var(--surface-2); font-size:11px;">
+                  <option value="All">All Categories</option>
+                  <option value="Sustainability">🌿 Sustainability</option>
+                  <option value="EduTech">📚 EduTech</option>
+                  <option value="AI & ML">🤖 AI & ML</option>
+                  <option value="FinTech">💳 FinTech</option>
+                  <option value="DeepTech">⚡ DeepTech</option>
+                </select>
+              </div>
 
-            <!-- Feed Items Container -->
-            <div id="innovationFeedContainer" style="display: flex; flex-direction: column; gap: 16px;">
+              <div>
+                <label style="font-size: 10px; font-weight: 700; color: var(--text-3); display: block; margin-bottom: 3px;">Status</label>
+                <select id="ihFilterStatus" onchange="renderAdminStartupFeed()" style="width:100%; padding:7px 10px; border-radius:8px; border:1px solid var(--border); background:var(--surface-2); font-size:11px;">
+                  <option value="All">All Statuses</option>
+                  <option value="Pending">Pending Review</option>
+                  <option value="Approved">Approved</option>
+                  <option value="Incubated">Incubated</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+              </div>
+
+              <div>
+                <label style="font-size: 10px; font-weight: 700; color: var(--text-3); display: block; margin-bottom: 3px;">Funding Stage</label>
+                <select id="ihFilterStage" onchange="renderAdminStartupFeed()" style="width:100%; padding:7px 10px; border-radius:8px; border:1px solid var(--border); background:var(--surface-2); font-size:11px;">
+                  <option value="All">All Stages</option>
+                  <option value="Idea Stage">Idea Stage</option>
+                  <option value="Prototype/MVP">Prototype / MVP</option>
+                  <option value="Early Revenue">Early Revenue</option>
+                  <option value="Seed Funded">Seed Funded</option>
+                </select>
+              </div>
+
+              <div>
+                <label style="font-size: 10px; font-weight: 700; color: var(--text-3); display: block; margin-bottom: 3px;">Mentor Assigned</label>
+                <select id="ihFilterMentor" onchange="renderAdminStartupFeed()" style="width:100%; padding:7px 10px; border-radius:8px; border:1px solid var(--border); background:var(--surface-2); font-size:11px;">
+                  <option value="All">All Mentors</option>
+                  <option value="Assigned">Mentor Assigned</option>
+                  <option value="Unassigned">Unassigned</option>
+                </select>
+              </div>
+
+              <div>
+                <label style="font-size: 10px; font-weight: 700; color: var(--text-3); display: block; margin-bottom: 3px;">Academic Year</label>
+                <select id="ihFilterAcadYear" onchange="renderAdminStartupFeed()" style="width:100%; padding:7px 10px; border-radius:8px; border:1px solid var(--border); background:var(--surface-2); font-size:11px;">
+                  <option value="All">All Years</option>
+                  <option value="2025-2026">2025 - 2026</option>
+                  <option value="2024-2025">2024 - 2025</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trending Pitches Highlight Section -->
+          <div style="margin-bottom: 24px;">
+            <h3 style="font-size: 16px; font-weight: 800; color: var(--text); font-family: 'Rajdhani', sans-serif; margin-bottom: 12px;">🔥 Trending Pitch Highlights</h3>
+            <div id="ihTrendingPitchesRow" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
               <!-- Populated via JS -->
             </div>
           </div>
 
-          <!-- Right Column (Sidebar metrics) -->
-          <div class="ih-sidebar" style="display: flex; flex-direction: column; gap: 20px;">
+          <!-- Full-Width Startup Listing (Large Cards View) -->
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+              <h3 style="font-size: 16px; font-weight: 800; color: var(--text); font-family: 'Rajdhani', sans-serif; margin: 0;">Submitted Student Startups Roster</h3>
+            </div>
             
-            <div class="ih-metric-card" style="background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 20px;">
-              <div class="ih-metric-title" style="font-size: 13px; font-weight: 800; color: var(--text-3); text-transform: uppercase; margin-bottom: 14px; font-family: 'Rajdhani', sans-serif;">Innovation Cell Metrics</div>
-              <div class="ih-metric-row" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 10px;">
-                <div><div class="ih-metric-label" style="font-size: 11px; color: var(--text-2);">Total Incubated Projects</div><div class="ih-metric-value" id="ihTotalProjects" style="font-size: 22px; font-weight: 900; color: var(--text); font-family: 'Rajdhani', sans-serif;">248</div></div>
-                <div class="ih-metric-delta" style="font-size: 11px; color: var(--success); font-weight: 700;">+12% ↑</div>
-              </div>
-              <div class="ih-metric-row" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 10px;">
-                <div><div class="ih-metric-label" style="font-size: 11px; color: var(--text-2);">Seed Grants Raised</div><div class="ih-metric-value" style="font-size: 22px; font-weight: 900; color: var(--text); font-family: 'Rajdhani', sans-serif;">₹4.2M</div></div>
-                <div class="ih-metric-delta" style="font-size: 11px; color: var(--success); font-weight: 700;">+8% ↑</div>
-              </div>
-              <div class="ih-metric-row" style="display: flex; justify-content: space-between; align-items: center;">
-                <div><div class="ih-metric-label" style="font-size: 11px; color: var(--text-2);">Mentors Engaged</div><div class="ih-metric-value" style="font-size: 22px; font-weight: 900; color: var(--text); font-family: 'Rajdhani', sans-serif;">34</div></div>
-                <div class="ih-metric-delta" style="font-size: 11px; color: var(--primary); font-weight: 700;">Active</div>
-              </div>
+            <div id="ihAdminStartupFeed" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 20px;">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+
+        </div>
+
+
+        <!-- SUB-PAGE 2: MENTOR MANAGEMENT -->
+        <div class="sm-tab-content" id="ih-subpage-mentor-management" style="display: none;">
+          
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div>
+              <h3 style="font-size: 18px; font-weight: 800; color: var(--text); font-family: 'Rajdhani', sans-serif; margin: 0;">Ecosystem Mentors Directory</h3>
+              <p style="font-size: 12px; color: var(--text-2); margin-top: 2px;">Manage industry leaders & alumni guiding campus founders.</p>
+            </div>
+            <button class="btn-primary" onclick="openAddMentorModal()" style="padding: 8px 16px; font-size: 12px; font-weight: 700; border-radius: 10px;">+ Add New Mentor</button>
+          </div>
+
+          <!-- Mentor Cards Grid -->
+          <div id="ihMentorCardsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
+            <!-- Populated via JS -->
+          </div>
+
+        </div>
+
+
+        <!-- SUB-PAGE 3: EXECUTIVE STARTUP ANALYTICS -->
+        <div class="sm-tab-content" id="ih-subpage-startup-analytics" style="display: none;">
+          
+          <!-- Executive KPI Cards Row -->
+          <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 24px;">
+            
+            <div class="card" style="background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 18px;">
+              <div style="font-size: 11px; color: var(--text-2); font-weight: 700; text-transform: uppercase;">Total Startup Ideas</div>
+              <div id="ihKpiTotalIdeas" style="font-size: 26px; font-weight: 900; color: var(--primary); font-family: 'Rajdhani', sans-serif; margin: 4px 0;">248</div>
+              <div style="font-size: 10px; color: var(--success); font-weight: 700;">↑ +18% YoY</div>
             </div>
 
-            <!-- Submission Activity Chart -->
-            <div class="ih-metric-card" style="background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 20px;">
-              <div class="ih-metric-title" style="font-size: 13px; font-weight: 800; color: var(--text-3); text-transform: uppercase; margin-bottom: 10px; font-family: 'Rajdhani', sans-serif;">Weekly Pitch Submissions</div>
-              <div style="position: relative; height: 110px;">
-                <canvas id="innovationActivityChart"></canvas>
-              </div>
+            <div class="card" style="background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 18px;">
+              <div style="font-size: 11px; color: var(--text-2); font-weight: 700; text-transform: uppercase;">Approved / Incubated</div>
+              <div id="ihKpiIncubated" style="font-size: 26px; font-weight: 900; color: var(--success); font-family: 'Rajdhani', sans-serif; margin: 4px 0;">86</div>
+              <div style="font-size: 10px; color: var(--success); font-weight: 700;">34.6% Conversion</div>
             </div>
 
-            <!-- Trending List -->
-            <div class="ih-metric-card" style="background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 20px;">
-              <div class="ih-metric-title" style="font-size: 13px; font-weight: 800; color: var(--text-3); text-transform: uppercase; margin-bottom: 12px; font-family: 'Rajdhani', sans-serif;">🔥 Trending Projects</div>
-              <div id="ihTrendingList" style="display: flex; flex-direction: column; gap: 10px;"><!-- Populated via JS --></div>
+            <div class="card" style="background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 18px;">
+              <div style="font-size: 11px; color: var(--text-2); font-weight: 700; text-transform: uppercase;">Total Mentors</div>
+              <div id="ihKpiMentors" style="font-size: 26px; font-weight: 900; color: var(--text); font-family: 'Rajdhani', sans-serif; margin: 4px 0;">34</div>
+              <div style="font-size: 10px; color: var(--primary); font-weight: 700;">Active Mentorship</div>
+            </div>
+
+            <div class="card" style="background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 18px;">
+              <div style="font-size: 11px; color: var(--text-2); font-weight: 700; text-transform: uppercase;">Funding Pipeline</div>
+              <div id="ihKpiFunding" style="font-size: 26px; font-weight: 900; color: #D97706; font-family: 'Rajdhani', sans-serif; margin: 4px 0;">₹4.2M</div>
+              <div style="font-size: 10px; color: var(--text-3);">Seed Grants Awarded</div>
+            </div>
+
+            <div class="card" style="background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 18px;">
+              <div style="font-size: 11px; color: var(--text-2); font-weight: 700; text-transform: uppercase;">Pending Reviews</div>
+              <div id="ihKpiPending" style="font-size: 26px; font-weight: 900; color: var(--error); font-family: 'Rajdhani', sans-serif; margin: 4px 0;">12</div>
+              <div style="font-size: 10px; color: var(--error); font-weight: 700;">Requires Cell Action</div>
             </div>
 
           </div>
+
+          <!-- Charts Row 1: Growth Trend & Category Distribution -->
+          <div style="display: grid; grid-template-columns: 1.6fr 1.4fr; gap: 24px; margin-bottom: 24px;">
+            
+            <div class="card" style="background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 24px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-size: 16px; font-weight: 800; color: var(--text); font-family: 'Rajdhani', sans-serif; margin: 0;">Startup Pitch Submission Trend</h3>
+                <span style="font-size: 11px; color: var(--text-3);">2025-2026 Academic Year</span>
+              </div>
+              <div style="position: relative; height: 210px;">
+                <canvas id="ihGrowthTrendChart"></canvas>
+              </div>
+            </div>
+
+            <div class="card" style="background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 24px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-size: 16px; font-weight: 800; color: var(--text); font-family: 'Rajdhani', sans-serif; margin: 0;">Startup Sector Distribution</h3>
+                <span style="font-size: 11px; color: var(--text-3);">By Category</span>
+              </div>
+              <div style="position: relative; height: 210px;">
+                <canvas id="ihCategoryDistChart"></canvas>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- AI Innovation Insights & Progress Funnel -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            
+            <!-- AI Innovation Insights Card -->
+            <div class="card" style="background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%); border-radius: 20px; padding: 24px; color: #fff;">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                <span style="color: #FBBF24; font-size: 20px;">✦</span>
+                <h3 style="font-size: 18px; font-weight: 800; color: #fff; font-family: 'Rajdhani', sans-serif; margin: 0;">AI Executive Innovation Insights</h3>
+              </div>
+              
+              <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 14px;">
+                <div style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); padding: 12px; border-radius: 12px;">
+                  <strong style="font-size: 13px; color: #A7F3D0; display: block; margin-bottom: 4px;">🚀 Top Performing Sector</strong>
+                  <p style="font-size: 11px; color: #E0E7FF; margin: 0;">AI & DeepTech ventures show a 42% higher prototype completion rate than average.</p>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); padding: 12px; border-radius: 12px;">
+                  <strong style="font-size: 13px; color: #FDE68A; display: block; margin-bottom: 4px;">💡 Mentor Recommendation</strong>
+                  <p style="font-size: 11px; color: #E0E7FF; margin: 0;">8 EduTech ideas pending mentor assignment. Assigning FinTech & Tech leads will boost funding readiness score by 24%.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Funding Progress Funnel -->
+            <div class="card" style="background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 24px;">
+              <h3 style="font-size: 16px; font-weight: 800; color: var(--text); font-family: 'Rajdhani', sans-serif; margin-bottom: 14px;">Incubation & Funding Pipeline Funnel</h3>
+              <div style="position: relative; height: 180px;">
+                <canvas id="ihPipelineFunnelChart"></canvas>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Modal: Detailed Startup Inspection & Admin Commenting -->
+      <div class="modal-overlay" id="startupModalOverlay" style="z-index: 1300;" onclick="closeStartupModal(event)">
+        <div class="modal-box" style="max-width: 680px; text-align: left; padding: 0; overflow: hidden; border-radius: 24px;">
+          <div id="startupModalContent">
+            <!-- Dynamically filled by showStartupDetail(id) -->
+          </div>
         </div>
       </div>
+
+      <!-- Modal: Add New Mentor -->
+      <div class="modal-overlay" id="modalAddMentorOverlay" style="z-index: 1300;">
+        <div class="modal-box" style="max-width: 520px; text-align: left;">
+          <h3 style="color:var(--primary); font-family: 'Rajdhani', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 4px;">Add Ecosystem Mentor</h3>
+          <p style="font-size:12px;color:var(--text-2);margin-bottom:16px;">Empower student startup teams with expert industry mentorship.</p>
+          
+          <form id="addMentorForm" onsubmit="handleAddMentor(event)" style="display:flex; flex-direction:column; gap:12px;">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+              <div>
+                <label style="font-size:11px; font-weight:700; color:var(--text-2); display:block; margin-bottom:4px;">Full Name</label>
+                <input type="text" id="mName" placeholder="e.g. Anish Varma" required style="width:100%; padding:9px 12px; border-radius:8px; border:1px solid var(--border); font-size:12px;" />
+              </div>
+              <div>
+                <label style="font-size:11px; font-weight:700; color:var(--text-2); display:block; margin-bottom:4px;">Designation</label>
+                <input type="text" id="mDesignation" placeholder="e.g. VP of Engineering" required style="width:100%; padding:9px 12px; border-radius:8px; border:1px solid var(--border); font-size:12px;" />
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+              <div>
+                <label style="font-size:11px; font-weight:700; color:var(--text-2); display:block; margin-bottom:4px;">Company / Firm</label>
+                <input type="text" id="mCompany" placeholder="e.g. Microsoft / Sequoia" required style="width:100%; padding:9px 12px; border-radius:8px; border:1px solid var(--border); font-size:12px;" />
+              </div>
+              <div>
+                <label style="font-size:11px; font-weight:700; color:var(--text-2); display:block; margin-bottom:4px;">Domain Expertise</label>
+                <input type="text" id="mExpertise" placeholder="e.g. AI, SaaS, Growth" required style="width:100%; padding:9px 12px; border-radius:8px; border:1px solid var(--border); font-size:12px;" />
+              </div>
+            </div>
+
+            <div>
+              <label style="font-size:11px; font-weight:700; color:var(--text-2); display:block; margin-bottom:4px;">Short Bio</label>
+              <textarea id="mBio" rows="2" placeholder="Brief background & track record..." style="width:100%; padding:9px 12px; border-radius:8px; border:1px solid var(--border); font-size:12px; resize:none;"></textarea>
+            </div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+              <div>
+                <label style="font-size:11px; font-weight:700; color:var(--text-2); display:block; margin-bottom:4px;">Email Contact</label>
+                <input type="email" id="mEmail" placeholder="mentor@domain.com" style="width:100%; padding:9px 12px; border-radius:8px; border:1px solid var(--border); font-size:12px;" />
+              </div>
+              <div>
+                <label style="font-size:11px; font-weight:700; color:var(--text-2); display:block; margin-bottom:4px;">Profile Photo URL / Initials</label>
+                <input type="text" id="mAvatar" placeholder="e.g. AV" style="width:100%; padding:9px 12px; border-radius:8px; border:1px solid var(--border); font-size:12px;" />
+              </div>
+            </div>
+
+            <div class="modal-actions" style="margin-top:10px;">
+              <button type="button" class="btn-outline" onclick="closeAddMentorModal()">Cancel</button>
+              <button type="submit" class="btn-primary">Add Mentor to Network</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
 
       <!-- ============================================================
          PAGE 4: COMPANY RELATIONS
@@ -942,11 +1609,8 @@
               <div>
                 <label style="font-size: 11px; font-weight: 700; color: var(--text-2); display: block; margin-bottom: 4px;">Institutional Email</label>
                 <input type="email" id="settingsEmail" value="tp@ghrce.ac.in" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); font-size: 13px;" />
-              </div>
-              <div>
-                <label style="font-size: 11px; font-weight: 700; color: var(--text-2); display: block; margin-bottom: 4px;">Designation</label>
-                <input type="text" id="settingsRole" value="Head - Training & Placement Cell" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); font-size: 13px;" />
-              </div>
+</div>
+
               <button class="btn-primary" style="padding: 12px; border-radius: 10px; font-size: 13px; font-weight: 700; margin-top: 8px;" onclick="showToast('Officer profile details updated.', 'success')">Save Officer Settings</button>
             </div>
           </div>

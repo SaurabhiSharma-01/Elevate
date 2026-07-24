@@ -5,54 +5,69 @@
         "studentId": "GHRCE2024047",
         "studentName": "Saurabhi Sharma",
         "strengths": [
-          "Programming Fundamentals",
-          "Database Queries"
+          "Basic Logic",
+          "Attention to Detail"
         ],
         "weaknesses": [
-          "Networks",
+          "Technical Aptitude",
+          "Data Structures",
+          "Computer Science",
+          "Database",
           "Programming",
+          "Aptitude",
+          "Operating Systems",
+          "Networks",
           "Logical Reasoning",
           "Algorithms",
-          "Aptitude",
           "General Tech"
         ],
         "knowledgeGaps": [
-          "Networks",
+          "Technical Aptitude",
+          "Data Structures",
+          "Computer Science",
+          "Database",
           "Programming",
+          "Aptitude",
+          "Operating Systems",
+          "Networks",
           "Logical Reasoning",
           "Algorithms",
-          "Aptitude",
           "General Tech"
         ],
-        "technicalSkillScore": 87,
-        "aptitudeScore": 70,
-        "communicationScore": 71,
+        "technicalSkillScore": 35,
+        "aptitudeScore": 30,
+        "communicationScore": 55,
         "logicalReasoningScore": 35,
-        "overallSkillScore": 70,
+        "overallSkillScore": 37,
         "skillProfile": {
-          "DSA": "Advanced",
-          "DBMS": "Intermediate",
-          "OS": "Intermediate",
-          "Networks": "Intermediate",
-          "Aptitude": "Intermediate",
-          "Communication": "Intermediate",
-          "SystemDesign": "Intermediate"
+          "DSA": "Beginner",
+          "DBMS": "Beginner",
+          "OS": "Beginner",
+          "Networks": "Beginner",
+          "Aptitude": "Beginner",
+          "Communication": "Beginner",
+          "SystemDesign": "Beginner"
         },
         "improvementSuggestions": [
-          "Study standard resources for Networks and resolve practice exercises.",
+          "Study standard resources for Technical Aptitude and resolve practice exercises.",
+          "Study standard resources for Data Structures and resolve practice exercises.",
+          "Study standard resources for Computer Science and resolve practice exercises.",
+          "Study standard resources for Database and resolve practice exercises.",
           "Study standard resources for Programming and resolve practice exercises.",
+          "Study standard resources for Aptitude and resolve practice exercises.",
+          "Study standard resources for Operating Systems and resolve practice exercises.",
+          "Study standard resources for Networks and resolve practice exercises.",
           "Study standard resources for Logical Reasoning and resolve practice exercises.",
           "Study standard resources for Algorithms and resolve practice exercises.",
-          "Study standard resources for Aptitude and resolve practice exercises.",
           "Study standard resources for General Tech and resolve practice exercises."
         ],
         "priorityAreas": [
-          "Networks",
-          "Programming"
+          "Technical Aptitude",
+          "Data Structures"
         ],
-        "estimatedReadinessLevel": "Partially Ready",
-        "summary": "Saurabhi Sharma completed the Engineering assessment with a score of 70%. Solid performance overall, but needs focus in Networks and Programming to improve readiness.",
-        "generatedAt": "2026-07-22T17:26:06.673Z"
+        "estimatedReadinessLevel": "Needs Improvement",
+        "summary": "Saurabhi Sharma completed the Engineering assessment. Score is 37%. Performance indicates a need for immediate reinforcement of foundational topics, particularly in Technical Aptitude and Data Structures.",
+        "generatedAt": "2026-07-24T10:22:51.072Z"
       },
       "recommendations": {
         "studentId": "GHRCE2024047",
@@ -134,9 +149,9 @@
             "reason": "Check ATS compatibility instantly"
           }
         ],
-        "todayFocus": "Solve 5 Networks problems on LeetCode",
-        "weeklyGoal": "Complete Networks basics and take one full mock test",
-        "generatedAt": "2026-07-22T17:26:06.939Z"
+        "todayFocus": "Solve 5 Technical Aptitude problems on LeetCode",
+        "weeklyGoal": "Complete Technical Aptitude basics and take one full mock test",
+        "generatedAt": "2026-07-24T10:22:51.778Z"
       }
     }
   },
@@ -152,16 +167,16 @@
       "weeklyPlan": [
         {
           "week": 1,
-          "theme": "Foundations: Networks",
+          "theme": "Foundations: Technical Aptitude",
           "focus": [
-            "Networks",
+            "Technical Aptitude",
             "Aptitude basics"
           ],
           "dailyTasks": [
             {
               "day": "Monday",
               "tasks": [
-                "Study Networks"
+                "Study Technical Aptitude"
               ],
               "hours": 2
             },
@@ -208,7 +223,7 @@
               "hours": 1
             }
           ],
-          "milestone": "Complete Networks basics",
+          "milestone": "Complete Technical Aptitude basics",
           "resources": [
             "GeeksforGeeks",
             "LeetCode easy set"
@@ -218,33 +233,33 @@
       "monthlyMilestones": [
         {
           "month": 1,
-          "goal": "Master Networks fundamentals",
+          "goal": "Master Technical Aptitude fundamentals",
           "keyOutcome": "15% score improvement"
         }
       ],
       "priorities": [
-        "Networks",
-        "Programming",
-        "Logical Reasoning"
+        "Technical Aptitude",
+        "Data Structures",
+        "Computer Science"
       ],
       "companySpecificTips": [
         "Study -- interview patterns",
         "Practice previous year questions"
       ],
-      "summary": "Saurabhi Sharma's roadmap focuses on Networks improvement to reach placement readiness for -- within 4 weeks.",
-      "generatedAt": "2026-07-22T17:26:06.901Z"
+      "summary": "Saurabhi Sharma's roadmap focuses on Technical Aptitude improvement to reach placement readiness for -- within 4 weeks.",
+      "generatedAt": "2026-07-24T10:22:51.475Z"
     }
   },
   "skillProfiles": {
     "GHRCE2024047": {
-      "DSA": "Advanced",
-      "DBMS": "Intermediate",
-      "OS": "Intermediate",
-      "Networks": "Intermediate",
-      "Aptitude": "Intermediate",
-      "Communication": "Intermediate",
-      "SystemDesign": "Intermediate",
-      "generatedAt": "2026-07-22T17:26:06.675Z"
+      "DSA": "Beginner",
+      "DBMS": "Beginner",
+      "OS": "Beginner",
+      "Networks": "Beginner",
+      "Aptitude": "Beginner",
+      "Communication": "Beginner",
+      "SystemDesign": "Beginner",
+      "generatedAt": "2026-07-24T10:22:51.078Z"
     }
   }
 }

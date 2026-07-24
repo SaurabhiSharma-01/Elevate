@@ -2097,63 +2097,416 @@ async function initCollegeDashboard() {
 // ──────────────────────────────────────────────────────────────
 // COLLEGE PORTAL — SECTION 2: STUDENT MONITORING
 // ──────────────────────────────────────────────────────────────
+// ──────────────────────────────────────────────────────────────
+// COLLEGE PORTAL — SECTION 2: STUDENT MONITORING & PLACEMENT LMS
+// ──────────────────────────────────────────────────────────────
 let _cohortChart = null;
+let _hFunnelChart = null;
 let _smCurrentYear = 'All';
 let _smAllStudents = [];
+
+// LMS State
+let _lmsResources = [
+  { id: 'res-1', type: 'Video Course', title: 'Data Structures & Algorithms Mastery', author: 'Dr. Priya Sharma', duration: '12h 45m', scope: 'Entire Institute', difficulty: 'Intermediate', date: '2026-07-20', icon: '📹' },
+  { id: 'res-2', type: 'PDF Notes', title: 'TCS NQT Comprehensive Aptitude Notes & Formulas', author: 'T&P Aptitude Cell', duration: '45 pages', scope: 'Specific Division (TY CSE A)', difficulty: 'Beginner', date: '2026-07-22', icon: '📄' },
+  { id: 'res-3', type: 'Previous Year Paper', title: 'Amazon System Design PYQs 2023-2025', author: 'Alumni Network', duration: '15 Papers', scope: 'Readiness >= 75%', difficulty: 'Advanced', date: '2026-07-23', icon: '📝' },
+  { id: 'res-4', type: 'Test', title: 'National Qualifier Technical & Coding Assessment', author: 'Elevate AI Test Engine', duration: '90 mins', scope: 'TY & Final Year CSE/IT', difficulty: 'Advanced', date: '2026-07-24', icon: '⚡' }
+];
+
+let _lmsClasses = [
+  { id: 'cls-1', name: 'TY CSE Div A', year: '2025-2026', dept: 'Computer Science', studentsCount: 68 },
+  { id: 'cls-2', name: 'TY CSE Div B', year: '2025-2026', dept: 'Computer Science', studentsCount: 64 },
+  { id: 'cls-3', name: 'Final Year IT Div A', year: '2025-2026', dept: 'Information Technology', studentsCount: 72 }
+];
+
+let _hFilterState = {
+  acadYear: '',
+  dept: '',
+  year: '',
+  division: ''
+};
+
+// Sub-Tab Switcher
+function switchSmTab(tabName) {
+  document.querySelectorAll('.sm-subnav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.sm-tab-content').forEach(c => c.style.display = 'none');
+
+  const btn = document.getElementById(`tabBtn-${tabName}`);
+  const content = document.getElementById(`sm-subpage-${tabName}`);
+  if (btn) btn.classList.add('active');
+  if (content) content.style.display = 'block';
+
+  if (tabName === 'resource-management') {
+    renderLmsFeed('All');
+    renderLmsClassesList();
+  }
+}
+
+// 4-Level Hierarchical Filter Handler
+function onHFilterChange(level) {
+  const yEl = document.getElementById('hFilterAcadYear');
+  const dEl = document.getElementById('hFilterDept');
+  const yrEl = document.getElementById('hFilterYear');
+  const divEl = document.getElementById('hFilterDivision');
+
+  _hFilterState.acadYear = yEl ? yEl.value : '';
+  _hFilterState.dept = dEl ? dEl.value : '';
+  _hFilterState.year = yrEl ? yrEl.value : '';
+  _hFilterState.division = divEl ? divEl.value : '';
+
+  if (level === 1) {
+    if (_hFilterState.acadYear) {
+      if (dEl) { dEl.disabled = false; dEl.value = ''; }
+      if (yrEl) { yrEl.disabled = true; yrEl.value = ''; }
+      if (divEl) { divEl.disabled = true; divEl.value = ''; }
+    } else {
+      if (dEl) { dEl.disabled = true; dEl.value = ''; }
+      if (yrEl) { yrEl.disabled = true; yrEl.value = ''; }
+      if (divEl) { divEl.disabled = true; divEl.value = ''; }
+    }
+  } else if (level === 2) {
+    if (_hFilterState.dept) {
+      if (yrEl) { yrEl.disabled = false; yrEl.value = ''; }
+      if (divEl) { divEl.disabled = true; divEl.value = ''; }
+    } else {
+      if (yrEl) { yrEl.disabled = true; yrEl.value = ''; }
+      if (divEl) { divEl.disabled = true; divEl.value = ''; }
+    }
+  } else if (level === 3) {
+    if (_hFilterState.year) {
+      if (divEl) { divEl.disabled = false; divEl.value = ''; }
+    } else {
+      if (divEl) { divEl.disabled = true; divEl.value = ''; }
+    }
+  }
+
+  // Check if ALL 4 filters are selected
+  const allSelected = _hFilterState.acadYear && _hFilterState.dept && _hFilterState.year && _hFilterState.division;
+  const badge = document.getElementById('hFilterStatusBadge');
+
+  if (allSelected) {
+    if (badge) {
+      badge.textContent = `✅ Live Cohort Analytics: ${_hFilterState.acadYear} • ${_hFilterState.dept} • ${_hFilterState.year} • ${_hFilterState.division}`;
+      badge.style.background = '#DCFCE7'; badge.style.color = '#15803D'; badge.style.borderColor = '#86EFAC';
+    }
+    unlockCohortAnalytics();
+  } else {
+    if (badge) {
+      badge.textContent = `🔒 Select all 4 filters sequentially to unlock cohort intelligence`;
+      badge.style.background = '#FEF3C7'; badge.style.color = '#D97706'; badge.style.borderColor = '#FDE68A';
+    }
+    lockCohortAnalytics();
+  }
+}
+
+function lockCohortAnalytics() {
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('hMetricReadiness', '--%'); set('hMetricReadinessSub', 'Select all 4 filters');
+  set('hMetricReady', '0'); set('hMetricAttention', '0'); set('hMetricResume', '--%');
+
+  const dist = document.getElementById('hSkillDistList');
+  if (dist) dist.innerHTML = '<div style="font-size: 12px; color: var(--text-3); text-align: center; padding: 30px 0;">Select all 4 filters to unlock skill breakdown.</div>';
+
+  const sInput = document.getElementById('hStudentSearchInput');
+  if (sInput) sInput.disabled = true;
+
+  const roster = document.getElementById('hStudentRosterContainer');
+  if (roster) {
+    roster.innerHTML = `🔒 Student-level information is masked.<br><span style="font-size: 11px; font-weight: 400; color: var(--text-3); margin-top: 6px; display: block;">Select Academic Year ➔ Department ➔ Year of Study ➔ Division to view student roster.</span>`;
+  }
+}
+
+function unlockCohortAnalytics() {
+  const students = _smAllStudents.length > 0 ? _smAllStudents : [];
+  const dept = _hFilterState.dept;
+  const filtered = students.filter(s => dept === 'All' || s.branch === dept || true);
+
+  const ready = filtered.filter(s => s.readiness >= 75).length;
+  const attention = filtered.filter(s => s.readiness < 55).length;
+  const avg = filtered.length > 0 ? Math.round(filtered.reduce((a, s) => a + s.readiness, 0) / filtered.length) : 76;
+
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  set('hMetricReadiness', `${avg}%`); set('hMetricReadinessSub', '↑ +7% cohort improvement');
+  set('hMetricReady', ready || 52); set('hMetricAttention', attention || 8); set('hMetricResume', '92%');
+
+  const dist = document.getElementById('hSkillDistList');
+  if (dist) {
+    dist.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface-2);border-radius:8px;">
+        <span style="font-size:12px;font-weight:600;color:var(--text)">DSA & Problem Solving</span>
+        <span style="font-size:12px;font-weight:700;color:var(--success)">84% Strong</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface-2);border-radius:8px;">
+        <span style="font-size:12px;font-weight:600;color:var(--text)">System Design</span>
+        <span style="font-size:12px;font-weight:700;color:var(--warning)">62% Moderate</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--surface-2);border-radius:8px;">
+        <span style="font-size:12px;font-weight:600;color:var(--text)">Aptitude & Logical</span>
+        <span style="font-size:12px;font-weight:700;color:var(--error)">48% Weak (Intervention)</span>
+      </div>
+    `;
+  }
+
+  const sInput = document.getElementById('hStudentSearchInput');
+  if (sInput) sInput.disabled = false;
+
+  renderHStudentRoster();
+
+  // Render Placement Funnel Chart
+  setTimeout(() => {
+    const ctx = document.getElementById('hPlacementFunnelChart');
+    if (!ctx) return;
+    if (_hFunnelChart) _hFunnelChart.destroy();
+    _hFunnelChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Enrolled', 'Shortlisted', 'Test Passed', 'Interviewed', 'Placed'],
+        datasets: [{
+          label: 'Students Count',
+          data: [68, 62, 54, 48, 42],
+          backgroundColor: ['#5B2D90', '#7B3FE4', '#3B82F6', '#10B981', '#059669'],
+          borderRadius: 6
+        }]
+      },
+      options: {
+        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { x: { grid: { color: 'rgba(0,0,0,0.04)' } }, y: { grid: { display: false } } }
+      }
+    });
+  }, 200);
+}
+
+function renderHStudentRoster() {
+  const container = document.getElementById('hStudentRosterContainer');
+  if (!container) return;
+  const q = (document.getElementById('hStudentSearchInput')?.value || '').toLowerCase();
+  const students = _smAllStudents.length > 0 ? _smAllStudents : [];
+  const dept = _hFilterState.dept;
+
+  const matched = students.filter(s => {
+    const mName = s.name.toLowerCase().includes(q);
+    const mDept = !dept || dept === 'All' || s.branch === dept;
+    return mName && mDept;
+  });
+
+  container.style.display = 'block';
+  container.style.border = 'none';
+  container.style.background = 'transparent';
+  container.style.padding = '0';
+
+  if (matched.length === 0) {
+    container.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text-2);">No student profiles found for this division.</div>`;
+    return;
+  }
+
+  container.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(260px, 1fr));gap:14px;">
+      ${matched.map(s => `
+        <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:14px;padding:14px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;" onclick="openStudentPanel('${s.id}')">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <strong style="font-size:13px;color:var(--text);">${s.name}</strong>
+            <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:${s.readiness >= 75 ? '#DCFCE7' : '#FEF3C7'};color:${s.readiness >= 75 ? '#15803D' : '#B45309'}">${s.readiness}% Ready</span>
+          </div>
+          <div style="font-size:11px;color:var(--text-2);">ID: ${s.id} • CGPA: ${s.cgpa}</div>
+          <div style="font-size:11px;color:var(--primary);font-weight:700;margin-top:8px;">Inspect Profile →</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// LMS Modal Handlers
+function openCreateClassModal() {
+  const modal = document.getElementById('modalCreateClassOverlay');
+  if (modal) modal.classList.add('active');
+}
+function closeCreateClassModal() {
+  const modal = document.getElementById('modalCreateClassOverlay');
+  if (modal) modal.classList.remove('active');
+}
+function handleCreateClass(e) {
+  e.preventDefault();
+  const year = document.getElementById('ccAcadYear').value;
+  const dept = document.getElementById('ccDept').value;
+  const yr = document.getElementById('ccYear').value;
+  const div = document.getElementById('ccDivision').value;
+
+  const newClass = {
+    id: `cls-${Date.now()}`,
+    name: `${yr} ${dept.split(' ')[0]} ${div}`,
+    year: year,
+    dept: dept,
+    studentsCount: Math.floor(Math.random() * 20) + 50
+  };
+
+  _lmsClasses.unshift(newClass);
+  renderLmsClassesList();
+  closeCreateClassModal();
+  showToast(`Class '${newClass.name}' created & Excel roster imported!`, 'success');
+}
+
+function openAddStudyMaterialModal() {
+  const modal = document.getElementById('modalAddStudyMaterialOverlay');
+  if (modal) modal.classList.add('active');
+}
+function closeAddStudyMaterialModal() {
+  const modal = document.getElementById('modalAddStudyMaterialOverlay');
+  if (modal) modal.classList.remove('active');
+}
+function onResourceTypeChange() {
+  const type = document.getElementById('smResType').value;
+  const zone = document.getElementById('smDynamicInputZone');
+  if (!zone) return;
+
+  if (type === 'YouTube Video') {
+    zone.innerHTML = `
+      <label style="font-size: 11px; font-weight: 700; color: var(--primary); display: block; margin-bottom: 4px;">YouTube Video / Playlist URL</label>
+      <input type="url" placeholder="https://www.youtube.com/watch?v=..." required style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px;" />
+    `;
+  } else if (type === 'External Link') {
+    zone.innerHTML = `
+      <label style="font-size: 11px; font-weight: 700; color: var(--primary); display: block; margin-bottom: 4px;">External Material Web URL</label>
+      <input type="url" placeholder="https://..." required style="width: 100%; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px;" />
+    `;
+  } else if (type === 'PDF Notes' || type === 'PPT Presentation' || type === 'Previous Year Paper') {
+    zone.innerHTML = `
+      <label style="font-size: 11px; font-weight: 700; color: var(--primary); display: block; margin-bottom: 4px;">Upload Document (.pdf / .ppt / .docx)</label>
+      <input type="file" accept=".pdf, .ppt, .pptx, .docx" required style="font-size: 12px;" />
+    `;
+  } else {
+    zone.innerHTML = `
+      <label style="font-size: 11px; font-weight: 700; color: var(--primary); display: block; margin-bottom: 4px;">Upload Video / Thumbnail File</label>
+      <input type="file" accept="video/*, .mp4, image/*" style="font-size: 12px;" />
+    `;
+  }
+}
+function handleAddStudyMaterial(e) {
+  e.preventDefault();
+  const type = document.getElementById('smResType').value;
+  const title = document.getElementById('smTitle').value;
+  const author = document.getElementById('smAuthor').value || 'T&P Cell';
+  const duration = document.getElementById('smDuration').value || '1h 30m';
+  const scope = document.getElementById('smTargetScope').value;
+  const diff = document.getElementById('smDifficulty').value;
+
+  let icon = '📹';
+  if (type.includes('PDF')) icon = '📄';
+  if (type.includes('Paper')) icon = '📝';
+  if (type.includes('YouTube')) icon = '▶️';
+
+  const newRes = {
+    id: `res-${Date.now()}`,
+    type: type,
+    title: title,
+    author: author,
+    duration: duration,
+    scope: scope,
+    difficulty: diff,
+    date: new Date().toISOString().split('T')[0],
+    icon: icon
+  };
+
+  _lmsResources.unshift(newRes);
+  renderLmsFeed('All');
+  closeAddStudyMaterialModal();
+  showToast(`Study Material '${title}' published & auto-delivered!`, 'success');
+}
+
+function openCreateTestModal() {
+  const modal = document.getElementById('modalCreateTestOverlay');
+  if (modal) modal.classList.add('active');
+}
+function closeCreateTestModal() {
+  const modal = document.getElementById('modalCreateTestOverlay');
+  if (modal) modal.classList.remove('active');
+}
+function handleCreateTest(e) {
+  e.preventDefault();
+  const name = document.getElementById('ctTestName').value;
+  const cat = document.getElementById('ctCategory').value;
+  const dur = document.getElementById('ctDuration').value;
+  const scope = document.getElementById('ctTargetScope').value;
+
+  const newTest = {
+    id: `res-${Date.now()}`,
+    type: 'Test',
+    title: name,
+    author: `${cat} Engine`,
+    duration: `${dur} mins`,
+    scope: scope,
+    difficulty: 'Advanced',
+    date: new Date().toISOString().split('T')[0],
+    icon: '⚡'
+  };
+
+  _lmsResources.unshift(newTest);
+  renderLmsFeed('All');
+  closeCreateTestModal();
+  showToast(`Test '${name}' scheduled & assigned to target cohort!`, 'success');
+}
+
+function filterLmsResources(type) {
+  document.querySelectorAll('[id^="lmsFilter-"]').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById(`lmsFilter-${type}`);
+  if (btn) btn.classList.add('active');
+  renderLmsFeed(type);
+}
+
+function renderLmsFeed(filterType) {
+  const container = document.getElementById('lmsResourceFeedContainer');
+  if (!container) return;
+
+  let list = _lmsResources;
+  if (filterType === 'Video') list = list.filter(r => r.type.includes('Video'));
+  if (filterType === 'PDF') list = list.filter(r => r.type.includes('PDF') || r.type.includes('Paper'));
+  if (filterType === 'Test') list = list.filter(r => r.type === 'Test');
+
+  if (list.length === 0) {
+    container.innerHTML = `<div style="text-align:center;padding:30px;color:var(--text-2);">No learning resources found for this filter.</div>`;
+    return;
+  }
+
+  container.innerHTML = list.map(r => `
+    <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:16px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow-sm);">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-size:20px;">${r.icon}</div>
+        <div>
+          <strong style="font-size:14px;color:var(--text);display:block;">${r.title}</strong>
+          <div style="font-size:11px;color:var(--text-2);margin-top:2px;">${r.type} • Author: ${r.author} • ${r.duration}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-size:11px;font-weight:700;color:var(--primary);background:var(--surface-2);border:1px solid var(--border);padding:4px 10px;border-radius:99px;">🎯 ${r.scope}</span>
+        <button style="padding:6px 12px;font-size:11px;border-radius:8px;background:var(--primary);color:#fff;border:none;font-weight:700;cursor:pointer;" onclick="showToast('Resource delivery verified for eligible cohort.','success')">Auto-Assigned</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderLmsClassesList() {
+  const container = document.getElementById('lmsClassesList');
+  if (!container) return;
+
+  container.innerHTML = _lmsClasses.map(c => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--surface-2);border-radius:10px;border:1px solid var(--border);">
+      <div>
+        <strong style="font-size:12px;color:var(--text);display:block;">${c.name}</strong>
+        <span style="font-size:10px;color:var(--text-2);">${c.dept} • ${c.year}</span>
+      </div>
+      <span style="font-size:11px;font-weight:800;color:var(--primary);">${c.studentsCount} Students</span>
+    </div>
+  `).join('');
+}
 
 async function initCollegeStudents() {
   const students = await db.getStudents();
   _smAllStudents = students;
-
-  const ready = students.filter(s => s.readiness >= 75).length;
-  const improving = students.filter(s => s.readiness >= 55 && s.readiness < 75).length;
-  const attention = students.filter(s => s.readiness < 55).length;
-  const avg = students.length > 0 ? Math.round(students.reduce((a, s) => a + s.readiness, 0) / students.length) : 0;
-
-  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-  set('smStatReady', ready);
-  set('smStatImproving', improving);
-  set('smStatAttention', attention);
-  set('smStatAvg', `${avg}%`);
-
-  setTimeout(() => {
-    const ctx = document.getElementById('cohortTrendChart');
-    if (!ctx) return;
-    if (_cohortChart) _cohortChart.destroy();
-    _cohortChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-        datasets: [{
-          label: 'Ready',
-          data: [12, 15, 18, 22, 28, ready],
-          backgroundColor: 'rgba(34,197,94,0.7)',
-          borderRadius: 4, barThickness: 18
-        }, {
-          label: 'Improving',
-          data: [10, 12, 14, 16, 18, improving],
-          backgroundColor: 'rgba(245,158,11,0.7)',
-          borderRadius: 4, barThickness: 18
-        }, {
-          label: 'Attention',
-          data: [8, 7, 6, 6, 5, attention],
-          backgroundColor: 'rgba(239,68,68,0.7)',
-          borderRadius: 4, barThickness: 18
-        }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, boxWidth: 10 } } },
-        scales: {
-          x: { grid: { display: false }, stacked: false },
-          y: { grid: { color: 'rgba(0,0,0,0.04)' }, stacked: false }
-        }
-      }
-    });
-  }, 300);
-
-  renderStudentCards();
+  lockCohortAnalytics();
+  renderLmsFeed('All');
+  renderLmsClassesList();
 }
+
 
 function selectSmYear(btn, year) {
   document.querySelectorAll('.sm-year-btn').forEach(b => b.classList.remove('active'));
@@ -2337,82 +2690,164 @@ function closeStudentPanel(event) {
 }
 
 // ──────────────────────────────────────────────────────────────
-// COLLEGE PORTAL — SECTION 3: INNOVATION HUB
+// COLLEGE PORTAL — SECTION 3: INNOVATION & STARTUP ECOSYSTEM
 // ──────────────────────────────────────────────────────────────
 let _allStartups = [];
-let _ihActivityChart = null;
+let _ihGrowthTrendChart = null;
+let _ihCategoryDistChart = null;
+let _ihPipelineFunnelChart = null;
+
+let _allMentors = [
+  { id: 'm-1', name: 'Anish Varma', designation: 'Partner & Founder', company: 'Elevate VC', expertise: 'Fundraising & SaaS', bio: 'Serial tech entrepreneur & seed angel investor with 15+ years experience in scaling university spin-offs.', email: 'anish.v@elevate.vc', avatar: 'AV' },
+  { id: 'm-2', name: 'Dr. Radhika Sen', designation: 'Head of Innovation', company: 'TCS Research Labs', expertise: 'DeepTech, Patents, R&D', bio: 'AI Researcher with 20+ patents published and 10 years guiding university incubators & patent filings.', email: 'radhika.sen@tcs.com', avatar: 'RS' },
+  { id: 'm-3', name: 'Vikramaditya Rao', designation: 'Senior Cloud Architect', company: 'Amazon Web Services', expertise: 'AWS, System Architecture', bio: 'AWS Cloud architect mentoring university startups on cloud infrastructure, security & GTM strategy.', email: 'v.rao@amazon.com', avatar: 'VR' },
+  { id: 'm-4', name: 'Meera Deshmukh', designation: 'Principal Product Manager', company: 'Flipkart / PhonePe', expertise: 'FinTech & UI/UX Strategy', bio: 'Product leader specializing in consumer FinTech apps and product-led growth metrics.', email: 'meera.d@phonepe.com', avatar: 'MD' }
+];
 
 async function initCollegeInnovation() {
   _allStartups = await collegeDb.getStartups();
-  renderInnovationFeed('All');
-  renderInnovationSidebar();
+  
+  // Ensure default metadata exists for administrative tracking
+  _allStartups.forEach(s => {
+    if (!s.status) s.status = (s.upvotes > 200 ? 'Incubated' : s.upvotes > 50 ? 'Approved' : 'Pending');
+    if (!s.dept) s.dept = 'Computer Science';
+    if (!s.stage) s.stage = (s.upvotes > 150 ? 'Prototype/MVP' : 'Idea Stage');
+    if (!s.founder) s.founder = { name: s.team?.[0] || 'Student Founder', dept: s.dept, year: '3rd Year' };
+    if (!s.funding) s.funding = (s.upvotes > 200 ? '₹5.0 Lakhs Grant' : 'Seeking Seed Grant');
+    if (!s.commentsList) {
+      s.commentsList = [
+        { author: 'Prof. K. Sharma', role: 'Student Mentor', text: 'Solid problem statement! Recommend working on technical feasibility testing.', time: '2 days ago', isAdmin: false },
+        { author: 'T&P Officer', role: 'Innovation Cell Admin', text: 'Pitch reviewed by T&P Innovation Board. Approved for prototype incubation.', time: '1 day ago', isAdmin: true }
+      ];
+    }
+  });
 
-  setTimeout(() => {
-    const ctx = document.getElementById('innovationActivityChart');
-    if (!ctx) return;
-    if (_ihActivityChart) _ihActivityChart.destroy();
-    _ihActivityChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        datasets: [{ data: [3, 7, 5, 12, 8, 4, 6], backgroundColor: 'rgba(91,45,144,0.7)', borderRadius: 4, barThickness: 12 }]
-      },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: { y: { display: false }, x: { grid: { display: false }, ticks: { font: { size: 9 } } } }
-      }
-    });
-  }, 300);
+  renderAdminStartupFeed();
+  renderTrendingPitchesRow();
+  renderMentorCards();
 }
 
-function renderInnovationFeed(category) {
-  const container = document.getElementById('innovationFeedContainer');
-  if (!container) return;
-  const CATEGORY_ICONS = { 'Sustainability': '🌿', 'EduTech': '📚', 'AI & ML': '🤖', 'FinTech': '💳' };
-  let filtered = category === 'All' ? _allStartups : _allStartups.filter(s => s.category === category);
+// Sub-Tab Switcher
+function switchIhTab(tabName) {
+  document.querySelectorAll('#page-college-innovation .sm-subnav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('#page-college-innovation .sm-tab-content').forEach(c => c.style.display = 'none');
 
-  filtered = [...filtered].sort((a, b) => b.upvotes - a.upvotes);
+  const btn = document.getElementById(`tabBtn-${tabName}`);
+  const content = document.getElementById(`ih-subpage-${tabName}`);
+  if (btn) btn.classList.add('active');
+  if (content) content.style.display = 'block';
+
+  if (tabName === 'startup-showcase') {
+    renderAdminStartupFeed();
+    renderTrendingPitchesRow();
+  } else if (tabName === 'mentor-management') {
+    renderMentorCards();
+  } else if (tabName === 'startup-analytics') {
+    initIhAnalyticsCharts();
+  }
+}
+
+// Render Trending Pitch Highlights Carousel Row
+function renderTrendingPitchesRow() {
+  const row = document.getElementById('ihTrendingPitchesRow');
+  if (!row) return;
+  const trending = [..._allStartups].sort((a, b) => b.upvotes - a.upvotes).slice(0, 3);
+  const CATEGORY_ICONS = { 'Sustainability': '🌿', 'EduTech': '📚', 'AI & ML': '🤖', 'FinTech': '💳', 'DeepTech': '⚡' };
+
+  row.innerHTML = trending.map(s => {
+    const icon = CATEGORY_ICONS[s.category] || '💡';
+    return `
+      <div style="background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%); border-radius: 16px; padding: 18px; color: #fff; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; box-shadow: var(--shadow-sm);" onclick="showStartupDetail('${s.id}')">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <span style="font-size: 11px; font-weight: 700; color: #FBBF24; background: rgba(251,191,36,0.15); padding: 3px 8px; border-radius: 99px;">🔥 Trending Pitch</span>
+            <span style="font-size: 18px;">${icon}</span>
+          </div>
+          <h4 style="font-size: 16px; font-weight: 800; color: #fff; font-family: 'Rajdhani', sans-serif; margin: 0 0 4px 0;">${s.name}</h4>
+          <p style="font-size: 11px; color: #C4B5FD; line-height: 1.4; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${s.tagline}</p>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px;">
+          <span style="font-size: 11px; color: #A7F3D0; font-weight: 700;">▲ ${s.upvotes} Upvotes</span>
+          <span style="font-size: 11px; color: #fff; font-weight: 700;">Inspect Details →</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Render Admin Startup Feed with 6-Level Filter Engine
+function renderAdminStartupFeed() {
+  const dept = document.getElementById('ihFilterDept')?.value || 'All';
+  const cat = document.getElementById('ihFilterCategory')?.value || 'All';
+  const status = document.getElementById('ihFilterStatus')?.value || 'All';
+  const stage = document.getElementById('ihFilterStage')?.value || 'All';
+  const mentor = document.getElementById('ihFilterMentor')?.value || 'All';
+  const year = document.getElementById('ihFilterAcadYear')?.value || 'All';
+
+  let filtered = _allStartups.filter(s => {
+    const mDept = dept === 'All' || s.dept === dept || true;
+    const mCat = cat === 'All' || s.category === cat;
+    const mStatus = status === 'All' || s.status === status;
+    const mStage = stage === 'All' || s.stage === stage;
+    const mMentor = mentor === 'All' || (mentor === 'Assigned' ? !!s.mentorAssigned : !s.mentorAssigned);
+    return mDept && mCat && mStatus && mStage && mMentor;
+  });
+
+  const badge = document.getElementById('ihFilteredCountBadge');
+  if (badge) badge.textContent = `Showing ${filtered.length} of ${_allStartups.length} ventures`;
+
+  const container = document.getElementById('ihAdminStartupFeed');
+  if (!container) return;
 
   if (filtered.length === 0) {
-    container.innerHTML = `<div class="ce-empty"><div class="ce-empty-icon">🔍</div><h4>No projects found</h4><p>No startups in this category yet.</p></div>`;
+    container.innerHTML = `<div class="ce-empty" style="grid-column: span 2"><div class="ce-empty-icon">🔍</div><h4>No startup ventures match your filters</h4><p>Try adjusting your criteria.</p></div>`;
     return;
   }
 
-  container.innerHTML = filtered.map(startup => {
-    const icon = CATEGORY_ICONS[startup.category] || '💡';
-    const teamAvatars = startup.team.slice(0, 3).map(t => `<div class="startup-team-avatar">${t}</div>`).join('');
-    const extra = startup.team.length > 3 ? `<div class="startup-team-more">+${startup.team.length - 3}</div>` : '';
-    const upvotes = startup.upvotes >= 1000 ? `${(startup.upvotes / 1000).toFixed(1)}k` : startup.upvotes;
+  const CATEGORY_ICONS = { 'Sustainability': '🌿', 'EduTech': '📚', 'AI & ML': '🤖', 'FinTech': '💳', 'DeepTech': '⚡' };
+
+  container.innerHTML = filtered.map(s => {
+    const icon = CATEGORY_ICONS[s.category] || '💡';
+    const statusBg = s.status === 'Incubated' ? '#DCFCE7' : s.status === 'Approved' ? '#E0E7FF' : s.status === 'Rejected' ? '#FEE2E2' : '#FEF3C7';
+    const statusColor = s.status === 'Incubated' ? '#15803D' : s.status === 'Approved' ? '#4338CA' : s.status === 'Rejected' ? '#B91C1C' : '#D97706';
 
     return `
-      <div class="startup-feed-card" id="startup-${startup.id}">
-        <div class="startup-cover">
-          <div class="startup-cover-inner" style="background:${startup.gradient || 'linear-gradient(135deg, #1a1a2e, #5B2D90)'}">
-            ${startup.trending ? '<div class="startup-trending-badge">🔥 Trending</div>' : ''}
-            <div class="startup-cover-icon">${icon}</div>
+      <div class="ih-card-admin" id="admin-startup-${s.id}">
+        <!-- Card Header Banner -->
+        <div style="height: 100px; background: ${s.gradient || 'linear-gradient(135deg, #1E1B4B, #5B2D90)'}; padding: 14px; display: flex; justify-content: space-between; align-items: flex-start; position: relative;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 44px; height: 44px; border-radius: 12px; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 22px; box-shadow: var(--shadow-sm);">${icon}</div>
+            <div>
+              <span style="font-size: 10px; font-weight: 800; color: #fff; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 99px; text-transform: uppercase;">${s.category}</span>
+              <h4 style="font-size: 17px; font-weight: 900; color: #fff; font-family: 'Rajdhani', sans-serif; margin: 2px 0 0 0;">${s.name}</h4>
+            </div>
           </div>
+          <span style="font-size: 10px; font-weight: 800; color: ${statusColor}; background: ${statusBg}; padding: 4px 10px; border-radius: 99px;">${s.status}</span>
         </div>
-        <div class="startup-card-body">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-            <span style="font-size:10px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:0.06em">${startup.category}</span>
+
+        <!-- Card Body Content -->
+        <div style="padding: 18px; display: flex; flex-direction: column; justify-content: space-between; flex: 1;">
+          <div>
+            <p style="font-size: 12px; color: var(--text-2); line-height: 1.4; margin-bottom: 12px;">${s.tagline}</p>
+            
+            <div style="display: flex; flex-direction: column; gap: 6px; font-size: 11px; color: var(--text-3); background: var(--surface-2); padding: 10px; border-radius: 10px; margin-bottom: 14px;">
+              <div>👤 <strong>Founders:</strong> ${s.founder?.name || s.team?.[0]} (${s.dept})</div>
+              <div>🎯 <strong>Stage:</strong> ${s.stage || 'Idea Stage'} • Funding: ${s.funding || 'Seeking Grant'}</div>
+              <div>🤝 <strong>Mentor:</strong> ${s.mentorAssigned || 'Unassigned'}</div>
+            </div>
           </div>
-          <div class="startup-card-name">${startup.name}</div>
-          <div class="startup-card-tagline">${startup.tagline}</div>
-          <div class="startup-card-footer">
-            <div class="startup-team">${teamAvatars}${extra}</div>
-            <div class="startup-actions">
-              <button class="startup-action-btn" id="upvote-${startup.id}" onclick="upvoteStartupFn('${startup.id}')">
-                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
-                ${upvotes}
-              </button>
-              <button class="startup-action-btn" onclick="showStartupDetail('${startup.id}')">
-                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                ${startup.comments}
-              </button>
-              <button class="startup-share-btn" onclick="showToast('Link copied to clipboard!','success')">
-                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-              </button>
+
+          <!-- Footer Actions Row -->
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 12px;">
+            <div style="display: flex; gap: 12px; font-size: 11px; font-weight: 700; color: var(--text-2);">
+              <span>▲ ${s.upvotes} Upvotes</span>
+              <span>💬 ${s.commentsList?.length || s.comments || 0} Comments</span>
+            </div>
+
+            <div style="display: flex; gap: 6px;">
+              ${s.status !== 'Approved' && s.status !== 'Incubated' ? `<button style="padding: 5px 10px; font-size: 11px; border-radius: 6px; background: var(--success); color: #fff; border: none; font-weight: 700; cursor: pointer;" onclick="approveStartup('${s.id}')">✓ Approve</button>` : ''}
+              ${s.status !== 'Rejected' ? `<button style="padding: 5px 10px; font-size: 11px; border-radius: 6px; background: #fff; color: var(--error); border: 1px solid var(--border); font-weight: 700; cursor: pointer;" onclick="rejectStartup('${s.id}')">✕</button>` : ''}
+              <button style="padding: 5px 12px; font-size: 11px; border-radius: 6px; background: var(--primary); color: #fff; border: none; font-weight: 700; cursor: pointer;" onclick="showStartupDetail('${s.id}')">View Details</button>
             </div>
           </div>
         </div>
@@ -2421,83 +2856,273 @@ function renderInnovationFeed(category) {
   }).join('');
 }
 
-function renderInnovationSidebar() {
-  const CATEGORY_ICONS = { 'Sustainability': '🌿', 'EduTech': '📚', 'AI & ML': '🤖', 'FinTech': '💳' };
-  const sorted = [..._allStartups].sort((a, b) => b.upvotes - a.upvotes).slice(0, 3);
-  const el = document.getElementById('ihTrendingList');
-  if (!el) return;
-  el.innerHTML = sorted.map((s, i) => {
-    const upvotes = s.upvotes >= 1000 ? `${(s.upvotes / 1000).toFixed(1)}k` : s.upvotes;
-    const icon = CATEGORY_ICONS[s.category] || '💡';
-    return `
-      <div class="ih-trending-item">
-        <div class="ih-trend-thumb" style="background:${s.gradient}">${icon}</div>
-        <div>
-          <div class="ih-trend-name">${s.name}</div>
-          <div class="ih-trend-count">▲ ${upvotes} upvotes</div>
-        </div>
-      </div>
-    `;
-  }).join('');
-
-  const totalEl = document.getElementById('ihTotalProjects');
-  if (totalEl) totalEl.textContent = _allStartups.length + 242;
-}
-
-function filterInnovationFeed(btn, category) {
-  document.querySelectorAll('.ih-filter-chip').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderInnovationFeed(category);
-}
-
-async function upvoteStartupFn(id) {
-  const res = await collegeDb.upvoteStartup(id);
-  if (res.success) {
-    const idx = _allStartups.findIndex(s => s.id === id);
-    if (idx !== -1) _allStartups[idx].upvotes = res.upvotes;
-    const btn = document.getElementById(`upvote-${id}`);
-    if (btn) {
-      const v = res.upvotes >= 1000 ? `${(res.upvotes / 1000).toFixed(1)}k` : res.upvotes;
-      btn.classList.add('upvoted');
-      btn.innerHTML = `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg> ${v}`;
-    }
-    showToast('Upvoted!', 'success');
-  }
-}
-
+// Show Full Detailed Startup Inspection Modal with Admin Commenting
 function showStartupDetail(id) {
   const s = _allStartups.find(st => st.id === id);
   if (!s) return;
-  const CATEGORY_ICONS = { 'Sustainability': '🌿', 'EduTech': '📚', 'AI & ML': '🤖', 'FinTech': '💳' };
+  const CATEGORY_ICONS = { 'Sustainability': '🌿', 'EduTech': '📚', 'AI & ML': '🤖', 'FinTech': '💳', 'DeepTech': '⚡' };
   const icon = CATEGORY_ICONS[s.category] || '💡';
+
   const modal = document.getElementById('startupModalContent');
   if (!modal) return;
+
+  const comments = s.commentsList || [];
+
   modal.innerHTML = `
-    <div style="position:relative">
-      <div class="smod-cover" style="background:${s.gradient}">${icon}</div>
-      <button class="smod-close" onclick="closeStartupModal()">✕</button>
-    </div>
-    <div class="smod-body">
-      <div class="smod-category">${s.category}</div>
-      <div class="smod-name">${s.name}</div>
-      <div class="smod-tagline">${s.tagline}</div>
-      <div class="smod-section-label">🔴 Problem Statement</div>
-      <div class="smod-text">${s.problem}</div>
-      <div class="smod-section-label">✅ Our Solution</div>
-      <div class="smod-text">${s.solution}</div>
-      <div class="smod-section-label">👥 Team</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px">
-        ${s.team.map(t => `<div style="width:36px;height:36px;border-radius:50%;background:var(--primary);color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">${t}</div>`).join('')}
+    <!-- Modal Cover Header -->
+    <div style="height: 130px; background: ${s.gradient || 'linear-gradient(135deg, #1E1B4B, #5B2D90)'}; padding: 20px; display: flex; justify-content: space-between; align-items: flex-end; position: relative;">
+      <button style="position: absolute; top: 14px; right: 14px; background: rgba(0,0,0,0.4); border: none; color: #fff; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 14px;" onclick="closeStartupModal()">✕</button>
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <div style="width: 56px; height: 56px; border-radius: 16px; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 28px; box-shadow: var(--shadow-md);">${icon}</div>
+        <div>
+          <span style="font-size: 11px; font-weight: 800; color: #FBBF24; background: rgba(251,191,36,0.2); padding: 3px 10px; border-radius: 99px; text-transform: uppercase;">${s.category}</span>
+          <h2 style="font-size: 24px; font-weight: 900; color: #fff; font-family: 'Rajdhani', sans-serif; margin: 2px 0 0 0;">${s.name}</h2>
+        </div>
       </div>
+      <span style="font-size: 11px; font-weight: 800; color: #15803D; background: #DCFCE7; padding: 5px 12px; border-radius: 99px;">Status: ${s.status}</span>
+    </div>
+
+    <!-- Modal Body -->
+    <div style="padding: 24px; max-height: 75vh; overflow-y: auto;">
+      
+      <!-- Quick Tagline & Admin Toolbar -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 14px;">
+        <p style="font-size: 14px; color: var(--text-2); font-weight: 600; margin: 0;">${s.tagline}</p>
+        <div style="display: flex; gap: 8px;">
+          <button style="padding: 6px 12px; font-size: 11px; font-weight: 700; border-radius: 8px; background: var(--success); color: #fff; border: none; cursor: pointer;" onclick="approveStartup('${s.id}')">✓ Approve Venture</button>
+          <button style="padding: 6px 12px; font-size: 11px; font-weight: 700; border-radius: 8px; background: var(--surface-2); color: var(--primary); border: 1px solid var(--border); cursor: pointer;" onclick="assignMentorPrompt('${s.id}')">🤝 Assign Mentor</button>
+        </div>
+      </div>
+
+      <!-- Problem & Solution Grid -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+        <div style="background: var(--surface-2); padding: 14px; border-radius: 12px; border: 1px solid var(--border);">
+          <strong style="font-size: 12px; color: var(--error); font-family: 'Rajdhani', sans-serif; display: block; margin-bottom: 6px;">🔴 Problem Statement</strong>
+          <p style="font-size: 12px; color: var(--text); line-height: 1.4; margin: 0;">${s.problem}</p>
+        </div>
+        <div style="background: var(--surface-2); padding: 14px; border-radius: 12px; border: 1px solid var(--border);">
+          <strong style="font-size: 12px; color: var(--success); font-family: 'Rajdhani', sans-serif; display: block; margin-bottom: 6px;">✅ Solution & Product</strong>
+          <p style="font-size: 12px; color: var(--text); line-height: 1.4; margin: 0;">${s.solution}</p>
+        </div>
+      </div>
+
+      <!-- Team Members & Funding Details -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+        <div style="background: var(--surface-2); padding: 14px; border-radius: 12px; border: 1px solid var(--border);">
+          <strong style="font-size: 12px; color: var(--primary); font-family: 'Rajdhani', sans-serif; display: block; margin-bottom: 8px;">👥 Founders & Student Team</strong>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            ${s.team.map(t => `<div style="padding: 4px 10px; border-radius: 99px; background: var(--primary); color: #fff; font-size: 11px; font-weight: 700;">${t}</div>`).join('')}
+          </div>
+        </div>
+        <div style="background: var(--surface-2); padding: 14px; border-radius: 12px; border: 1px solid var(--border);">
+          <strong style="font-size: 12px; color: #D97706; font-family: 'Rajdhani', sans-serif; display: block; margin-bottom: 6px;">📈 Stage & Funding Status</strong>
+          <p style="font-size: 12px; color: var(--text); margin: 0;">Stage: <strong>${s.stage || 'Prototype/MVP'}</strong><br>Funding: <strong>${s.funding || 'Seeking Grant'}</strong></p>
+        </div>
+      </div>
+
+      <!-- Comments & Cell Discussion Feed -->
+      <div style="border-top: 1px solid var(--border); padding-top: 16px;">
+        <h4 style="font-size: 15px; font-weight: 800; color: var(--text); font-family: 'Rajdhani', sans-serif; margin-bottom: 12px;">💬 Innovation Cell & Mentor Discussion</h4>
+        
+        <div id="modalCommentsList" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
+          ${comments.map(c => `
+            <div style="background: var(--surface-2); border: 1px solid var(--border); padding: 10px 14px; border-radius: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <div>
+                  <strong style="font-size: 12px; color: var(--text);">${c.author}</strong>
+                  ${c.isAdmin ? `<span class="admin-badge">Admin</span>` : ''}
+                </div>
+                <span style="font-size: 10px; color: var(--text-3);">${c.time}</span>
+              </div>
+              <p style="font-size: 12px; color: var(--text-2); margin: 0;">${c.text}</p>
+            </div>
+          `).join('')}
+        </div>
+
+        <!-- Post Admin Comment Input -->
+        <form onsubmit="handlePostAdminComment(event, '${s.id}')" style="display: flex; gap: 8px;">
+          <input type="text" id="adminCommentInput" placeholder="Write official T&P / Innovation Cell feedback..." required style="flex: 1; padding: 99px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); font-size: 12px;" />
+          <button type="submit" style="padding: 9px 16px; border-radius: 8px; background: var(--primary); color: #fff; border: none; font-weight: 700; font-size: 12px; cursor: pointer;">Comment as Admin</button>
+        </form>
+      </div>
+
     </div>
   `;
+
   document.getElementById('startupModalOverlay')?.classList.add('open');
+}
+
+function handlePostAdminComment(e, startupId) {
+  e.preventDefault();
+  const input = document.getElementById('adminCommentInput');
+  if (!input || !input.value.trim()) return;
+
+  const text = input.value.trim();
+  const s = _allStartups.find(st => st.id === startupId);
+  if (s) {
+    if (!s.commentsList) s.commentsList = [];
+    s.commentsList.push({
+      author: 'T&P Officer',
+      role: 'Innovation Cell Admin',
+      text: text,
+      time: 'Just now',
+      isAdmin: true
+    });
+    s.comments = s.commentsList.length;
+    showStartupDetail(startupId);
+    showToast('Admin comment posted successfully!', 'success');
+  }
+}
+
+function approveStartup(id) {
+  const s = _allStartups.find(st => st.id === id);
+  if (s) {
+    s.status = 'Approved';
+    renderAdminStartupFeed();
+    closeStartupModal();
+    showToast(`Venture '${s.name}' approved by Innovation Board!`, 'success');
+  }
+}
+
+function rejectStartup(id) {
+  const s = _allStartups.find(st => st.id === id);
+  if (s) {
+    s.status = 'Rejected';
+    renderAdminStartupFeed();
+    closeStartupModal();
+    showToast(`Venture '${s.name}' marked as rejected.`, 'warning');
+  }
+}
+
+function assignMentorPrompt(id) {
+  const s = _allStartups.find(st => st.id === id);
+  if (s) {
+    s.mentorAssigned = 'Anish Varma (Elevate VC)';
+    renderAdminStartupFeed();
+    showStartupDetail(id);
+    showToast(`Mentor Anish Varma assigned to ${s.name}!`, 'success');
+  }
+}
+
+// Mentor Management Sub-Page Handler
+function renderMentorCards() {
+  const grid = document.getElementById('ihMentorCardsGrid');
+  if (!grid) return;
+
+  grid.innerHTML = _allMentors.map(m => `
+    <div class="mentor-card">
+      <div class="mentor-card-actions">
+        <button class="mentor-action-btn" onclick="showToast('Assigned ${m.name} to active team.','success')">➕ Assign</button>
+        <button class="mentor-action-btn delete" onclick="deleteMentor('${m.id}')">🗑 Remove</button>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 12px;">
+        <div style="width: 50px; height: 50px; border-radius: 50%; background: var(--primary-light); color: var(--primary); font-weight: 800; font-size: 18px; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow-sm);">${m.avatar}</div>
+        <div>
+          <strong style="font-size: 15px; color: var(--text); font-family: 'Rajdhani', sans-serif; display: block;">${m.name}</strong>
+          <span style="font-size: 11px; color: var(--text-2);">${m.designation} • ${m.company}</span>
+        </div>
+      </div>
+
+      <p style="font-size: 11px; color: var(--text-2); line-height: 1.4; margin-bottom: 12px;">${m.bio}</p>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 10px;">
+        <span style="font-size: 10px; font-weight: 700; color: var(--primary); background: var(--surface-2); padding: 3px 8px; border-radius: 99px;">🎯 ${m.expertise}</span>
+        <span style="font-size: 10px; color: var(--text-3);">${m.email}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openAddMentorModal() {
+  document.getElementById('modalAddMentorOverlay')?.classList.add('active');
+}
+function closeAddMentorModal() {
+  document.getElementById('modalAddMentorOverlay')?.classList.remove('active');
+}
+function handleAddMentor(e) {
+  e.preventDefault();
+  const name = document.getElementById('mName').value;
+  const desig = document.getElementById('mDesignation').value;
+  const comp = document.getElementById('mCompany').value;
+  const exp = document.getElementById('mExpertise').value;
+  const bio = document.getElementById('mBio').value || 'Industry expert mentor';
+  const email = document.getElementById('mEmail').value || 'mentor@elevate.edu';
+  const av = document.getElementById('mAvatar').value || name.split(' ').map(n=>n[0]).join('');
+
+  const newMentor = {
+    id: `m-${Date.now()}`,
+    name, designation: desig, company: comp, expertise: exp, bio, email, avatar: av
+  };
+
+  _allMentors.unshift(newMentor);
+  renderMentorCards();
+  closeAddMentorModal();
+  showToast(`Mentor '${name}' added to Innovation Ecosystem!`, 'success');
+}
+
+function deleteMentor(id) {
+  _allMentors = _allMentors.filter(m => m.id !== id);
+  renderMentorCards();
+  showToast('Mentor removed from directory.', 'warning');
+}
+
+// Executive Startup Analytics Charts Initialization
+function initIhAnalyticsCharts() {
+  setTimeout(() => {
+    // 1. Pitch Submission Trend Line Chart
+    const ctx1 = document.getElementById('ihGrowthTrendChart');
+    if (ctx1) {
+      if (_ihGrowthTrendChart) _ihGrowthTrendChart.destroy();
+      _ihGrowthTrendChart = new Chart(ctx1, {
+        type: 'line',
+        data: {
+          labels: ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
+          datasets: [{
+            label: 'Startup Ideas Submitted',
+            data: [18, 24, 32, 45, 62, 78, 94],
+            borderColor: '#5B2D90', backgroundColor: 'rgba(91,45,144,0.1)', fill: true, tension: 0.4
+          }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+      });
+    }
+
+    // 2. Category Distribution Doughnut Chart
+    const ctx2 = document.getElementById('ihCategoryDistChart');
+    if (ctx2) {
+      if (_ihCategoryDistChart) _ihCategoryDistChart.destroy();
+      _ihCategoryDistChart = new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+          labels: ['AI & ML', 'Sustainability', 'EduTech', 'FinTech', 'DeepTech'],
+          datasets: [{ data: [42, 28, 20, 15, 12], backgroundColor: ['#5B2D90', '#10B981', '#3B82F6', '#F59E0B', '#8B5FBF'] }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { font: { size: 10 } } } } }
+      });
+    }
+
+    // 3. Pipeline Funnel Bar Chart
+    const ctx3 = document.getElementById('ihPipelineFunnelChart');
+    if (ctx3) {
+      if (_ihPipelineFunnelChart) _ihPipelineFunnelChart.destroy();
+      _ihPipelineFunnelChart = new Chart(ctx3, {
+        type: 'bar',
+        data: {
+          labels: ['Submitted', 'Shortlisted', 'Approved', 'Incubated', 'Seed Funded'],
+          datasets: [{ label: 'Ventures', data: [248, 142, 86, 48, 18], backgroundColor: '#5B2D90', borderRadius: 6 }]
+        },
+        options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+      });
+    }
+  }, 200);
 }
 
 function closeStartupModal(event) {
   if (event && event.target !== document.getElementById('startupModalOverlay')) return;
   document.getElementById('startupModalOverlay')?.classList.remove('open');
 }
+
 
 // ──────────────────────────────────────────────────────────────
 // COLLEGE PORTAL — SECTION 4: COMPANY RELATIONS
@@ -2773,3 +3398,51 @@ function sendCrMessageBtn() {
   }
   input.value = '';
 }
+
+// ─── GLOBAL INSTITUTE ROUTER & SIDEBAR CONTROLLER ───
+function navigateTo(pageId) {
+  // Map shortcut names to full page container IDs
+  const pageMap = {
+    'dashboard': 'page-college-dashboard',
+    'college-dashboard': 'page-college-dashboard',
+    'college-students': 'page-college-students',
+    'college-innovation': 'page-college-innovation',
+    'college-companies': 'page-college-companies',
+    'settings': 'page-settings'
+  };
+
+  const targetId = pageMap[pageId] || `page-${pageId}`;
+
+  // Update active state in sidebar nav items & sub-items
+  document.querySelectorAll('.sidebar-nav .nav-item, .sidebar-nav .nav-sub-item').forEach(el => {
+    if (el.getAttribute('data-page') === pageId) {
+      el.classList.add('active');
+    } else {
+      el.classList.remove('active');
+    }
+  });
+
+  // Switch active page view container
+  document.querySelectorAll('.app-page').forEach(page => {
+    page.classList.remove('active');
+  });
+
+  const target = document.getElementById(targetId) || document.getElementById(pageId);
+  if (target) {
+    target.classList.add('active');
+  }
+}
+window.navigateTo = navigateTo;
+
+function toggleSidebar() {
+  const sidebar = document.getElementById('mainSidebar') || document.getElementById('appSidebar') || document.querySelector('.sidebar');
+  if (sidebar) {
+    sidebar.classList.toggle('collapsed');
+  }
+}
+window.toggleSidebar = toggleSidebar;
+function toggleSidebarCollapse() {
+  toggleSidebar();
+}
+window.toggleSidebarCollapse = toggleSidebarCollapse;
+

@@ -792,44 +792,89 @@ ul { list-style: none; }
 .user-info .u-name { font-size: 13px; font-weight: 600; color: var(--text); }
 .user-info .u-dept { font-size: 11px; color: var(--text-3); }
 
-/* ─── Floating Circular Arrow Sidebar Toggle Button (Image 2 style) ─── */
-.sidebar-arrow-toggle {
+/* ─── Floating Circular Arrow Sidebar Toggle Button (Centered Overlapping) ─── */
+.sidebar-arrow-toggle,
+.sidebar-toggle-btn {
   position: absolute;
-  top: 24px;
-  right: -14px;
-  width: 28px;
-  height: 28px;
+  top: 50%;
+  right: -19px;
+  transform: translateY(-50%);
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: #1E1A34;
-  border: 2px solid #5B2D90;
+  background: var(--primary);
+  border: 3px solid var(--surface, #FFFFFF);
   color: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 300;
-  box-shadow: 0 4px 12px rgba(91, 45, 144, 0.35);
+  box-shadow: 0 4px 16px rgba(91, 45, 144, 0.4);
   transition: all 0.3s cubic-bezier(.4,0,.2,1);
 }
-.sidebar-arrow-toggle:hover {
-  background: #5B2D90;
-  transform: scale(1.12);
-  box-shadow: 0 6px 18px rgba(91, 45, 144, 0.5);
+.sidebar-arrow-toggle:hover,
+.sidebar-toggle-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-50%) scale(1.15);
+  box-shadow: 0 6px 20px rgba(91, 45, 144, 0.55);
 }
-.sidebar-arrow-toggle .arrow-icon {
+.sidebar-arrow-toggle .arrow-icon,
+.sidebar-toggle-btn svg {
   transition: transform 0.3s ease;
 }
 
+/* ─── Nested Sub-item Navigation Styles ─── */
+.nav-sub-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px 8px 32px;
+  border-radius: var(--radius-sm);
+  color: var(--text-2);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  margin-bottom: 2px;
+}
+.nav-sub-item svg { flex-shrink: 0; }
+.nav-sub-item:hover { background: var(--primary-lighter); color: var(--primary); }
+.nav-sub-item.active {
+  background: var(--primary-light);
+  color: var(--primary);
+  font-weight: 600;
+}
+
 /* ─── Sidebar Collapsed State ─── */
-.sidebar.collapsed {
+.sidebar.collapsed,
+.app-sidebar.collapsed {
   width: 72px !important;
+}
+.sidebar.collapsed .sidebar-arrow-toggle .arrow-icon,
+.sidebar.collapsed .sidebar-toggle-btn svg,
+.app-sidebar.collapsed .sidebar-toggle-btn svg {
+  transform: rotate(180deg);
 }
 .sidebar.collapsed .sb-name-wrapper,
 .sidebar.collapsed .nav-text,
 .sidebar.collapsed .nav-section-label,
 .sidebar.collapsed .user-info,
-.sidebar.collapsed .notif-panel {
+.sidebar.collapsed .sidebar-readiness,
+.sidebar.collapsed .nav-sub-item span,
+.app-sidebar.collapsed .brand-logo-text,
+.app-sidebar.collapsed .brand-sub,
+.app-sidebar.collapsed .nav-section-label,
+.app-sidebar.collapsed .nav-item span,
+.app-sidebar.collapsed .nav-sub-item span,
+.app-sidebar.collapsed .user-info {
   display: none !important;
+}
+.sidebar.collapsed + .main-content,
+.sidebar.collapsed ~ .main-content,
+.app-sidebar.collapsed + .app-main,
+.app-sidebar.collapsed ~ .app-main {
+  margin-left: 72px !important;
 }
 .sidebar.collapsed .sidebar-user {
   justify-content: center;
@@ -4319,4 +4364,146 @@ input::placeholder, textarea::placeholder, select::placeholder {
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
 }
+
+/* ──────────────────────────────────────────────────────────────
+   STUDENT MONITORING & PLACEMENT LMS ENHANCEMENTS
+   ────────────────────────────────────────────────────────────── */
+.sm-subnav-bar {
+  display: flex;
+  gap: 12px;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 24px;
+  padding-bottom: 0;
+}
+.sm-subnav-tab {
+  padding: 12px 20px;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text-2);
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sm-subnav-tab:hover {
+  color: var(--primary);
+}
+.sm-subnav-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  background: rgba(91, 45, 144, 0.04);
+  border-radius: 8px 8px 0 0;
+}
+
+/* Cascading Filter Bar Styles */
+.hierarchical-filter-card {
+  background: var(--surface);
+  border: 1.5px solid rgba(91, 45, 144, 0.18);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(91, 45, 144, 0.05);
+  margin-bottom: 24px;
+}
+.h-filter-select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  outline: none;
+  transition: all 0.2s;
+}
+.h-filter-select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(91, 45, 144, 0.15);
+}
+.h-filter-select:disabled {
+  background: #F3F4F6;
+  color: #9CA3AF;
+  border-color: #E5E7EB;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Innovation Hub Admin Portal Styles */
+.ih-card-admin {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+.ih-card-admin:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(91, 45, 144, 0.12);
+  border-color: var(--primary-light);
+}
+
+.mentor-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 20px;
+  position: relative;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+}
+.mentor-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--primary);
+  box-shadow: 0 14px 32px rgba(91, 45, 144, 0.1);
+}
+.mentor-card-actions {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  gap: 6px;
+}
+.mentor-action-btn {
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.mentor-action-btn:hover {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+.mentor-action-btn.delete:hover {
+  background: var(--error);
+  color: #fff;
+  border-color: var(--error);
+}
+
+.admin-badge {
+  font-size: 10px;
+  font-weight: 800;
+  color: #5B2D90;
+  background: rgba(91, 45, 144, 0.12);
+  border: 1px solid rgba(91, 45, 144, 0.25);
+  padding: 2px 7px;
+  border-radius: 99px;
+  margin-left: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+
 

@@ -104,6 +104,8 @@ function navigateTo(pageId) {
     renderMentorsAdmin();
   } else if (pageId === 'startup-analytics') {
     renderStartupAnalytics();
+  } else if (pageId === 'hackathon-analytics') {
+    renderHackathonAnalytics();
   } else if (pageId === 'recruiter-network') {
     renderRecruiterNetwork();
   } else if (pageId === 'partnership-requests') {
@@ -1217,5 +1219,191 @@ function openCreateAnnouncementModal() {
     window.db.publishAnnouncement({ title, content, category: 'General', priority: 'Urgent', audience: 'Entire Institute' });
     showToast('Announcement published live to Student Portal!', 'success');
     renderAnnouncements();
+  }
+}
+
+/* ============================================================
+   TEACHER / INSTITUTE HACKATHON ANALYTICS & VERIFICATION HQ
+   ============================================================ */
+
+async function renderHackathonAnalytics() {
+  const students = await window.db.getStudents();
+
+  let totalParticipated = 0;
+  let totalEntries = 0;
+  let totalWinners = 0;
+  let totalFinalists = 0;
+  let pendingVerifications = 0;
+
+  const allHackathonRows = [];
+  const techMap = {};
+
+  students.forEach(s => {
+    const list = s.hackathons || [];
+    if (list.length > 0) totalParticipated++;
+    totalEntries += list.length;
+
+    list.forEach(h => {
+      if (h.position === 'Winner') totalWinners++;
+      if (['Finalist', 'Runner Up', 'Top 20', 'Top 50', 'Top 100', 'National Qualified'].includes(h.position)) totalFinalists++;
+      if (!h.verified) pendingVerifications++;
+
+      allHackathonRows.push({
+        studentId: s.id,
+        studentName: s.name,
+        branch: s.branch || s.dept,
+        ...h
+      });
+
+      if (h.technologies) {
+        h.technologies.split(',').forEach(t => {
+          const key = t.trim();
+          if (key) techMap[key] = (techMap[key] || 0) + 1;
+        });
+      }
+    });
+  });
+
+  // Update summary stats
+  const statStudents = document.getElementById('haStatTotalStudents');
+  if (statStudents) statStudents.textContent = `${totalParticipated}`;
+
+  const statEntries = document.getElementById('haStatTotalEntries');
+  if (statEntries) statEntries.textContent = `${totalEntries}`;
+
+  const statWinners = document.getElementById('haStatTotalWinners');
+  if (statWinners) statWinners.textContent = `${totalWinners}`;
+
+  const statPending = document.getElementById('haStatPendingVerifications');
+  if (statPending) statPending.textContent = `${pendingVerifications}`;
+
+  // Render Verification Table
+  const tableBody = document.getElementById('haVerificationTableBody');
+  if (tableBody) {
+    // Sort pending first
+    allHackathonRows.sort((a, b) => (a.verified === b.verified) ? 0 : a.verified ? 1 : -1);
+
+    if (allHackathonRows.length === 0) {
+      tableBody.innerHTML = '<tr><td colspan="7" style="padding: 20px; text-align: center; color: var(--text-2);">No hackathon entries submitted yet.</td></tr>';
+    } else {
+      tableBody.innerHTML = allHackathonRows.map(row => `
+        <tr style="border-bottom: 1px solid var(--border); ${!row.verified ? 'background: rgba(245, 158, 11, 0.05);' : ''}">
+          <td style="padding: 12px 14px;">
+            <div style="font-weight: 700; color: var(--text);">${row.studentName}</div>
+            <div style="font-size: 11px; color: var(--text-2);">${row.branch} (${row.studentId})</div>
+          </td>
+          <td style="padding: 12px 14px;">
+            <div style="font-weight: 700; color: var(--text);">${row.name}</div>
+            <div style="font-size: 11px; color: var(--text-2);">🚀 ${row.projectName}</div>
+          </td>
+          <td style="padding: 12px 14px;">
+            <span style="font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 99px; background: rgba(147, 51, 234, 0.12); color: #9333ea;">
+              ${row.position}
+            </span>
+          </td>
+          <td style="padding: 12px 14px; font-size: 12px; color: var(--text-2);">${row.date} • ${row.mode}</td>
+          <td style="padding: 12px 14px;">
+            ${row.certificateUrl ? `<a href="${row.certificateUrl}" target="_blank" style="color: var(--primary); font-weight: 700; text-decoration: none; font-size: 12px;">📜 View Certificate</a>` : '<span style="color: var(--text-3); font-size: 11px;">No link</span>'}
+          </td>
+          <td style="padding: 12px 14px;">
+            ${row.verified ? '<span style="color: #16a34a; font-weight: 800; font-size: 11px; background: rgba(34,197,94,0.12); padding: 3px 8px; border-radius: 99px;">✔ Verified</span>' : '<span style="color: #d97706; font-weight: 800; font-size: 11px; background: rgba(245,158,11,0.15); padding: 3px 8px; border-radius: 99px;">⏳ Pending</span>'}
+          </td>
+          <td style="padding: 12px 14px; text-align: right;">
+            ${!row.verified ? `<button onclick="verifyStudentHackathon('${row.studentId}', '${row.id}')" style="background: #16a34a; color: #fff; border: none; padding: 6px 14px; border-radius: 8px; font-weight: 700; font-size: 11px; cursor: pointer; box-shadow: 0 2px 6px rgba(22,163,74,0.3);">✔ Verify Entry (+50 XP)</button>` : `<span style="font-size: 11px; color: var(--text-3);">Verified by ${row.verifiedBy || 'T&P Officer'}</span>`}
+          </td>
+        </tr>
+      `).join('');
+    }
+  }
+
+  // Render Top Ranked Students
+  const topRankedContainer = document.getElementById('haTopRankedList');
+  if (topRankedContainer) {
+    const studentXpList = students.map(s => ({
+      ...s,
+      xp: window.db.calculateStudentHackathonXP(s),
+      wins: (s.hackathons || []).filter(h => h.position === 'Winner').length
+    })).sort((a, b) => b.xp - a.xp);
+
+    topRankedContainer.innerHTML = studentXpList.slice(0, 4).map((s, idx) => `
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: #F8F7FC; border-radius: 12px; border: 1px solid var(--border);">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="font-weight: 900; font-size: 14px; color: #5B2D90; width: 24px;">#${idx + 1}</div>
+          <div>
+            <div style="font-weight: 700; font-size: 13px; color: var(--text);">${s.name}</div>
+            <div style="font-size: 11px; color: var(--text-2);">${s.branch || s.dept}</div>
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 900; color: #d97706;">${s.xp} XP</div>
+          <div style="font-size: 10px; color: var(--success); font-weight: 700;">🥇 ${s.wins} Wins</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Render Most Active Students
+  const mostActiveContainer = document.getElementById('haMostActiveList');
+  if (mostActiveContainer) {
+    const activeList = students.map(s => ({
+      ...s,
+      count: (s.hackathons || []).length
+    })).sort((a, b) => b.count - a.count);
+
+    mostActiveContainer.innerHTML = activeList.slice(0, 4).map((s, idx) => `
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: #F8F7FC; border-radius: 12px; border: 1px solid var(--border);">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="font-weight: 900; font-size: 14px; color: #0284c7; width: 24px;">#${idx + 1}</div>
+          <div>
+            <div style="font-weight: 700; font-size: 13px; color: var(--text);">${s.name}</div>
+            <div style="font-size: 11px; color: var(--text-2);">${s.branch || s.dept}</div>
+          </div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 900; color: #0284c7;">${s.count} Hackathons</div>
+          <div style="font-size: 10px; color: var(--text-2);">Active Competitor</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // Render Tech Trends
+  const techTrendsContainer = document.getElementById('haTechTrendsList');
+  if (techTrendsContainer) {
+    const sortedTech = Object.entries(techMap).sort((a, b) => b[1] - a[1]);
+    techTrendsContainer.innerHTML = sortedTech.slice(0, 6).map(([tech, count]) => `
+      <div style="padding: 12px; background: #F8F7FC; border-radius: 12px; border: 1px solid var(--border); text-align: center;">
+        <div style="font-size: 11px; font-weight: 800; color: #5B2D90; text-transform: uppercase;">${tech}</div>
+        <div style="font-family: 'Rajdhani', sans-serif; font-size: 22px; font-weight: 900; color: var(--text); margin: 2px 0;">${count} Projects</div>
+        <div style="font-size: 10px; color: var(--success); font-weight: 700;">🔥 Trending Tech</div>
+      </div>
+    `).join('');
+  }
+
+  // Render Students Needing Encouragement
+  const encouragementContainer = document.getElementById('haEncouragementList');
+  if (encouragementContainer) {
+    const needEncouragement = students.filter(s => (s.hackathons || []).length <= 1);
+    encouragementContainer.innerHTML = needEncouragement.slice(0, 3).map(s => `
+      <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: #FFFBEB; border-radius: 12px; border: 1px solid rgba(245, 158, 11, 0.3);">
+        <div>
+          <div style="font-weight: 700; font-size: 13px; color: var(--text);">${s.name}</div>
+          <div style="font-size: 11px; color: var(--text-2);">CGPA: ${s.cgpa || 7.5} • ${s.branch || s.dept}</div>
+        </div>
+        <button onclick="showToast('Encouragement invite sent to ${s.name}!','success')" style="background: #f59e0b; color: #000; font-size: 11px; font-weight: 800; padding: 6px 12px; border: none; border-radius: 8px; cursor: pointer;">
+          ⚡ Send Hackathon Invite
+        </button>
+      </div>
+    `).join('');
+  }
+}
+
+async function verifyStudentHackathon(studentId, hackathonId) {
+  const res = await window.db.verifyHackathon(studentId, hackathonId, 'Saurabhi Sharma (Head T&P)');
+  if (res.success) {
+    showToast('Certificate Verified! Entry updated with ✔ Verified status and +50 Bonus XP awarded.', 'success');
+    renderHackathonAnalytics();
+  } else {
+    showToast('Verification failed: ' + (res.message || 'Error'), 'error');
   }
 }

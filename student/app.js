@@ -399,7 +399,9 @@ function navigateTo(page) {
     'dashboard': 'Dashboard', 'skill-report': 'Skill Report', 'roadmap': 'Learning Roadmap',
     'learning-hub': 'Learning Hub', 'company-prep': 'Company Preparation',
     'company-papers': 'Company Papers', 'mock-tests': 'Mock Tests',
-    'ai-interview': 'AI Interview', 'all-startups': 'All Startups', 'my-startup': 'Pitch My Startup', 'mentors': 'Startup Mentors',
+    'ai-interview': 'AI Interview',
+    'hackathon-dashboard': 'Hackathon Dashboard', 'hackathon-my': 'My Hackathons', 'hackathon-leaderboard': 'Campus Leaderboard', 'hackathon-timeline': 'Achievement Timeline', 'hackathon-badges': 'Achievement Badges', 'hackathon-add': 'Add Hackathon Entry',
+    'all-startups': 'All Startups', 'my-startup': 'Pitch My Startup', 'mentors': 'Startup Mentors',
     'profile': 'Profile', 'settings': 'Settings',
     'college-dashboard': 'T&P Dashboard', 'college-students': 'Student Monitoring',
     'college-innovation': 'Innovation Hub', 'college-companies': 'Company Relations',
@@ -416,6 +418,13 @@ function navigateTo(page) {
   // Page-specific init
   if (page === 'skill-report') initSkillReport();
   if (page === 'roadmap') initRoadmap();
+  if (page === 'hackathon-dashboard') initHackathonDashboard();
+  if (page === 'hackathon-my') initMyHackathonsPage();
+  if (page === 'hackathon-leaderboard') initLeaderboardPage();
+  if (page === 'hackathon-timeline') initTimelinePage();
+  if (page === 'hackathon-badges') initBadgesPage();
+  if (page === 'hackathon-add') initAddHackathonPage();
+  if (page === 'hackathon-ai') initAIPage();
   if (page === 'all-startups') renderAllStartupsList();
   if (page === 'mentors') renderMentorsPage();
   if (page === 'learning-hub') initLearningHub();
@@ -4331,3 +4340,1111 @@ function showSkillGapResults(report) {
     }
   }
 }
+
+/* ============================================================
+   HACKATHON MODULE — 6 PAGE SPA LOGIC
+   ============================================================ */
+
+async function initProfilePage() {
+  const studentId = state.student.id || 'GHRCE2024047';
+  const student = await window.db.getStudentById(studentId) || state.student;
+  
+  const xp = window.db.calculateStudentHackathonXP(student);
+  const score = window.db.calculateInnovationScore(student);
+  const count = (student.hackathons || []).length;
+  const badges = window.db.getEarnedBadges(student).length;
+  const verifiedCerts = (student.hackathons || []).filter(h => h.verified).length;
+
+  const xpEl = document.getElementById('profHackathonXP');
+  if (xpEl) xpEl.textContent = `${xp} XP`;
+  
+  const scoreEl = document.getElementById('profInnovationScore');
+  if (scoreEl) scoreEl.textContent = `${score} / 100`;
+
+  const countEl = document.getElementById('profHackathonsCount');
+  if (countEl) countEl.textContent = `${count} Competitions`;
+
+  const badgesEl = document.getElementById('profHackathonBadgesCount');
+  if (badgesEl) badgesEl.textContent = `${badges} Badges`;
+
+  const certsEl = document.getElementById('profVerifiedCerts');
+  if (certsEl) certsEl.textContent = `${verifiedCerts} Verified`;
+}
+
+/* 1. HACKATHON DASHBOARD */
+async function initHackathonDashboard() {
+  const studentId = state.student.id || 'GHRCE2024047';
+  const student = await window.db.getStudentById(studentId);
+
+  if (student) {
+    const totalXP = window.db.calculateStudentHackathonXP(student);
+    const innovationScore = window.db.calculateInnovationScore(student);
+    const hackathons = student.hackathons || [];
+    const winsCount = hackathons.filter(h => h.position === 'Winner').length;
+    const finalistsCount = hackathons.filter(h => ['Finalist', 'Runner Up', 'Top 20', 'Top 50', 'Top 100', 'National Qualified'].includes(h.position)).length;
+
+    // Get all students for rank calculation
+    const allStudents = await window.db.getStudents();
+    const sortedStudents = allStudents.map(s => ({ id: s.id, xp: window.db.calculateStudentHackathonXP(s) })).sort((a, b) => b.xp - a.xp);
+    const myRankIndex = sortedStudents.findIndex(s => s.id === studentId);
+    const rankText = myRankIndex !== -1 ? `#${myRankIndex + 1}` : '#--';
+
+    const xpEl = document.getElementById('hdXPVal');
+    if (xpEl) xpEl.textContent = `${totalXP} XP`;
+
+    const scoreEl = document.getElementById('hdInnovationVal');
+    if (scoreEl) scoreEl.textContent = `${innovationScore} / 100`;
+
+    const rankEl = document.getElementById('hdRankVal');
+    if (rankEl) rankEl.textContent = rankText;
+
+    const countEl = document.getElementById('hdParticipatedVal');
+    if (countEl) countEl.textContent = `${hackathons.length}`;
+
+    const winsEl = document.getElementById('hdWinsVal');
+    if (winsEl) winsEl.textContent = `${winsCount}`;
+
+    const finalistsEl = document.getElementById('hdFinalistsVal');
+    if (finalistsEl) finalistsEl.textContent = `${finalistsCount}`;
+
+    // Render Recent Activity List
+    const recentActivityEl = document.getElementById('hdRecentActivityList');
+    if (recentActivityEl) {
+      if (hackathons.length === 0) {
+        recentActivityEl.innerHTML = '<div style="color: var(--text-2); font-size: 13px; padding: 12px; text-align: center;">No recent hackathon activities logged yet.</div>';
+      } else {
+        recentActivityEl.innerHTML = hackathons.slice(0, 3).map(h => {
+          const xp = window.db.calculateHackathonXP(h);
+          return `
+            <div style="padding: 14px; background: var(--surface-2); border-radius: 12px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(147, 51, 234, 0.12); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; flex-shrink: 0;">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/><path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/></svg>
+                </div>
+                <div>
+                  <div style="font-weight: 700; font-size: 14px; color: var(--text);">${h.name}</div>
+                  <div style="font-size: 11px; color: var(--text-2);">Project: ${h.projectName} • ${h.date}</div>
+                </div>
+              </div>
+              <div style="text-align: right;">
+                <span style="font-size: 11px; font-weight: 800; color: var(--primary); background: var(--primary-light); padding: 3px 8px; border-radius: 6px; display: inline-block; margin-bottom: 2px;">${h.position}</span>
+                <div style="font-size: 11px; font-weight: 800; color: var(--success);">+${xp} XP</div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    // Render Recommended List
+    const recEl = document.getElementById('hdRecommendedList');
+    if (recEl) {
+      recEl.innerHTML = `
+        <div style="padding: 14px; background: var(--surface-2); border-radius: 12px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-weight: 700; font-size: 14px; color: var(--text);">Niti Aayog National AI Grand Challenge 2026</div>
+            <div style="font-size: 11px; color: var(--text-2);">Prize Pool: ₹10 Lakhs • 96% Match with Python & PyTorch</div>
+          </div>
+          <button class="btn-outline" style="padding: 6px 12px; font-size: 11px;" onclick="showToast('Hackathon details: Healthcare & Agriculture track open for entries.', 'info')">View Details</button>
+        </div>
+        <div style="padding: 14px; background: var(--surface-2); border-radius: 12px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-weight: 700; font-size: 14px; color: var(--text);">Smart India Hackathon (SIH) 2026</div>
+            <div style="font-size: 11px; color: var(--text-2);">Hardware & Software Edition • 92% Skill Match</div>
+          </div>
+          <button class="btn-outline" style="padding: 6px 12px; font-size: 11px;" onclick="showToast('Hackathon details: Campus round registrations closing soon.', 'info')">View Details</button>
+        </div>
+      `;
+    }
+
+    // Render Upcoming Deadlines List
+    const upcomingEl = document.getElementById('hdUpcomingList');
+    if (upcomingEl) {
+      upcomingEl.innerHTML = `
+        <div style="padding: 12px; background: var(--surface-2); border-radius: 10px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-weight: 700; font-size: 12px; color: var(--text);">FinSpark '26 Final Demo</div>
+            <div style="font-size: 10px; color: var(--text-2);">Feb 28, 2026</div>
+          </div>
+          <span style="font-size: 10px; font-weight: 800; color: var(--primary); background: var(--primary-light); padding: 2px 6px; border-radius: 4px;">Upcoming</span>
+        </div>
+        <div style="padding: 12px; background: var(--surface-2); border-radius: 10px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+          <div>
+            <div style="font-weight: 700; font-size: 12px; color: var(--text);">SIH Campus Screening</div>
+            <div style="font-size: 10px; color: var(--text-2);">Mar 15, 2026</div>
+          </div>
+          <span style="font-size: 10px; font-weight: 800; color: var(--text-2); background: var(--border-light); padding: 2px 6px; border-radius: 4px;">Upcoming</span>
+        </div>
+      `;
+    }
+
+    // Render Latest Badges List
+    const latestBadgesEl = document.getElementById('hdLatestBadgesList');
+    if (latestBadgesEl) {
+      const earned = window.db.getEarnedBadges(student);
+      latestBadgesEl.innerHTML = earned.slice(0, 3).map(b => `
+        <div style="padding: 10px 12px; background: var(--surface-2); border-radius: 10px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="openBadgeModal('${b.title}')">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <svg width="14" height="14" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+            <span style="font-size: 12px; font-weight: 700; color: var(--text);">${b.title}</span>
+          </div>
+          <span style="font-size: 10px; font-weight: 800; color: #16a34a; background: rgba(34, 197, 94, 0.12); padding: 2px 6px; border-radius: 4px;">Unlocked</span>
+        </div>
+      `).join('') || '<div style="font-size: 11px; color: var(--text-2);">No badges unlocked yet.</div>';
+    }
+  }
+}
+
+/* 2. MY HACKATHONS PAGE */
+async function initMyHackathonsPage() {
+  renderMyHackathonsPage();
+}
+
+async function renderMyHackathonsPage() {
+  const studentId = state.student.id || 'GHRCE2024047';
+  const student = await window.db.getStudentById(studentId);
+  const grid = document.getElementById('hmHackathonsGrid');
+  const countLabel = document.getElementById('hmCountLabel');
+
+  if (!grid || !student) return;
+
+  let hackathons = student.hackathons || [];
+
+  const searchQuery = (document.getElementById('hmSearch')?.value || '').toLowerCase().trim();
+  const yearFilter = document.getElementById('hmFilterYear')?.value || 'ALL';
+  const posFilter = document.getElementById('hmFilterPosition')?.value || 'ALL';
+  const verFilter = document.getElementById('hmFilterVerified')?.value || 'ALL';
+  const domainFilter = document.getElementById('hmFilterDomain')?.value || 'ALL';
+
+  if (searchQuery) {
+    hackathons = hackathons.filter(h => h.name.toLowerCase().includes(searchQuery) || (h.projectName && h.projectName.toLowerCase().includes(searchQuery)) || h.organizer.toLowerCase().includes(searchQuery));
+  }
+
+  if (yearFilter !== 'ALL') {
+    hackathons = hackathons.filter(h => h.date && h.date.startsWith(yearFilter));
+  }
+
+  if (posFilter !== 'ALL') {
+    hackathons = hackathons.filter(h => {
+      if (posFilter === 'Finalist') return ['Finalist', 'Runner Up', 'Top 20', 'Top 50', 'Top 100'].includes(h.position);
+      return h.position === posFilter;
+    });
+  }
+
+  if (verFilter === 'VERIFIED') hackathons = hackathons.filter(h => h.verified);
+  if (verFilter === 'PENDING') hackathons = hackathons.filter(h => !h.verified);
+
+  if (domainFilter !== 'ALL') {
+    hackathons = hackathons.filter(h => {
+      const allText = `${h.technologies} ${h.theme}`.toLowerCase();
+      if (domainFilter === 'AI' && (allText.includes('ai') || allText.includes('python') || allText.includes('pytorch'))) return true;
+      if (domainFilter === 'Web' && (allText.includes('web') || allText.includes('react') || allText.includes('node'))) return true;
+      if (domainFilter === 'Security' && (allText.includes('security') || allText.includes('cyber'))) return true;
+      if (domainFilter === 'IoT' && (allText.includes('iot') || allText.includes('hardware'))) return true;
+      return false;
+    });
+  }
+
+  if (countLabel) countLabel.textContent = `Showing ${hackathons.length} entries`;
+
+  if (hackathons.length === 0) {
+    grid.innerHTML = `
+      <div class="card" style="padding: 60px 24px; text-align: center; border-radius: 20px; grid-column: 1 / -1; width: 100%; border: 1px dashed var(--border);">
+        <div style="width: 56px; height: 56px; border-radius: 16px; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+          <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/><path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/></svg>
+        </div>
+        <h3 style="font-size: 18px; font-weight: 800; color: var(--text); margin: 0 0 6px;">No hackathons added yet.</h3>
+        <p style="font-size: 13px; color: var(--text-2); max-width: 440px; margin: 0 auto 20px; line-height: 1.5;">Start building your hackathon portfolio by adding your first participation.</p>
+        <button class="btn-primary" onclick="openAddHackathonModal()" style="padding: 10px 20px; font-size: 13px; font-weight: 700;">+ Add First Hackathon</button>
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML = hackathons.map(h => {
+    const xp = window.db.calculateHackathonXP(h);
+    const techTags = (h.technologies || '').split(',').map(t => `<span class="tag-chip" style="background: var(--surface-2); border: 1px solid var(--border); color: var(--text); font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 600;">${t.trim()}</span>`).join('');
+
+    return `
+      <div class="card" style="padding: 20px; border-radius: 16px; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid var(--border); transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+            <span style="padding: 4px 10px; border-radius: 99px; background: var(--primary-light); color: var(--primary); font-size: 11px; font-weight: 800; text-transform: uppercase;">
+              ${h.position}
+            </span>
+            <div style="display: flex; gap: 6px; align-items: center;">
+              ${h.verified ? '<span style="background: rgba(34, 197, 94, 0.15); color: #16a34a; border: 1px solid rgba(34, 197, 94, 0.3); font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 99px;">Verified</span>' : '<span style="background: rgba(245, 158, 11, 0.15); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.3); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px;">Pending Verification</span>'}
+              <span style="font-size: 12px; font-weight: 800; color: var(--primary); background: var(--primary-light); padding: 2px 8px; border-radius: 8px;">+${xp} XP</span>
+            </div>
+          </div>
+
+          <h3 style="font-size: 16px; font-weight: 800; color: var(--text); margin: 0 0 4px;">${h.name}</h3>
+          <div style="font-size: 11px; color: var(--text-2); font-weight: 600; margin-bottom: 12px;">
+            <span>Organizer: ${h.organizer}</span> • <span>${h.date}</span> • <span>${h.mode}</span>
+          </div>
+
+          <div style="background: var(--surface-2); padding: 12px; border-radius: 10px; margin-bottom: 12px; border: 1px solid var(--border);">
+            <div style="font-size: 12px; font-weight: 800; color: var(--primary); margin-bottom: 2px;">Project: ${h.projectName}</div>
+            ${h.problemStatement ? `<div style="font-size: 11px; color: var(--text-2); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${h.problemStatement}</div>` : ''}
+            ${h.teamName ? `<div style="font-size: 10px; color: var(--text-3); margin-top: 6px;">Team ${h.teamName}: ${h.teamMembers}</div>` : ''}
+          </div>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px;">
+            ${techTags}
+          </div>
+        </div>
+
+        <div style="padding-top: 12px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+            ${h.githubUrl ? `<a href="${h.githubUrl}" target="_blank" title="GitHub Repo" style="color: var(--text); font-size: 11px; font-weight: 700; text-decoration: none; padding: 4px 8px; background: var(--surface-2); border-radius: 6px; border: 1px solid var(--border);">Repository</a>` : ''}
+            ${h.demoUrl ? `<a href="${h.demoUrl}" target="_blank" title="Working Prototype" style="color: var(--primary); font-size: 11px; font-weight: 700; text-decoration: none; padding: 4px 8px; background: var(--primary-light); border-radius: 6px;">Demo</a>` : ''}
+            ${h.certificateUrl ? `<a href="${h.certificateUrl}" target="_blank" title="Certificate" style="color: #16a34a; font-size: 11px; font-weight: 700; text-decoration: none; padding: 4px 8px; background: rgba(34, 197, 94, 0.1); border-radius: 6px;">Certificate</a>` : ''}
+          </div>
+
+          <div style="display: flex; gap: 6px;">
+            <button onclick="viewHackathonEntry('${h.id}')" style="background: none; border: 1px solid var(--border); padding: 4px 8px; border-radius: 6px; font-size: 11px; color: var(--text); cursor: pointer;">View</button>
+            <button onclick="openAddHackathonModal('${h.id}')" style="background: none; border: 1px solid var(--border); padding: 4px 8px; border-radius: 6px; font-size: 11px; color: var(--text-2); cursor: pointer;">Edit</button>
+            <button onclick="deleteHackathonEntry('${h.id}')" style="background: none; border: 1px solid var(--border); padding: 4px 8px; border-radius: 6px; font-size: 11px; color: var(--error); cursor: pointer;">Delete</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function viewHackathonEntry(id) {
+  const student = state.student || {};
+  const h = (student.hackathons || []).find(item => item.id === id);
+  if (!h) return;
+
+  const xp = window.db.calculateHackathonXP(h);
+  showToast(`Viewing details for ${h.name}: ${h.projectName} (+${xp} XP)`, 'info');
+}
+
+/* 3. CAMPUS LEADERBOARD PAGE */
+async function initLeaderboardPage() {
+  renderLeaderboardPage();
+}
+
+async function renderLeaderboardPage() {
+  const tbody = document.getElementById('hlTableBody');
+  if (!tbody) return;
+
+  const students = await window.db.getStudents();
+  const currentStudentId = state.student.id || 'GHRCE2024047';
+
+  // Calculate XP for each student
+  const studentStats = students.map(s => {
+    const xp = window.db.calculateStudentHackathonXP(s);
+    const score = window.db.calculateInnovationScore(s);
+    const hackathons = s.hackathons || [];
+    const count = hackathons.length;
+    const wins = hackathons.filter(h => h.position === 'Winner').length;
+    const finalists = hackathons.filter(h => ['Finalist', 'Runner Up', 'Top 20', 'Top 50', 'Top 100', 'National Qualified'].includes(h.position)).length;
+    const badges = window.db.getEarnedBadges(s).length;
+
+    return {
+      ...s,
+      xp,
+      score,
+      count,
+      wins,
+      finalists,
+      badges
+    };
+  });
+
+  studentStats.sort((a, b) => b.xp - a.xp);
+
+  // Update Top Summary Stat Cards for active logged-in student
+  const myStat = studentStats.find(s => s.id === currentStudentId);
+  const myRankIndex = studentStats.findIndex(s => s.id === currentStudentId);
+
+  const rankEl = document.getElementById('hlMyRank');
+  if (rankEl) rankEl.textContent = myRankIndex !== -1 ? `#${myRankIndex + 1}` : '#--';
+
+  const xpEl = document.getElementById('hlMyXP');
+  if (xpEl) xpEl.textContent = `${myStat ? myStat.xp : 0} XP`;
+
+  const winsEl = document.getElementById('hlMyWins');
+  if (winsEl) winsEl.textContent = `${myStat ? myStat.wins : 0} ${myStat && myStat.wins === 1 ? 'Win' : 'Wins'}`;
+
+  const partEl = document.getElementById('hlMyParticipations');
+  if (partEl) partEl.textContent = `${myStat ? myStat.count : 0} Joined`;
+
+  // Filters
+  const deptFilter = document.getElementById('hlFilterDept')?.value || 'ALL';
+  const yearFilter = document.getElementById('hlFilterYear')?.value || 'ALL';
+  const branchFilter = document.getElementById('hlFilterBranch')?.value || 'ALL';
+  const domainFilter = document.getElementById('hlFilterDomain')?.value || 'ALL';
+  const query = (document.getElementById('hlSearch')?.value || '').toLowerCase().trim();
+
+  let filtered = studentStats.filter(s => {
+    if (deptFilter !== 'ALL' && s.dept !== deptFilter) return false;
+    if (yearFilter !== 'ALL' && s.year !== yearFilter && !(yearFilter === 'TY' && s.semester?.includes('5th'))) return false;
+    if (branchFilter !== 'ALL' && s.branch && !s.branch.includes(branchFilter)) return false;
+    if (query && !s.name.toLowerCase().includes(query) && !s.id.toLowerCase().includes(query)) return false;
+    
+    if (domainFilter !== 'ALL') {
+      const allTech = (s.hackathons || []).map(h => `${h.technologies} ${h.theme}`).join(' ').toLowerCase();
+      if (domainFilter === 'AI' && !allTech.includes('ai') && !allTech.includes('python')) return false;
+      if (domainFilter === 'Cybersecurity' && !allTech.includes('cyber') && !allTech.includes('security')) return false;
+      if (domainFilter === 'Web Development' && !allTech.includes('web') && !allTech.includes('react') && !allTech.includes('node')) return false;
+      if (domainFilter === 'Healthcare' && !allTech.includes('health') && !allTech.includes('med')) return false;
+      if (domainFilter === 'IoT' && !allTech.includes('iot') && !allTech.includes('arduino')) return false;
+      if (domainFilter === 'Cloud' && !allTech.includes('cloud') && !allTech.includes('aws')) return false;
+    }
+
+    return true;
+  });
+
+  tbody.innerHTML = filtered.map((s, idx) => {
+    const isMe = s.id === currentStudentId;
+    let rankBadge = `<span style="font-weight: 800; color: var(--text);">${idx + 1}</span>`;
+    if (idx === 0) rankBadge = `<span style="background: rgba(147, 51, 234, 0.15); color: var(--primary); font-weight: 800; padding: 3px 9px; border-radius: 99px;">Rank 1</span>`;
+    if (idx === 1) rankBadge = `<span style="background: var(--surface-2); color: var(--text); font-weight: 800; padding: 3px 9px; border-radius: 99px;">Rank 2</span>`;
+    if (idx === 2) rankBadge = `<span style="background: var(--surface-2); color: var(--text-2); font-weight: 800; padding: 3px 9px; border-radius: 99px;">Rank 3</span>`;
+
+    return `
+      <tr style="border-bottom: 1px solid var(--border); ${isMe ? 'background: rgba(147, 51, 234, 0.08); font-weight: 700; border-left: 4px solid var(--primary);' : ''}">
+        <td style="padding: 12px 14px;">${rankBadge}</td>
+        <td style="padding: 12px 14px;">
+          <div style="font-weight: 700; color: var(--text);">${s.name} ${isMe ? '<span style="font-size: 10px; color: var(--primary); background: var(--primary-light); padding: 2px 6px; border-radius: 4px; margin-left: 6px;">YOU</span>' : ''}</div>
+          <div style="font-size: 11px; color: var(--text-2);">${s.branch || s.dept}</div>
+        </td>
+        <td style="padding: 12px 14px; color: var(--text-2);">${s.dept}</td>
+        <td style="padding: 12px 14px; color: var(--text-2);">${s.year || 'TY'}</td>
+        <td style="padding: 12px 14px; font-weight: 700; color: var(--text);">${s.count}</td>
+        <td style="padding: 12px 14px; color: var(--success); font-weight: 700;">${s.wins}</td>
+        <td style="padding: 12px 14px; color: var(--primary); font-weight: 700;">${s.finalists}</td>
+        <td style="padding: 12px 14px; font-weight: 900; color: var(--primary); font-family: 'Rajdhani', sans-serif; font-size: 15px;">${s.xp} XP</td>
+        <td style="padding: 12px 14px; font-weight: 700; color: var(--text);">${s.score} / 100</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+/* 4. ACHIEVEMENT TIMELINE PAGE */
+async function initTimelinePage() {
+  const studentId = state.student.id || 'GHRCE2024047';
+  const student = await window.db.getStudentById(studentId);
+  const container = document.getElementById('htTimelineContainer');
+
+  if (!container || !student) return;
+
+  const hackathons = student.hackathons || [];
+
+  if (hackathons.length === 0) {
+    container.innerHTML = '<div style="color: var(--text-2); font-size: 13px; text-align: center; padding: 30px;">No timeline entries yet. Add your first hackathon entry!</div>';
+    return;
+  }
+
+  // Group by year
+  const grouped = {};
+  hackathons.forEach(h => {
+    const year = h.date ? new Date(h.date).getFullYear() : '2026';
+    if (!grouped[year]) grouped[year] = [];
+    grouped[year].push(h);
+  });
+
+  const years = Object.keys(grouped).sort((a, b) => b - a);
+
+  container.innerHTML = years.map(yr => `
+    <div style="margin-bottom: 28px; position: relative;">
+      <div style="position: absolute; left: -32px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: var(--primary); border: 3px solid var(--surface); box-shadow: 0 0 10px rgba(147, 51, 234, 0.4);"></div>
+      <div style="font-size: 20px; font-weight: 900; color: var(--primary); font-family: 'Rajdhani', sans-serif; margin-bottom: 14px;">${yr}</div>
+
+      <div style="display: flex; flex-direction: column; gap: 16px; width: 100%;">
+        ${grouped[yr].map(h => {
+          const xp = window.db.calculateHackathonXP(h);
+          const skillsList = (h.technologies || '').split(',').map(s => `<span class="tag-chip" style="background: var(--surface-2); border: 1px solid var(--border); color: var(--text); font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 600;">${s.trim()}</span>`).join('');
+
+          return `
+            <div class="card" style="padding: 20px; border-radius: 16px; border: 1px solid var(--border); width: 100%;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
+                <strong style="font-size: 16px; color: var(--text);">${h.name} — ${h.position}</strong>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  ${h.verified ? '<span style="background: rgba(34, 197, 94, 0.15); color: #16a34a; border: 1px solid rgba(34, 197, 94, 0.3); font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 99px;">Verified</span>' : ''}
+                  <span style="font-size: 12px; font-weight: 800; color: var(--primary); background: var(--primary-light); padding: 3px 10px; border-radius: 99px;">
+                    XP Earned: +${xp}
+                  </span>
+                </div>
+              </div>
+              <div style="font-size: 12px; font-weight: 800; color: var(--primary); margin-bottom: 6px;">
+                Project: ${h.projectName}
+              </div>
+              ${h.problemStatement ? `<div style="font-size: 12px; color: var(--text-2); line-height: 1.5; margin-bottom: 12px;">${h.problemStatement}</div>` : ''}
+              
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; padding-top: 10px; border-top: 1px solid var(--border);">
+                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                  <span style="font-size: 11px; font-weight: 700; color: var(--text-3); align-self: center; margin-right: 4px;">Skills:</span>
+                  ${skillsList}
+                </div>
+                <div style="font-size: 11px; color: var(--text-3); font-weight: 600;">
+                  ${h.mode} • ${h.date}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+/* 5. ACHIEVEMENT BADGES PAGE */
+async function initBadgesPage() {
+  const studentId = state.student.id || 'GHRCE2024047';
+  const student = await window.db.getStudentById(studentId);
+  const grid = document.getElementById('hbBadgesGrid');
+
+  if (!grid || !student) return;
+
+  const earned = window.db.getEarnedBadges(student);
+
+  const all10Badges = [
+    { title: 'First Hackathon', desc: 'Completed your very first hackathon entry on Elevate', category: 'Milestone', req: 'Add 1 Hackathon entry', xp: 50 },
+    { title: 'Hackathon Explorer', desc: 'Consistently participating in hackathons across domains', category: 'Dedication', req: 'Participate in 3+ hackathons', xp: 100 },
+    { title: 'Finalist', desc: 'Reached finalist round in campus or national hackathons', category: 'Achievement', req: 'Achieve Finalist status in any hackathon', xp: 150 },
+    { title: 'National Finalist', desc: 'Achieved National level qualification or placement in hackathons', category: 'Achievement', req: 'Qualify for National Hackathon Finals', xp: 200 },
+    { title: 'Hackathon Winner', desc: 'First Place Winner in campus or national hackathons', category: 'Top Honor', req: 'Secure 1st Place in any Hackathon', xp: 500 },
+    { title: 'Consistent Participant', desc: 'Elite hackathon veteran with 5+ hackathons completed', category: 'Dedication', req: 'Complete 5+ hackathons', xp: 150 },
+    { title: 'AI Innovator', desc: 'Built cutting-edge Artificial Intelligence & Machine Learning prototypes', category: 'Domain Mastery', req: 'Build AI/ML projects in hackathons', xp: 150 },
+    { title: 'Cybersecurity Builder', desc: 'Demonstrated security, vault & privacy architecture in hackathons', category: 'Domain Mastery', req: 'Build Security/Vault projects', xp: 150 },
+    { title: 'Full Stack Builder', desc: 'Built end-to-end full stack web applications in hackathons', category: 'Domain Mastery', req: 'Build Web/API projects', xp: 150 },
+    { title: 'Team Player', desc: 'Successfully collaborated in multi-disciplinary hackathon teams', category: 'Leadership', req: 'Participate in multi-person hackathon teams', xp: 100 }
+  ];
+
+  // Calculate summary stats
+  const totalEarnedXP = earned.reduce((sum, b) => {
+    const match = all10Badges.find(x => x.title.toLowerCase() === b.title.toLowerCase());
+    return sum + (match ? match.xp : 100);
+  }, 0);
+
+  const lockedBadges = all10Badges.filter(b => !earned.some(e => e.title.toLowerCase() === b.title.toLowerCase()));
+  const nextBadgeText = lockedBadges.length > 0 ? lockedBadges[0].title : 'All Unlocked!';
+
+  const earnedValEl = document.getElementById('hbBadgesEarnedVal');
+  if (earnedValEl) earnedValEl.textContent = `${earned.length} / ${all10Badges.length}`;
+
+  const xpValEl = document.getElementById('hbBadgesXPVal');
+  if (xpValEl) xpValEl.textContent = `+${totalEarnedXP} XP`;
+
+  const nextValEl = document.getElementById('hbNextBadgeVal');
+  if (nextValEl) nextValEl.textContent = nextBadgeText;
+
+  grid.innerHTML = all10Badges.map(badge => {
+    const isEarned = earned.some(b => b.title.toLowerCase() === badge.title.toLowerCase());
+    return `
+      <div class="card" style="padding: 18px; border-radius: 16px; border: 1.5px solid ${isEarned ? 'var(--primary)' : 'var(--border)'}; background: ${isEarned ? 'var(--surface)' : 'var(--surface-2)'}; opacity: ${isEarned ? '1' : '0.55'}; display: flex; align-items: flex-start; gap: 14px; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'" onclick="openBadgeModal('${badge.title}')">
+        <div style="width: 44px; height: 44px; border-radius: 12px; background: ${isEarned ? 'var(--primary-light)' : 'var(--border-light)'}; color: ${isEarned ? 'var(--primary)' : 'var(--text-3)'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+        </div>
+        <div style="flex: 1;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 2px;">
+            <h4 style="margin: 0; font-size: 14px; font-weight: 800; color: var(--text);">${badge.title}</h4>
+            ${isEarned ? '<span style="background: rgba(34, 197, 94, 0.15); color: #16a34a; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 99px;">UNLOCKED</span>' : '<span style="background: var(--border-light); color: var(--text-3); font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 99px;">LOCKED</span>'}
+          </div>
+          <p style="margin: 0; font-size: 11px; color: var(--text-2); line-height: 1.4;">${badge.desc}</p>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function openBadgeModal(badgeTitle) {
+  const allPossibleBadges = [
+    { title: 'First Hackathon', desc: 'Completed your very first hackathon entry on Elevate', category: 'Milestone', req: 'Add 1 Hackathon entry', xp: 50 },
+    { title: 'Hackathon Explorer', desc: 'Consistently participating in hackathons across domains', category: 'Dedication', req: 'Participate in 3+ hackathons', xp: 100 },
+    { title: 'Finalist', desc: 'Reached finalist round in campus or national hackathons', category: 'Achievement', req: 'Achieve Finalist status in any hackathon', xp: 150 },
+    { title: 'National Finalist', desc: 'Achieved National level qualification or placement in hackathons', category: 'Achievement', req: 'Qualify for National Hackathon Finals', xp: 200 },
+    { title: 'Hackathon Winner', desc: 'First Place Winner in campus or national hackathons', category: 'Top Honor', req: 'Secure 1st Place in any Hackathon', xp: 500 },
+    { title: 'Consistent Participant', desc: 'Elite hackathon veteran with 5+ hackathons completed', category: 'Dedication', req: 'Complete 5+ hackathons', xp: 150 },
+    { title: 'AI Innovator', desc: 'Built cutting-edge Artificial Intelligence & Machine Learning prototypes', category: 'Domain Mastery', req: 'Build AI/ML projects in hackathons', xp: 150 },
+    { title: 'Cybersecurity Builder', desc: 'Demonstrated security, vault & privacy architecture in hackathons', category: 'Domain Mastery', req: 'Build Security/Vault projects', xp: 150 },
+    { title: 'Full Stack Builder', desc: 'Built end-to-end full stack web applications in hackathons', category: 'Domain Mastery', req: 'Build Web/API projects', xp: 150 },
+    { title: 'Team Player', desc: 'Successfully collaborated in multi-disciplinary hackathon teams', category: 'Leadership', req: 'Participate in multi-person hackathon teams', xp: 100 }
+  ];
+
+  const badge = allPossibleBadges.find(b => b.title.toLowerCase() === badgeTitle.toLowerCase()) || {
+    title: badgeTitle,
+    desc: 'Achievement badge unlocked for hackathon performance.',
+    category: 'Achievement',
+    req: 'Participate and excel in hackathons.',
+    xp: 100
+  };
+
+  const student = state.student || {};
+  const earned = window.db.getEarnedBadges(student);
+  const isEarned = earned.some(b => b.title.toLowerCase() === badge.title.toLowerCase());
+
+  document.getElementById('badgeModalTitle').textContent = badge.title;
+  document.getElementById('badgeModalCategory').textContent = badge.category;
+  document.getElementById('badgeModalDesc').textContent = badge.desc;
+  document.getElementById('badgeModalRequirement').textContent = `Requirement: ${badge.req}`;
+  document.getElementById('badgeModalDate').textContent = isEarned ? 'Unlocked' : 'Locked';
+  document.getElementById('badgeModalXP').textContent = `+${badge.xp} XP`;
+
+  document.getElementById('badgeModalOverlay').style.display = 'flex';
+}
+
+function closeBadgeModal() {
+  document.getElementById('badgeModalOverlay').style.display = 'none';
+}
+
+async function openAddHackathonModal(editId = null) {
+  const form = document.getElementById('hackathonForm');
+  if (form) form.reset();
+
+  document.getElementById('hEditId').value = editId || '';
+  document.getElementById('hackathonModalTitle').textContent = editId ? 'Edit Hackathon Entry' : 'Add Hackathon Entry';
+
+  if (editId) {
+    const studentId = state.student.id || 'GHRCE2024047';
+    const student = await window.db.getStudentById(studentId);
+    const entry = (student.hackathons || []).find(h => h.id === editId);
+
+    if (entry) {
+      document.getElementById('hName').value = entry.name || '';
+      document.getElementById('hOrganizer').value = entry.organizer || '';
+      document.getElementById('hDate').value = entry.date || '';
+      document.getElementById('hMode').value = entry.mode || 'Offline';
+      document.getElementById('hPosition').value = entry.position || 'Participant';
+      document.getElementById('hTheme').value = entry.theme || '';
+      document.getElementById('hTeamName').value = entry.teamName || '';
+      document.getElementById('hTeamMembers').value = entry.teamMembers || '';
+      document.getElementById('hProjectName').value = entry.projectName || '';
+      document.getElementById('hProblemStatement').value = entry.problemStatement || '';
+      document.getElementById('hTechnologies').value = entry.technologies || '';
+      document.getElementById('hGithubUrl').value = entry.githubUrl || '';
+      document.getElementById('hDemoUrl').value = entry.demoUrl || '';
+      document.getElementById('hVideoUrl').value = entry.videoUrl || '';
+      document.getElementById('hPptUrl').value = entry.pptUrl || '';
+      document.getElementById('hCertificateUrl').value = entry.certificateUrl || '';
+      document.getElementById('hIsOpenSource').checked = !!entry.isOpenSource;
+    }
+  }
+
+  document.getElementById('hackathonModalOverlay').style.display = 'flex';
+}
+
+function closeHackathonModal() {
+  document.getElementById('hackathonModalOverlay').style.display = 'none';
+}
+
+async function handleSaveHackathon(e) {
+  e.preventDefault();
+  const studentId = state.student.id || 'GHRCE2024047';
+  const editId = document.getElementById('hEditId').value;
+
+  const data = {
+    name: document.getElementById('hName').value.trim(),
+    organizer: document.getElementById('hOrganizer').value.trim(),
+    date: document.getElementById('hDate').value,
+    mode: document.getElementById('hMode').value,
+    position: document.getElementById('hPosition').value,
+    theme: document.getElementById('hTheme').value.trim(),
+    teamName: document.getElementById('hTeamName').value.trim(),
+    teamMembers: document.getElementById('hTeamMembers').value.trim(),
+    projectName: document.getElementById('hProjectName').value.trim(),
+    problemStatement: document.getElementById('hProblemStatement').value.trim(),
+    technologies: document.getElementById('hTechnologies').value.trim(),
+    githubUrl: document.getElementById('hGithubUrl').value.trim(),
+    demoUrl: document.getElementById('hDemoUrl').value.trim(),
+    videoUrl: document.getElementById('hVideoUrl').value.trim(),
+    pptUrl: document.getElementById('hPptUrl').value.trim(),
+    certificateUrl: document.getElementById('hCertificateUrl').value.trim(),
+    isOpenSource: document.getElementById('hIsOpenSource').checked
+  };
+
+  if (editId) {
+    await window.db.updateHackathon(studentId, editId, data);
+    showToast('Hackathon entry updated successfully!', 'success');
+  } else {
+    await window.db.addHackathon(studentId, data);
+    showToast('Hackathon entry added & Hackathon XP awarded!', 'success');
+  }
+
+  closeHackathonModal();
+  
+  if (state.currentPage === 'hackathon-dashboard') initHackathonDashboard();
+  if (state.currentPage === 'hackathon-my') initMyHackathonsPage();
+  if (state.currentPage === 'hackathon-leaderboard') initLeaderboardPage();
+  if (state.currentPage === 'hackathon-timeline') initTimelinePage();
+  if (state.currentPage === 'hackathon-badges') initBadgesPage();
+}
+
+async function deleteHackathonEntry(hackathonId) {
+  if (confirm('Are you sure you want to delete this hackathon entry?')) {
+    const studentId = state.student.id || 'GHRCE2024047';
+    await window.db.deleteHackathon(studentId, hackathonId);
+    showToast('Hackathon entry deleted.', 'info');
+    if (state.currentPage === 'hackathon-dashboard') initHackathonDashboard();
+    if (state.currentPage === 'hackathon-my') initMyHackathonsPage();
+    if (state.currentPage === 'hackathon-leaderboard') initLeaderboardPage();
+    if (state.currentPage === 'hackathon-timeline') initTimelinePage();
+    if (state.currentPage === 'hackathon-badges') initBadgesPage();
+  }
+}
+
+/* ============================================================
+   PAGE 6: ADD HACKATHON ENTRY (MULTI-STEP FULL PAGE)
+   ============================================================ */
+
+state.haCurrentStep = 1;
+state.haDraft = {
+  name: '',
+  organizer: '',
+  website: '',
+  date: new Date().toISOString().split('T')[0],
+  duration: '36 Hours',
+  mode: 'Online',
+  location: '',
+  theme: '',
+  level: 'National',
+  projectName: '',
+  problemStatement: '',
+  projectDescription: '',
+  innovationUSP: '',
+  techStack: '',
+  domain: 'AI & Machine Learning',
+  githubUrl: '',
+  demoUrl: '',
+  pptUrl: '',
+  videoUrl: '',
+  teamName: '',
+  yourRole: '',
+  isLeader: true,
+  teamMembers: [{ name: 'Alex Johnson (You)', role: 'Lead Developer' }],
+  selectedSkills: ['Python', 'React', 'PyTorch'],
+  softSkills: '',
+  certFileName: '',
+  resultLink: '',
+  certNumber: '',
+  organizerEmail: '',
+  mentorName: '',
+  mentorEmail: '',
+  verificationNotes: ''
+};
+
+const ALL_SKILL_OPTIONS = ['Python', 'Java', 'React', 'TypeScript', 'AWS', 'PyTorch', 'TensorFlow', 'Node.js', 'Docker', 'SQL', 'Flutter', 'Figma'];
+
+async function openAddHackathonModal(editId = null) {
+  if (editId) {
+    const studentId = state.student.id || 'GHRCE2024047';
+    const student = await window.db.getStudentById(studentId);
+    const entry = (student.hackathons || []).find(h => h.id === editId);
+    if (entry) {
+      state.haDraft = {
+        id: entry.id,
+        name: entry.name || '',
+        organizer: entry.organizer || '',
+        website: entry.website || '',
+        date: entry.date || '',
+        duration: entry.duration || '36 Hours',
+        mode: entry.mode || 'Online',
+        location: entry.location || '',
+        theme: entry.theme || '',
+        level: entry.level || 'National',
+        projectName: entry.projectName || '',
+        problemStatement: entry.problemStatement || '',
+        projectDescription: entry.projectDescription || '',
+        innovationUSP: entry.innovationUSP || '',
+        techStack: entry.technologies || entry.techStack || '',
+        domain: entry.domain || 'AI & Machine Learning',
+        githubUrl: entry.githubUrl || '',
+        demoUrl: entry.demoUrl || '',
+        pptUrl: entry.pptUrl || '',
+        videoUrl: entry.videoUrl || '',
+        teamName: entry.teamName || '',
+        yourRole: entry.yourRole || 'Developer',
+        isLeader: true,
+        teamMembers: [{ name: 'Alex Johnson (You)', role: 'Lead Developer' }],
+        selectedSkills: ['Python', 'React'],
+        softSkills: '',
+        certFileName: entry.certificateUrl ? 'certificate.pdf' : '',
+        resultLink: '',
+        certNumber: '',
+        organizerEmail: '',
+        mentorName: '',
+        mentorEmail: '',
+        verificationNotes: ''
+      };
+    }
+  }
+  navigateTo('hackathon-add');
+}
+
+function initAddHackathonPage() {
+  populateDraftFormValues();
+  renderSkillChips();
+  renderTeamMembersList();
+  goToAddHackathonStep(state.haCurrentStep || 1);
+  updateDraftState();
+}
+
+function populateDraftFormValues() {
+  const d = state.haDraft;
+  if (!d) return;
+  if (document.getElementById('haName')) document.getElementById('haName').value = d.name || '';
+  if (document.getElementById('haOrganizer')) document.getElementById('haOrganizer').value = d.organizer || '';
+  if (document.getElementById('haWebsite')) document.getElementById('haWebsite').value = d.website || '';
+  if (document.getElementById('haDate')) document.getElementById('haDate').value = d.date || '';
+  if (document.getElementById('haDuration')) document.getElementById('haDuration').value = d.duration || '36 Hours';
+  if (document.getElementById('haMode')) document.getElementById('haMode').value = d.mode || 'Online';
+  if (document.getElementById('haLocation')) document.getElementById('haLocation').value = d.location || '';
+  if (document.getElementById('haTheme')) document.getElementById('haTheme').value = d.theme || '';
+  if (document.getElementById('haLevel')) document.getElementById('haLevel').value = d.level || 'National';
+
+  if (document.getElementById('haProjectName')) document.getElementById('haProjectName').value = d.projectName || '';
+  if (document.getElementById('haProblemStatement')) document.getElementById('haProblemStatement').value = d.problemStatement || '';
+  if (document.getElementById('haProjectDescription')) document.getElementById('haProjectDescription').value = d.projectDescription || '';
+  if (document.getElementById('haInnovationUSP')) document.getElementById('haInnovationUSP').value = d.innovationUSP || '';
+  if (document.getElementById('haTechStack')) document.getElementById('haTechStack').value = d.techStack || '';
+  if (document.getElementById('haDomain')) document.getElementById('haDomain').value = d.domain || 'AI & Machine Learning';
+  if (document.getElementById('haGithubUrl')) document.getElementById('haGithubUrl').value = d.githubUrl || '';
+  if (document.getElementById('haDemoUrl')) document.getElementById('haDemoUrl').value = d.demoUrl || '';
+  if (document.getElementById('haPptUrl')) document.getElementById('haPptUrl').value = d.pptUrl || '';
+  if (document.getElementById('haVideoUrl')) document.getElementById('haVideoUrl').value = d.videoUrl || '';
+
+  if (document.getElementById('haTeamName')) document.getElementById('haTeamName').value = d.teamName || '';
+  if (document.getElementById('haYourRole')) document.getElementById('haYourRole').value = d.yourRole || '';
+  if (document.getElementById('haIsLeader')) document.getElementById('haIsLeader').checked = d.isLeader !== false;
+  if (document.getElementById('haSoftSkills')) document.getElementById('haSoftSkills').value = d.softSkills || '';
+
+  if (document.getElementById('haResultLink')) document.getElementById('haResultLink').value = d.resultLink || '';
+  if (document.getElementById('haCertNumber')) document.getElementById('haCertNumber').value = d.certNumber || '';
+  if (document.getElementById('haOrganizerEmail')) document.getElementById('haOrganizerEmail').value = d.organizerEmail || '';
+  if (document.getElementById('haMentorName')) document.getElementById('haMentorName').value = d.mentorName || '';
+  if (document.getElementById('haVerificationNotes')) document.getElementById('haVerificationNotes').value = d.verificationNotes || '';
+}
+
+function goToAddHackathonStep(stepNum) {
+  if (stepNum < 1) stepNum = 1;
+  if (stepNum > 5) stepNum = 5;
+  state.haCurrentStep = stepNum;
+
+  for (let i = 1; i <= 5; i++) {
+    const el = document.getElementById(`haStep${i}`);
+    if (el) el.style.display = i === stepNum ? 'block' : 'none';
+  }
+
+  renderStepIndicator();
+
+  const prevBtn = document.getElementById('haBtnPrev');
+  const nextBtn = document.getElementById('haBtnNext');
+
+  if (prevBtn) prevBtn.style.display = stepNum > 1 ? 'block' : 'none';
+  if (nextBtn) {
+    if (stepNum === 5) {
+      nextBtn.textContent = 'Submit for Verification';
+      nextBtn.className = 'btn-primary';
+    } else {
+      nextBtn.textContent = 'Next →';
+      nextBtn.className = 'btn-primary';
+    }
+  }
+
+  if (stepNum === 5) {
+    renderReviewAccordion();
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderStepIndicator() {
+  const container = document.getElementById('haStepIndicator');
+  if (!container) return;
+
+  const steps = [
+    { num: 1, label: 'Hackathon Details' },
+    { num: 2, label: 'Project Details' },
+    { num: 3, label: 'Team & Skills' },
+    { num: 4, label: 'Documents & Verification' },
+    { num: 5, label: 'Review & Submit' }
+  ];
+
+  container.innerHTML = steps.map(s => {
+    const isDone = s.num < state.haCurrentStep;
+    const isCurrent = s.num === state.haCurrentStep;
+    const badgeBg = isCurrent ? 'var(--primary)' : isDone ? 'var(--primary)' : 'var(--surface-2)';
+    const badgeColor = isCurrent || isDone ? '#ffffff' : 'var(--text-3)';
+    const fontWeight = isCurrent ? '800' : '600';
+    const textColor = isCurrent ? 'var(--primary)' : isDone ? 'var(--text)' : 'var(--text-3)';
+
+    return `
+      <div onclick="goToAddHackathonStep(${s.num})" style="display: flex; align-items: center; gap: 10px; cursor: pointer; opacity: ${s.num > state.haCurrentStep ? 0.75 : 1};">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background: ${badgeBg}; color: ${badgeColor}; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; border: 2px solid ${isCurrent ? 'rgba(168, 85, 247, 0.4)' : 'transparent'}; box-shadow: ${isCurrent ? '0 0 12px rgba(147, 51, 234, 0.4)' : 'none'}; flex-shrink: 0;">
+          ${isDone ? '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>' : s.num}
+        </div>
+        <span style="font-size: 13px; font-weight: ${fontWeight}; color: ${textColor}; white-space: nowrap;">
+          ${s.label}
+        </span>
+      </div>
+    `;
+  }).join('<div style="flex: 1; min-width: 20px; height: 2px; background: var(--border); margin: 0 4px; border-radius: 2px;"></div>');
+}
+
+function handleAddStepNext() {
+  if (state.haCurrentStep < 5) {
+    goToAddHackathonStep(state.haCurrentStep + 1);
+  } else {
+    submitHackathonEntry();
+  }
+}
+
+function updateDraftState() {
+  if (!state.haDraft) state.haDraft = {};
+  const d = state.haDraft;
+
+  d.name = document.getElementById('haName')?.value.trim() || '';
+  d.organizer = document.getElementById('haOrganizer')?.value.trim() || '';
+  d.website = document.getElementById('haWebsite')?.value.trim() || '';
+  d.date = document.getElementById('haDate')?.value || '';
+  d.duration = document.getElementById('haDuration')?.value || '36 Hours';
+  d.mode = document.getElementById('haMode')?.value || 'Online';
+  d.location = document.getElementById('haLocation')?.value.trim() || '';
+  d.theme = document.getElementById('haTheme')?.value.trim() || '';
+  d.level = document.getElementById('haLevel')?.value || 'National';
+
+  d.projectName = document.getElementById('haProjectName')?.value.trim() || '';
+  d.problemStatement = document.getElementById('haProblemStatement')?.value.trim() || '';
+  d.projectDescription = document.getElementById('haProjectDescription')?.value.trim() || '';
+  d.innovationUSP = document.getElementById('haInnovationUSP')?.value.trim() || '';
+  d.techStack = document.getElementById('haTechStack')?.value.trim() || '';
+  d.domain = document.getElementById('haDomain')?.value || 'AI & Machine Learning';
+  d.githubUrl = document.getElementById('haGithubUrl')?.value.trim() || '';
+  d.demoUrl = document.getElementById('haDemoUrl')?.value.trim() || '';
+  d.pptUrl = document.getElementById('haPptUrl')?.value.trim() || '';
+  d.videoUrl = document.getElementById('haVideoUrl')?.value.trim() || '';
+
+  d.teamName = document.getElementById('haTeamName')?.value.trim() || '';
+  d.yourRole = document.getElementById('haYourRole')?.value.trim() || '';
+  d.isLeader = document.getElementById('haIsLeader')?.checked !== false;
+  d.softSkills = document.getElementById('haSoftSkills')?.value.trim() || '';
+
+  d.resultLink = document.getElementById('haResultLink')?.value.trim() || '';
+  d.certNumber = document.getElementById('haCertNumber')?.value.trim() || '';
+  d.organizerEmail = document.getElementById('haOrganizerEmail')?.value.trim() || '';
+  d.mentorName = document.getElementById('haMentorName')?.value.trim() || '';
+  d.verificationNotes = document.getElementById('haVerificationNotes')?.value.trim() || '';
+
+  // Calculate completion percentage
+  let score = 0;
+  if (d.name) score += 20;
+  if (d.projectName) score += 20;
+  if (d.problemStatement || d.projectDescription) score += 20;
+  if (d.teamName || (d.teamMembers && d.teamMembers.length > 0)) score += 20;
+  if (d.certFileName || d.resultLink || d.githubUrl) score += 20;
+
+  const pct = Math.min(100, score);
+  const completionEl = document.getElementById('haCompletionVal');
+  const progressBar = document.getElementById('haProgressBar');
+  if (completionEl) completionEl.textContent = `${pct}%`;
+  if (progressBar) progressBar.style.width = `${pct}%`;
+
+  // Est XP calculation
+  let estXP = 150;
+  if (d.level === 'National') estXP += 100;
+  if (d.level === 'International') estXP += 200;
+  if (d.githubUrl) estXP += 50;
+  if (d.demoUrl) estXP += 50;
+  if (d.certFileName || d.certNumber) estXP += 100;
+  const estXPEl = document.getElementById('haEstXPVal');
+  if (estXPEl) estXPEl.textContent = `+${estXP} XP`;
+
+  renderChecklist(d);
+  renderPortfolioCardPreview(d);
+}
+
+function renderChecklist(d) {
+  const container = document.getElementById('haChecklistContainer');
+  if (!container) return;
+
+  const items = [
+    { label: 'Hackathon Basic Info', done: !!(d.name && d.organizer) },
+    { label: 'Project Description', done: !!(d.projectName && (d.problemStatement || d.projectDescription)) },
+    { label: 'Team Members Linked', done: !!(d.teamName || (d.teamMembers && d.teamMembers.length > 0)) },
+    { label: 'Proof Documents Uploaded', done: !!(d.certFileName || d.resultLink || d.githubUrl) },
+    { label: 'Verification Ready', done: !!(d.certFileName || d.certNumber || d.resultLink) }
+  ];
+
+  container.innerHTML = items.map(item => `
+    <div style="display: flex; align-items: center; gap: 8px; color: ${item.done ? '#16a34a' : 'var(--text-3)'}; font-weight: ${item.done ? '700' : '500'};">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      <span>${item.label}</span>
+    </div>
+  `).join('');
+}
+
+function renderPortfolioCardPreview(d) {
+  const container = document.getElementById('haPortfolioCardPreview');
+  if (!container) return;
+
+  const title = d.projectName || d.name || 'My Innovative Prototype';
+  const org = d.organizer || 'Global Hackathon 2026';
+  const domain = d.domain || 'AI & Machine Learning';
+
+  container.innerHTML = `
+    <div style="font-size: 10px; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">${domain}</div>
+    <div style="font-size: 15px; font-weight: 900; color: var(--text); margin-bottom: 4px;">${title}</div>
+    <div style="font-size: 11px; color: var(--text-2); margin-bottom: 10px;">${org} • ${d.mode || 'Online'}</div>
+    <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px;">
+      <span style="font-size: 10px; padding: 2px 8px; border-radius: 6px; background: var(--primary-light); color: var(--primary); font-weight: 700;">${d.level || 'National'}</span>
+      <span style="font-size: 10px; padding: 2px 8px; border-radius: 6px; background: var(--surface); border: 1px solid var(--border); color: var(--text-2); font-weight: 600;">${d.duration || '36 Hours'}</span>
+    </div>
+    <div style="font-size: 10px; font-weight: 800; color: #16a34a; display: flex; align-items: center; gap: 4px;">
+      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      <span>Ready for College Verification</span>
+    </div>
+  `;
+}
+
+function renderSkillChips() {
+  const container = document.getElementById('haSkillChipsContainer');
+  if (!container) return;
+
+  const selected = state.haDraft?.selectedSkills || [];
+  container.innerHTML = ALL_SKILL_OPTIONS.map(skill => {
+    const isSel = selected.includes(skill);
+    return `
+      <button type="button" onclick="toggleSkillChip('${skill}')" style="padding: 5px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; cursor: pointer; border: 1px solid ${isSel ? 'var(--primary)' : 'var(--border)'}; background: ${isSel ? 'var(--primary)' : 'var(--surface)'}; color: ${isSel ? '#ffffff' : 'var(--text-2)'}; transition: all 0.2s ease;">
+        ${isSel ? '✓ ' : '+ '}${skill}
+      </button>
+    `;
+  }).join('');
+}
+
+function toggleSkillChip(skill) {
+  if (!state.haDraft) state.haDraft = {};
+  if (!state.haDraft.selectedSkills) state.haDraft.selectedSkills = [];
+  const idx = state.haDraft.selectedSkills.indexOf(skill);
+  if (idx > -1) {
+    state.haDraft.selectedSkills.splice(idx, 1);
+  } else {
+    state.haDraft.selectedSkills.push(skill);
+  }
+  renderSkillChips();
+}
+
+function renderTeamMembersList() {
+  const container = document.getElementById('haTeamMembersList');
+  if (!container) return;
+  if (!state.haDraft) state.haDraft = {};
+  if (!state.haDraft.teamMembers) state.haDraft.teamMembers = [{ name: 'Alex Johnson (You)', role: 'Lead Developer' }];
+
+  container.innerHTML = state.haDraft.teamMembers.map((m, idx) => `
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <input type="text" value="${m.name}" placeholder="Member Name" oninput="state.haDraft.teamMembers[${idx}].name = this.value; updateDraftState();" style="flex: 2; padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 12px; background: var(--surface); color: var(--text);" />
+      <input type="text" value="${m.role}" placeholder="Role (e.g. UI/UX)" oninput="state.haDraft.teamMembers[${idx}].role = this.value; updateDraftState();" style="flex: 2; padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 12px; background: var(--surface); color: var(--text);" />
+      ${idx > 0 ? `<button type="button" onclick="removeDraftTeamMember(${idx})" style="background: none; border: none; color: #ef4444; font-size: 14px; cursor: pointer; padding: 4px 8px;">✕</button>` : `<span style="font-size: 10px; font-weight: 800; color: var(--primary); padding: 0 4px;">LEAD</span>`}
+    </div>
+  `).join('');
+}
+
+function addDraftTeamMember() {
+  if (!state.haDraft) state.haDraft = {};
+  if (!state.haDraft.teamMembers) state.haDraft.teamMembers = [];
+  state.haDraft.teamMembers.push({ name: '', role: '' });
+  renderTeamMembersList();
+}
+
+function removeDraftTeamMember(idx) {
+  if (state.haDraft && state.haDraft.teamMembers) {
+    state.haDraft.teamMembers.splice(idx, 1);
+    renderTeamMembersList();
+    updateDraftState();
+  }
+}
+
+function handleCertFileSelect(input) {
+  if (input.files && input.files[0]) {
+    const file = input.files[0];
+    state.haDraft.certFileName = file.name;
+    const nameEl = document.getElementById('haCertFileName');
+    if (nameEl) nameEl.textContent = `Attached: ${file.name}`;
+    showToast(`Certificate "${file.name}" attached successfully!`, 'success');
+    updateDraftState();
+  }
+}
+
+function saveHackathonDraft() {
+  updateDraftState();
+  localStorage.setItem('elevate_hackathon_draft', JSON.stringify(state.haDraft));
+  showToast('Draft saved successfully!', 'success');
+}
+
+function renderReviewAccordion() {
+  const container = document.getElementById('haReviewAccordion');
+  if (!container) return;
+  const d = state.haDraft || {};
+
+  const sections = [
+    { title: 'Step 1: Hackathon Details', step: 1, content: `${d.name || 'Not specified'} (${d.organizer || 'Organizer N/A'}) • ${d.date || 'Date N/A'} • ${d.mode || 'Online'} • ${d.level || 'National'}` },
+    { title: 'Step 2: Project Details', step: 2, content: `Project: ${d.projectName || 'Not specified'} | Domain: ${d.domain || 'AI'} | Stack: ${d.techStack || 'React, Python'}` },
+    { title: 'Step 3: Team Information & Skills', step: 3, content: `Team: ${d.teamName || 'Solo'} | Role: ${d.yourRole || 'Lead'} | Skills: ${(d.selectedSkills || []).join(', ')}` },
+    { title: 'Step 4: Proof & Verification', step: 4, content: `Cert: ${d.certFileName || 'Attached'} | Result Link: ${d.resultLink || 'Provided'} | Status: Pending Verification` }
+  ];
+
+  container.innerHTML = sections.map(s => `
+    <div style="background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <div style="font-size: 13px; font-weight: 800; color: var(--text);">${s.title}</div>
+        <div style="font-size: 11px; color: var(--text-2); margin-top: 2px;">${s.content}</div>
+      </div>
+      <button type="button" onclick="goToAddHackathonStep(${s.step})" style="background: var(--surface); border: 1px solid var(--border); padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 700; color: var(--primary); cursor: pointer;">Edit</button>
+    </div>
+  `).join('');
+}
+
+async function submitHackathonEntry() {
+  updateDraftState();
+  const d = state.haDraft || {};
+
+  if (!d.name || !d.organizer || !d.projectName) {
+    showToast('Please complete Hackathon Name, Organizer, and Project Name before submitting.', 'warning');
+    goToAddHackathonStep(1);
+    return;
+  }
+
+  const studentId = state.student.id || 'GHRCE2024047';
+
+  const entryData = {
+    name: d.name,
+    organizer: d.organizer,
+    website: d.website,
+    date: d.date || new Date().toISOString().split('T')[0],
+    duration: d.duration || '36 Hours',
+    mode: d.mode || 'Online',
+    position: d.level === 'International' ? 'Winner' : 'Finalist',
+    theme: d.theme || 'AI Innovation',
+    teamName: d.teamName || 'Squad Innovation',
+    teamMembers: (d.teamMembers || []).map(m => m.name).join(', '),
+    projectName: d.projectName,
+    problemStatement: d.problemStatement || 'Solving real world challenge',
+    technologies: d.techStack || 'React, Python, PyTorch',
+    githubUrl: d.githubUrl || 'https://github.com/example/hackathon-submission',
+    demoUrl: d.demoUrl || 'https://demo.vercel.app',
+    videoUrl: d.videoUrl || '',
+    pptUrl: d.pptUrl || '',
+    certificateUrl: d.certFileName ? 'certificate.pdf' : '',
+    verified: false,
+    status: 'Pending Verification',
+    xp: 450
+  };
+
+  if (d.id) {
+    await window.db.updateHackathon(studentId, d.id, entryData);
+    showToast('Hackathon entry updated & submitted for verification!', 'success');
+  } else {
+    await window.db.addHackathon(studentId, entryData);
+    showToast('Hackathon Entry Submitted! +450 XP awarded.', 'success');
+  }
+
+  // Reset draft
+  localStorage.removeItem('elevate_hackathon_draft');
+  state.haDraft = null;
+
+  // Navigate to My Hackathons page
+  navigateTo('hackathon-my');
+}

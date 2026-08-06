@@ -67,7 +67,7 @@
         ],
         "estimatedReadinessLevel": "Needs Improvement",
         "summary": "Saurabhi Sharma completed the Engineering assessment. Score is 37%. Performance indicates a need for immediate reinforcement of foundational topics, particularly in Technical Aptitude and Data Structures.",
-        "generatedAt": "2026-07-24T10:22:51.072Z"
+        "generatedAt": "2026-07-26T07:58:40.951Z"
       },
       "recommendations": {
         "studentId": "GHRCE2024047",
@@ -151,7 +151,7 @@
         ],
         "todayFocus": "Solve 5 Technical Aptitude problems on LeetCode",
         "weeklyGoal": "Complete Technical Aptitude basics and take one full mock test",
-        "generatedAt": "2026-07-24T10:22:51.778Z"
+        "generatedAt": "2026-07-26T07:58:41.195Z"
       }
     }
   },
@@ -162,7 +162,7 @@
       "studentId": "GHRCE2024047",
       "studentName": "Saurabhi Sharma",
       "targetCompany": "--",
-      "targetReadinessScore": 80,
+      "targetReadinessScore": 57,
       "studyHoursPerDay": 2,
       "weeklyPlan": [
         {
@@ -247,7 +247,7 @@
         "Practice previous year questions"
       ],
       "summary": "Saurabhi Sharma's roadmap focuses on Technical Aptitude improvement to reach placement readiness for -- within 4 weeks.",
-      "generatedAt": "2026-07-24T10:22:51.475Z"
+      "generatedAt": "2026-07-26T07:58:41.163Z"
     }
   },
   "skillProfiles": {
@@ -259,7 +259,7 @@
       "Aptitude": "Beginner",
       "Communication": "Beginner",
       "SystemDesign": "Beginner",
-      "generatedAt": "2026-07-24T10:22:51.078Z"
+      "generatedAt": "2026-07-26T07:58:40.975Z"
     }
   }
 }

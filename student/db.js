@@ -37,6 +37,96 @@ const DEFAULT_MOCK_DATA = {
           reportId: 'rep_001',
           feedback: 'Strong answers, good confidence, needs minor alignment with company cloud strategy.'
         }
+      ],
+      hackathons: [
+        {
+          id: 'h_101',
+          name: "FinSpark'26",
+          organizer: 'National Fintech Innovation Forum',
+          date: '2026-03-15',
+          mode: 'Offline',
+          theme: 'FinTech & AI Solutions',
+          teamName: 'CodeCrafters',
+          teamMembers: 'Priya Sharma, Rohan Mehta, Sneha Patil',
+          projectName: 'SmartPay AI Risk Engine',
+          problemStatement: 'Building a real-time fraudulent transaction detection model for UPI payments using graph AI.',
+          technologies: 'Python, PyTorch, Node.js, MongoDB, React, REST APIs',
+          githubUrl: 'https://github.com/priyasharma/smartpay-ai',
+          demoUrl: 'https://smartpay-demo.vercel.app',
+          videoUrl: 'https://youtube.com/watch?v=demo123',
+          pptUrl: 'https://slideshare.net/smartpay-pitch',
+          isOpenSource: true,
+          certificateUrl: 'https://images.unsplash.com/photo-1589330694653-ded6df03f754?auto=format&fit=crop&w=600&q=80',
+          position: 'Top 20',
+          verified: true,
+          verifiedBy: 'Dr. Rajesh Kumar (Head T&P)'
+        },
+        {
+          id: 'h_102',
+          name: 'SIH Internal Hackathon 2026',
+          organizer: 'GH Raisoni College T&P Cell',
+          date: '2026-01-20',
+          mode: 'Offline',
+          theme: 'Smart Education & Campus AI',
+          teamName: 'ByteBusters',
+          teamMembers: 'Priya Sharma, Aditya Sen',
+          projectName: 'Elevate AI Proctoring Hub',
+          problemStatement: 'Automated gaze detection and tab switching prevention for high-stakes online campus assessments.',
+          technologies: 'Python, OpenCV, Express, React, WebSockets',
+          githubUrl: 'https://github.com/priyasharma/proctor-ai',
+          demoUrl: 'https://proctor-demo.vercel.app',
+          videoUrl: 'https://youtube.com/watch?v=proctor456',
+          pptUrl: '',
+          isOpenSource: true,
+          certificateUrl: 'https://images.unsplash.com/photo-1589330694653-ded6df03f754?auto=format&fit=crop&w=600&q=80',
+          position: 'College Qualified',
+          verified: true,
+          verifiedBy: 'Saurabhi Sharma (Head T&P)'
+        },
+        {
+          id: 'h_103',
+          name: 'HackFest Pune 2025',
+          organizer: 'Pune Tech Foundation',
+          date: '2025-11-10',
+          mode: 'Online',
+          theme: 'Healthcare & Smart Diagnosis',
+          teamName: 'HealthNexus',
+          teamMembers: 'Priya Sharma, Sneha Patil',
+          projectName: 'MediScan AI',
+          problemStatement: 'Rapid X-Ray diagnostic analyzer using deep neural networks to assist rural clinics.',
+          technologies: 'Python, TensorFlow, Flask, Flutter, Firebase',
+          githubUrl: 'https://github.com/priyasharma/mediscan-ai',
+          demoUrl: 'https://mediscan.dev',
+          videoUrl: 'https://youtube.com/watch?v=medi789',
+          pptUrl: 'https://slideshare.net/mediscan-pitch',
+          isOpenSource: false,
+          certificateUrl: 'https://images.unsplash.com/photo-1589330694653-ded6df03f754?auto=format&fit=crop&w=600&q=80',
+          position: 'Winner',
+          verified: true,
+          verifiedBy: 'Saurabhi Sharma (Head T&P)'
+        },
+        {
+          id: 'h_104',
+          name: 'CyberShield National Hackathon',
+          organizer: 'IIT Bombay Techfest',
+          date: '2025-08-05',
+          mode: 'Offline',
+          theme: 'Cybersecurity & Zero Trust',
+          teamName: 'SentinelPriya',
+          teamMembers: 'Priya Sharma',
+          projectName: 'ZeroTrust Auth Vault',
+          problemStatement: 'Biometric authentication and multi-factor hardware security key interface.',
+          technologies: 'Node.js, Cryptography, OAuth, Security, PostgreSQL',
+          githubUrl: 'https://github.com/priyasharma/zerotrust-vault',
+          demoUrl: 'https://zerotrust-vault.io',
+          videoUrl: '',
+          pptUrl: '',
+          isOpenSource: true,
+          certificateUrl: 'https://images.unsplash.com/photo-1589330694653-ded6df03f754?auto=format&fit=crop&w=600&q=80',
+          position: 'Finalist',
+          verified: false,
+          verifiedBy: ''
+        }
       ]
     },
     {
@@ -57,7 +147,53 @@ const DEFAULT_MOCK_DATA = {
       mockTestsCompleted: 9,
       weakSkills: ['Quantitative Aptitude', 'DBMS'],
       appliedJobs: [],
-      interviewHistory: []
+      interviewHistory: [],
+      hackathons: [
+        {
+          id: 'h_301',
+          name: "FinSpark'26",
+          organizer: 'National Fintech Innovation Forum',
+          date: '2026-03-15',
+          mode: 'Offline',
+          theme: 'FinTech',
+          teamName: 'CodeCrafters',
+          teamMembers: 'Priya Sharma, Rohan Mehta, Sneha Patil',
+          projectName: 'SmartPay AI Risk Engine',
+          problemStatement: 'Building real-time transaction risk scoring.',
+          technologies: 'Node.js, Express, React, HTML, CSS',
+          githubUrl: 'https://github.com/rohanmehta/smartpay',
+          demoUrl: 'https://smartpay-demo.com',
+          videoUrl: '',
+          pptUrl: '',
+          isOpenSource: true,
+          certificateUrl: 'https://images.unsplash.com/photo-1589330694653-ded6df03f754?auto=format&fit=crop&w=600&q=80',
+          position: 'Top 20',
+          verified: true,
+          verifiedBy: 'Saurabhi Sharma (Head T&P)'
+        },
+        {
+          id: 'h_302',
+          name: 'WebDev Sprint 2025',
+          organizer: 'Nagpur Developers Club',
+          date: '2025-09-12',
+          mode: 'Online',
+          theme: 'Web Development',
+          teamName: 'DevCraft',
+          teamMembers: 'Rohan Mehta',
+          projectName: 'EduPortal Lite',
+          problemStatement: 'Lightweight student management portal for regional schools.',
+          technologies: 'JavaScript, Tailwind, React, Node.js',
+          githubUrl: 'https://github.com/rohanmehta/eduportal',
+          demoUrl: 'https://eduportal-lite.dev',
+          videoUrl: 'https://youtube.com/watch?v=rohan123',
+          pptUrl: '',
+          isOpenSource: true,
+          certificateUrl: 'https://images.unsplash.com/photo-1589330694653-ded6df03f754?auto=format&fit=crop&w=600&q=80',
+          position: 'Runner Up',
+          verified: true,
+          verifiedBy: 'Saurabhi Sharma (Head T&P)'
+        }
+      ]
     },
     {
       id: 'GHRCE2024089',
@@ -86,6 +222,74 @@ const DEFAULT_MOCK_DATA = {
           reportId: 'rep_002',
           feedback: 'Excellent DSA and logical reasoning capabilities. Fast problem-solving.'
         }
+      ],
+      hackathons: [
+        {
+          id: 'h_201',
+          name: 'National AI Challenge 2026',
+          organizer: 'NITI Aayog Tech Grand Challenge',
+          date: '2026-02-28',
+          mode: 'Offline',
+          theme: 'AI & Healthcare',
+          teamName: 'BioPulp Tech',
+          teamMembers: 'Sneha Patil, Priya Sharma',
+          projectName: 'NeuroDiagnostics AI',
+          problemStatement: 'EEG Signal classifier for early onset seizure detection.',
+          technologies: 'Python, PyTorch, TensorFlow, OpenCV, IoT, Sensors',
+          githubUrl: 'https://github.com/snehapatil/neuro-ai',
+          demoUrl: 'https://neuro-ai.org',
+          videoUrl: 'https://youtube.com/watch?v=sneha456',
+          pptUrl: 'https://slideshare.net/sneha-neuro',
+          isOpenSource: true,
+          certificateUrl: 'https://images.unsplash.com/photo-1589330694653-ded6df03f754?auto=format&fit=crop&w=600&q=80',
+          position: 'Winner',
+          verified: true,
+          verifiedBy: 'Dr. Rajesh Kumar (Head T&P)'
+        },
+        {
+          id: 'h_202',
+          name: 'HackFest Pune 2025',
+          organizer: 'Pune Tech Foundation',
+          date: '2025-11-10',
+          mode: 'Online',
+          theme: 'Healthcare & Smart Diagnosis',
+          teamName: 'HealthNexus',
+          teamMembers: 'Sneha Patil, Priya Sharma',
+          projectName: 'MediScan AI',
+          problemStatement: 'Rapid X-Ray diagnostic analyzer.',
+          technologies: 'Python, TensorFlow, Flask',
+          githubUrl: 'https://github.com/snehapatil/mediscan',
+          demoUrl: 'https://mediscan.dev',
+          videoUrl: '',
+          pptUrl: '',
+          isOpenSource: true,
+          certificateUrl: 'https://images.unsplash.com/photo-1589330694653-ded6df03f754?auto=format&fit=crop&w=600&q=80',
+          position: 'Winner',
+          verified: true,
+          verifiedBy: 'Saurabhi Sharma (Head T&P)'
+        },
+        {
+          id: 'h_203',
+          name: 'IoT World Hackathon',
+          organizer: 'IEEE India Council',
+          date: '2025-06-18',
+          mode: 'Offline',
+          theme: 'IoT & Smart Grid',
+          teamName: 'SolarSense',
+          teamMembers: 'Sneha Patil',
+          projectName: 'SolarGrid Smart Controller',
+          problemStatement: 'Automated solar grid load distribution controller.',
+          technologies: 'Arduino, Embedded Systems, IoT, C++',
+          githubUrl: 'https://github.com/snehapatil/solargrid',
+          demoUrl: 'https://solargrid.dev',
+          videoUrl: 'https://youtube.com/watch?v=solar789',
+          pptUrl: '',
+          isOpenSource: false,
+          certificateUrl: 'https://images.unsplash.com/photo-1589330694653-ded6df03f754?auto=format&fit=crop&w=600&q=80',
+          position: 'Top 20',
+          verified: true,
+          verifiedBy: 'Saurabhi Sharma (Head T&P)'
+        }
       ]
     },
     {
@@ -106,7 +310,31 @@ const DEFAULT_MOCK_DATA = {
       mockTestsCompleted: 5,
       weakSkills: ['Technical Aptitude', 'Logical Reasoning'],
       appliedJobs: [],
-      interviewHistory: []
+      interviewHistory: [],
+      hackathons: [
+        {
+          id: 'h_401',
+          name: 'Fintech Leap 2026',
+          organizer: 'Bombay Management Association',
+          date: '2026-04-01',
+          mode: 'Online',
+          theme: 'Financial Strategy',
+          teamName: 'FinAdvisors',
+          teamMembers: 'Aditya Sen',
+          projectName: 'Micro-SIP Advisory Model',
+          problemStatement: 'Algorithmic micro-investment allocation for rural demographics.',
+          technologies: 'Excel, Python, Financial Modeling',
+          githubUrl: '',
+          demoUrl: '',
+          videoUrl: '',
+          pptUrl: 'https://slideshare.net/aditya-microsip',
+          isOpenSource: false,
+          certificateUrl: 'https://images.unsplash.com/photo-1589330694653-ded6df03f754?auto=format&fit=crop&w=600&q=80',
+          position: 'Participant',
+          verified: true,
+          verifiedBy: 'Saurabhi Sharma (Head T&P)'
+        }
+      ]
     }
   ],
   jobs: [
@@ -396,6 +624,226 @@ class ElevateDatabase {
     this.localCache.assessments.push(newAsm);
     await this.save();
     return newAsm;
+  }
+
+  // --- Hackathon operations & calculation engine ---
+  calculateHackathonXP(h) {
+    if (!h) return 0;
+    const positionScores = {
+      'Participant': 20,
+      'College Qualified': 40,
+      'State Qualified': 70,
+      'National Qualified': 120,
+      'Top 100': 180,
+      'Top 50': 220,
+      'Top 20': 250,
+      'Finalist': 300,
+      'Runner Up': 400,
+      'Winner': 500
+    };
+    let xp = positionScores[h.position] || 20;
+
+    if (h.githubUrl && h.githubUrl.trim()) xp += 20;
+    if (h.demoUrl && h.demoUrl.trim()) xp += 30; // Working prototype
+    if (h.videoUrl && h.videoUrl.trim()) xp += 20; // Demo Video
+    if (h.pptUrl && h.pptUrl.trim()) xp += 15; // Presentation
+    if (h.isOpenSource) xp += 25; // Open source project
+    if (h.verified) xp += 50; // Verified achievement bonus
+
+    return xp;
+  }
+
+  calculateStudentHackathonXP(student) {
+    if (!student || !student.hackathons || !student.hackathons.length) return 0;
+    return student.hackathons.reduce((sum, h) => sum + this.calculateHackathonXP(h), 0);
+  }
+
+  extractSkillsFromTech(techString) {
+    if (!techString) return [];
+    const tech = techString.toLowerCase();
+    const skills = new Set();
+
+    if (tech.includes('node') || tech.includes('express') || tech.includes('django') || tech.includes('spring') || tech.includes('flask') || tech.includes('java') || tech.includes('php') || tech.includes('backend')) {
+      skills.add('Backend Development');
+    }
+    if (tech.includes('mongo') || tech.includes('postgres') || tech.includes('mysql') || tech.includes('redis') || tech.includes('firebase') || tech.includes('database') || tech.includes('sql')) {
+      skills.add('Cloud Database');
+    }
+    if (tech.includes('react') || tech.includes('vue') || tech.includes('angular') || tech.includes('html') || tech.includes('css') || tech.includes('tailwind') || tech.includes('frontend') || tech.includes('javascript') || tech.includes('typescript')) {
+      skills.add('Frontend Development');
+    }
+    if (tech.includes('flutter') || tech.includes('react native') || tech.includes('swift') || tech.includes('kotlin') || tech.includes('android') || tech.includes('ios') || tech.includes('mobile')) {
+      skills.add('Mobile Development');
+    }
+    if (tech.includes('python') || tech.includes('pytorch') || tech.includes('tensorflow') || tech.includes('opencv') || tech.includes('ai') || tech.includes('machine learning') || tech.includes('llm') || tech.includes('genai')) {
+      skills.add('Artificial Intelligence');
+    }
+    if (tech.includes('blockchain') || tech.includes('solidity') || tech.includes('web3') || tech.includes('crypto')) {
+      skills.add('Blockchain Development');
+    }
+    if (tech.includes('aws') || tech.includes('azure') || tech.includes('gcp') || tech.includes('docker') || tech.includes('kubernetes') || tech.includes('devops')) {
+      skills.add('Cloud Computing');
+    }
+    if (tech.includes('cyber') || tech.includes('security') || tech.includes('oauth') || tech.includes('cryptography')) {
+      skills.add('Cybersecurity & Privacy');
+    }
+    if (tech.includes('iot') || tech.includes('arduino') || tech.includes('raspberry') || tech.includes('embedded') || tech.includes('sensors')) {
+      skills.add('Internet of Things (IoT)');
+    }
+    if (tech.includes('rest') || tech.includes('graphql') || tech.includes('api') || tech.includes('websocket')) {
+      skills.add('REST APIs');
+    }
+
+    if (skills.size === 0) {
+      skills.add('Software Engineering');
+    }
+
+    return Array.from(skills);
+  }
+
+  getEarnedBadges(student) {
+    if (!student) return [];
+    const list = student.hackathons || [];
+    const badges = [];
+
+    const hasNational = list.some(h => ['National Qualified', 'Top 100', 'Top 50', 'Top 20', 'Finalist', 'Runner Up', 'Winner'].includes(h.position));
+    const winnerCount = list.filter(h => h.position === 'Winner').length;
+    const totalCount = list.length;
+    const allTech = list.map(h => `${h.technologies} ${h.theme}`).join(' ').toLowerCase();
+
+    if (hasNational) {
+      badges.push({ title: 'National Finalist', desc: 'Achieved National level qualification or placement in hackathons', category: 'Achievement' });
+    }
+    if (winnerCount > 0) {
+      badges.push({ title: 'Winner', desc: `First Place Winner in ${winnerCount} hackathon(s)`, category: 'Top Honor' });
+    }
+    if (totalCount >= 10) {
+      badges.push({ title: '10 Hackathons Completed', desc: 'Elite hackathon veteran with 10+ hackathons completed', category: 'Milestone' });
+    } else if (totalCount >= 5) {
+      badges.push({ title: '5 Hackathons Milestone', desc: 'Active competitor with 5+ hackathons completed', category: 'Milestone' });
+    }
+    if (allTech.includes('ai') || allTech.includes('pytorch') || allTech.includes('tensorflow') || allTech.includes('python') || allTech.includes('llm')) {
+      badges.push({ title: 'AI Innovator', desc: 'Built cutting-edge Artificial Intelligence & Machine Learning prototypes', category: 'Domain Mastery' });
+    }
+    if (allTech.includes('cyber') || allTech.includes('security') || allTech.includes('crypto') || allTech.includes('oauth')) {
+      badges.push({ title: 'Cybersecurity Specialist', desc: 'Demonstrated security, vault & privacy architecture in hackathons', category: 'Domain Mastery' });
+    }
+
+    const teamPlayerCount = list.filter(h => h.teamMembers && h.teamMembers.split(',').length > 1).length;
+    if (teamPlayerCount >= 1) {
+      badges.push({ title: 'Team Player', desc: 'Successfully collaborated in multi-disciplinary hackathon teams', category: 'Leadership' });
+    }
+
+    if (totalCount >= 3) {
+      badges.push({ title: 'Consistent Participant', desc: 'Consistently participating in hackathons to level up skills', category: 'Dedication' });
+    }
+
+    return badges;
+  }
+
+  calculateInnovationScore(student) {
+    if (!student) return 0;
+    const hackathons = student.hackathons || [];
+    const totalXp = this.calculateStudentHackathonXP(student);
+    
+    // 40% Hackathon Performance (max 40 pts, full score at 1000 XP)
+    const perfScore = Math.min(40, (totalXp / 1000) * 40);
+
+    // 25% Projects (max 25 pts, full score at 4 projects)
+    const projScore = Math.min(25, (hackathons.length / 4) * 25);
+
+    // 15% Certifications (max 15 pts, verified certificates count)
+    const verifiedCerts = hackathons.filter(h => h.verified).length;
+    const certScore = Math.min(15, (verifiedCerts / 2) * 15);
+
+    // 10% Open Source Contributions (max 10 pts)
+    const openSourceCount = hackathons.filter(h => h.isOpenSource || (h.githubUrl && h.githubUrl.trim())).length;
+    const openSourceScore = Math.min(10, (openSourceCount / 2) * 10);
+
+    // 10% Communication & Leadership (max 10 pts)
+    const teamLeads = hackathons.filter(h => h.teamMembers && h.teamMembers.split(',').length > 1).length;
+    const commScore = Math.min(10, (teamLeads / 2) * 10);
+
+    return Math.round(perfScore + projScore + certScore + openSourceScore + commScore);
+  }
+
+  async getStudentHackathons(studentId) {
+    await this.initPromise;
+    const student = this.localCache.students.find(s => s.id === studentId);
+    return student ? (student.hackathons || []) : [];
+  }
+
+  async addHackathon(studentId, entry) {
+    await this.initPromise;
+    const studentIndex = this.localCache.students.findIndex(s => s.id === studentId);
+    if (studentIndex === -1) return { success: false, message: 'Student not found.' };
+
+    const newEntry = {
+      id: 'h_' + Date.now(),
+      verified: false,
+      verifiedBy: '',
+      githubUrl: '',
+      demoUrl: '',
+      videoUrl: '',
+      pptUrl: '',
+      isOpenSource: false,
+      certificateUrl: '',
+      ...entry
+    };
+
+    if (!this.localCache.students[studentIndex].hackathons) {
+      this.localCache.students[studentIndex].hackathons = [];
+    }
+
+    this.localCache.students[studentIndex].hackathons.unshift(newEntry);
+    await this.save();
+    return { success: true, hackathon: newEntry, student: this.localCache.students[studentIndex] };
+  }
+
+  async updateHackathon(studentId, hackathonId, updatedData) {
+    await this.initPromise;
+    const studentIndex = this.localCache.students.findIndex(s => s.id === studentId);
+    if (studentIndex === -1) return { success: false, message: 'Student not found.' };
+
+    const hackathons = this.localCache.students[studentIndex].hackathons || [];
+    const hIndex = hackathons.findIndex(h => h.id === hackathonId);
+    if (hIndex === -1) return { success: false, message: 'Hackathon entry not found.' };
+
+    this.localCache.students[studentIndex].hackathons[hIndex] = {
+      ...hackathons[hIndex],
+      ...updatedData
+    };
+
+    await this.save();
+    return { success: true, hackathon: this.localCache.students[studentIndex].hackathons[hIndex] };
+  }
+
+  async deleteHackathon(studentId, hackathonId) {
+    await this.initPromise;
+    const studentIndex = this.localCache.students.findIndex(s => s.id === studentId);
+    if (studentIndex === -1) return { success: false, message: 'Student not found.' };
+
+    if (this.localCache.students[studentIndex].hackathons) {
+      this.localCache.students[studentIndex].hackathons = this.localCache.students[studentIndex].hackathons.filter(h => h.id !== hackathonId);
+      await this.save();
+    }
+    return { success: true };
+  }
+
+  async verifyHackathon(studentId, hackathonId, verifiedBy = 'Saurabhi Sharma (Head T&P)') {
+    await this.initPromise;
+    const studentIndex = this.localCache.students.findIndex(s => s.id === studentId);
+    if (studentIndex === -1) return { success: false, message: 'Student not found.' };
+
+    const hackathons = this.localCache.students[studentIndex].hackathons || [];
+    const hIndex = hackathons.findIndex(h => h.id === hackathonId);
+    if (hIndex === -1) return { success: false, message: 'Hackathon not found.' };
+
+    this.localCache.students[studentIndex].hackathons[hIndex].verified = true;
+    this.localCache.students[studentIndex].hackathons[hIndex].verifiedBy = verifiedBy;
+
+    await this.save();
+    return { success: true, hackathon: this.localCache.students[studentIndex].hackathons[hIndex] };
   }
 }
 

@@ -595,7 +595,7 @@
         <!-- SECTION BOX 3: STARTUPS (UNIQUE DARK PURPLE BACKGROUND BOX) -->
         <div class="sb-section-box startup-box">
           <div class="nav-section-label student-only" style="padding: 4px 8px 6px; font-size: 10px; font-weight: 800; color: #e9d5ff; text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px;">
-            <span>🚀 Startups</span>
+            <span>Startups</span>
           </div>
           <div class="nav-item student-only startup-item" data-page="all-startups" onclick="navigateTo('all-startups')">
             <div class="nav-icon-circle dark-purple">
@@ -625,6 +625,70 @@
               </svg>
             </div>
             <span class="nav-text">Mentors</span>
+          </div>
+        </div>
+
+        <!-- SECTION BOX 4: HACKATHONS (MATCHING STARTUPS MODULE STYLE) -->
+        <div class="sb-section-box hackathon-box startup-box">
+          <div class="nav-section-label student-only" style="padding: 4px 8px 6px; font-size: 10px; font-weight: 800; color: #e9d5ff; text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px;">
+            <span>Hackathons</span>
+          </div>
+          <div class="nav-item student-only startup-item" data-page="hackathon-dashboard" onclick="navigateTo('hackathon-dashboard')">
+            <div class="nav-icon-circle dark-purple">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <rect x="3" y="3" width="7" height="7" rx="1"/>
+                <rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="14" y="14" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/>
+              </svg>
+            </div>
+            <span class="nav-text">Hackathon Dashboard</span>
+          </div>
+          <div class="nav-item student-only startup-item" data-page="hackathon-my" onclick="navigateTo('hackathon-my')">
+            <div class="nav-icon-circle dark-purple">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M6 9l6 6 6-6"/>
+                <path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/>
+              </svg>
+            </div>
+            <span class="nav-text">My Hackathons</span>
+          </div>
+          <div class="nav-item student-only startup-item" data-page="hackathon-leaderboard" onclick="navigateTo('hackathon-leaderboard')">
+            <div class="nav-icon-circle dark-purple">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <line x1="18" y1="20" x2="18" y2="10"/>
+                <line x1="12" y1="20" x2="12" y2="4"/>
+                <line x1="6" y1="20" x2="6" y2="14"/>
+              </svg>
+            </div>
+            <span class="nav-text">Leaderboard</span>
+          </div>
+          <div class="nav-item student-only startup-item" data-page="hackathon-timeline" onclick="navigateTo('hackathon-timeline')">
+            <div class="nav-icon-circle dark-purple">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <span class="nav-text">Achievement Timeline</span>
+          </div>
+          <div class="nav-item student-only startup-item" data-page="hackathon-badges" onclick="navigateTo('hackathon-badges')">
+            <div class="nav-icon-circle dark-purple">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="12" cy="8" r="7"/>
+                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/>
+              </svg>
+            </div>
+            <span class="nav-text">Badges</span>
+          </div>
+          <div class="nav-item student-only startup-item" data-page="hackathon-add" onclick="navigateTo('hackathon-add')">
+            <div class="nav-icon-circle dark-purple">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+            </div>
+            <span class="nav-text">Add Hackathon Entry</span>
           </div>
         </div>
 
@@ -1828,6 +1892,830 @@
               Logout
             </button>
           </div>
+        </div>
+      </div>
+
+      <!-- ── PAGE 1: HACKATHON DASHBOARD ── -->
+      <div class="app-page fade-in" id="page-hackathon-dashboard">
+        <!-- Header Section -->
+        <div style="display: flex; align-items: flex-start; gap: 14px; margin-bottom: 24px;">
+          <div style="width: 5px; height: 38px; border-radius: 4px; background: linear-gradient(180deg, #c084fc 0%, #9333ea 100%); flex-shrink: 0; margin-top: 3px;"></div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #251b3e, #1a102f); border: 1px solid rgba(168, 85, 247, 0.4); display: flex; align-items: center; justify-content: center; color: #c084fc; flex-shrink: 0; box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+              </div>
+              <h2 style="font-size: 28px; font-weight: 900; color: var(--text); font-family: 'Rajdhani', sans-serif; margin: 0; letter-spacing: -0.01em;">
+                Hackathon Dashboard
+              </h2>
+            </div>
+            <p style="font-size: 14px; color: #a855f7; font-weight: 600; margin: 4px 0 0 0;">
+              Overview of your hackathon performance, dynamic XP, innovation index, and campus rank.
+            </p>
+          </div>
+        </div>
+
+        <!-- TOP ROW: 6 Overview Stat Cards Across Available Page Width -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-6 mb-8 w-full">
+          <div class="card" style="padding: 20px; border-radius: 16px; border: 1px solid var(--border);">
+            <div style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Hackathon XP</div>
+            <div id="hdXPVal" style="font-size: 28px; font-weight: 900; color: var(--primary); font-family: 'Rajdhani', sans-serif;">0 XP</div>
+            <div style="font-size: 11px; color: var(--success); font-weight: 700; margin-top: 4px;">Dynamic Level XP</div>
+          </div>
+
+          <div class="card" style="padding: 20px; border-radius: 16px; border: 1px solid var(--border);">
+            <div style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Innovation Score</div>
+            <div id="hdInnovationVal" style="font-size: 28px; font-weight: 900; color: var(--primary); font-family: 'Rajdhani', sans-serif;">0 / 100</div>
+            <div style="font-size: 11px; color: var(--text-2); font-weight: 600; margin-top: 4px;">5-Factor Weighted Score</div>
+          </div>
+
+          <div class="card" style="padding: 20px; border-radius: 16px; border: 1px solid var(--border);">
+            <div style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Campus Rank</div>
+            <div id="hdRankVal" style="font-size: 28px; font-weight: 900; color: var(--text); font-family: 'Rajdhani', sans-serif;">#--</div>
+            <div style="font-size: 11px; color: var(--primary); font-weight: 700; margin-top: 4px;">Institute Ranking</div>
+          </div>
+
+          <div class="card" style="padding: 20px; border-radius: 16px; border: 1px solid var(--border);">
+            <div style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Participations</div>
+            <div id="hdParticipatedVal" style="font-size: 28px; font-weight: 900; color: var(--text); font-family: 'Rajdhani', sans-serif;">0</div>
+            <div style="font-size: 11px; color: var(--text-2); font-weight: 600; margin-top: 4px;">Hackathons Joined</div>
+          </div>
+
+          <div class="card" style="padding: 20px; border-radius: 16px; border: 1px solid var(--border);">
+            <div style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Wins</div>
+            <div id="hdWinsVal" style="font-size: 28px; font-weight: 900; color: var(--success); font-family: 'Rajdhani', sans-serif;">0</div>
+            <div style="font-size: 11px; color: var(--success); font-weight: 700; margin-top: 4px;">First Place Honors</div>
+          </div>
+
+          <div class="card" style="padding: 20px; border-radius: 16px; border: 1px solid var(--border);">
+            <div style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Finalists</div>
+            <div id="hdFinalistsVal" style="font-size: 28px; font-weight: 900; color: var(--primary); font-family: 'Rajdhani', sans-serif;">0</div>
+            <div style="font-size: 11px; color: var(--text-2); font-weight: 600; margin-top: 4px;">Top Placements</div>
+          </div>
+        </div>
+
+        <!-- SECOND SECTION: 2-Column Responsive Dashboard Grid (Matching main Dashboard grid) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8 w-full">
+          <!-- Left Column -->
+          <div class="lg:col-span-8 space-y-8 flex flex-col gap-6">
+            <!-- Recent Activity Card -->
+            <div class="card" style="padding: 24px; border-radius: 20px;">
+              <h3 style="font-size: 16px; font-weight: 800; color: var(--text); margin: 0 0 16px; display: flex; align-items: center; gap: 8px;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Recent Hackathon Activity
+              </h3>
+              <div id="hdRecentActivityList" style="display: flex; flex-direction: column; gap: 12px;">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+
+            <!-- Recommended Hackathons Card -->
+            <div class="card" style="padding: 24px; border-radius: 20px;">
+              <h3 style="font-size: 16px; font-weight: 800; color: var(--text); margin: 0 0 16px; display: flex; align-items: center; gap: 8px;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+                Recommended Hackathons For You
+              </h3>
+              <div id="hdRecommendedList" style="display: flex; flex-direction: column; gap: 14px;">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div class="lg:col-span-4 space-y-8 flex flex-col gap-6">
+            <!-- Upcoming Hackathons -->
+            <div class="card" style="padding: 24px; border-radius: 20px;">
+              <h3 style="font-size: 16px; font-weight: 800; color: var(--text); margin: 0 0 16px; display: flex; align-items: center; gap: 8px;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Upcoming Deadlines
+              </h3>
+              <div id="hdUpcomingList" style="display: flex; flex-direction: column; gap: 12px;">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+
+            <!-- Latest Badges -->
+            <div class="card" style="padding: 24px; border-radius: 20px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-size: 16px; font-weight: 800; color: var(--text); margin: 0; display: flex; align-items: center; gap: 8px;">
+                  <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+                  Earned Badges
+                </h3>
+                <button onclick="navigateTo('hackathon-badges')" style="background: none; border: none; font-size: 12px; color: var(--primary); font-weight: 700; cursor: pointer;">View All</button>
+              </div>
+              <div id="hdLatestBadgesList" style="display: flex; flex-direction: column; gap: 10px;">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PAGE 2: MY HACKATHONS ── -->
+      <div class="app-page fade-in" id="page-hackathon-my">
+        <div style="margin-bottom: 24px;">
+          <h2 style="font-size: 28px; font-weight: 900; color: var(--text); font-family: 'Rajdhani', sans-serif; margin: 0;">
+            My Hackathons
+          </h2>
+          <p style="font-size: 13px; color: var(--text-2); margin: 4px 0 0;">
+            Manage your hackathon portfolio, project links, prototypes, and verification status.
+          </p>
+        </div>
+
+        <!-- FULL-WIDTH Filter / Search Bar -->
+        <div class="card" style="padding: 16px 20px; border-radius: 16px; margin-bottom: 24px; width: 100%; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;">
+          <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; flex: 1;">
+            <input type="text" id="hmSearch" placeholder="Search Hackathons..." oninput="renderMyHackathonsPage()" style="padding: 9px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 12px; min-width: 220px; background: var(--surface); flex: 1;" />
+            
+            <select id="hmFilterYear" onchange="renderMyHackathonsPage()" style="padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; background: var(--surface); color: var(--text);">
+              <option value="ALL">Year</option>
+              <option value="2026">2026</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+            </select>
+
+            <select id="hmFilterPosition" onchange="renderMyHackathonsPage()" style="padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; background: var(--surface); color: var(--text);">
+              <option value="ALL">Position</option>
+              <option value="Winner">Winner</option>
+              <option value="Runner Up">Runner Up</option>
+              <option value="Finalist">Finalist / Top 20</option>
+              <option value="National Qualified">National Qualified</option>
+              <option value="Participant">Participant</option>
+            </select>
+
+            <select id="hmFilterVerified" onchange="renderMyHackathonsPage()" style="padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; background: var(--surface); color: var(--text);">
+              <option value="ALL">Verification</option>
+              <option value="VERIFIED">Verified Entries</option>
+              <option value="PENDING">Pending Verification</option>
+            </select>
+
+            <select id="hmFilterDomain" onchange="renderMyHackathonsPage()" style="padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; background: var(--surface); color: var(--text);">
+              <option value="ALL">Domain</option>
+              <option value="AI">AI & Machine Learning</option>
+              <option value="Web">Web & Full Stack</option>
+              <option value="Security">Cybersecurity</option>
+              <option value="IoT">IoT & Embedded</option>
+            </select>
+          </div>
+
+          <div style="font-size: 12px; color: var(--text-2); font-weight: 600;" id="hmCountLabel">
+            Showing entries
+          </div>
+        </div>
+
+        <!-- FULL-WIDTH Cards Grid -->
+        <div id="hmHackathonsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
+          <!-- Populated via JS -->
+        </div>
+      </div>
+
+      <!-- ── PAGE 3: CAMPUS LEADERBOARD ── -->
+      <div class="app-page fade-in" id="page-hackathon-leaderboard">
+        <div style="margin-bottom: 24px;">
+          <h2 style="font-size: 28px; font-weight: 900; color: var(--text); font-family: 'Rajdhani', sans-serif; margin: 0;">
+            Campus Hackathon Leaderboard
+          </h2>
+          <p style="font-size: 13px; color: var(--text-2); margin: 4px 0 0;">
+            See how students rank based on verified hackathon participation and achievements.
+          </p>
+        </div>
+
+        <!-- TOP SUMMARY CARDS (4 Stats across full width) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6 w-full">
+          <div class="card" style="padding: 18px 20px; border-radius: 16px; border: 1px solid var(--border);">
+            <div style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Your Rank</div>
+            <div id="hlMyRank" style="font-size: 26px; font-weight: 900; color: var(--primary); font-family: 'Rajdhani', sans-serif;">#--</div>
+          </div>
+          <div class="card" style="padding: 18px 20px; border-radius: 16px; border: 1px solid var(--border);">
+            <div style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Your XP</div>
+            <div id="hlMyXP" style="font-size: 26px; font-weight: 900; color: var(--primary); font-family: 'Rajdhani', sans-serif;">0 XP</div>
+          </div>
+          <div class="card" style="padding: 18px 20px; border-radius: 16px; border: 1px solid var(--border);">
+            <div style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Your Wins</div>
+            <div id="hlMyWins" style="font-size: 26px; font-weight: 900; color: var(--success); font-family: 'Rajdhani', sans-serif;">0</div>
+          </div>
+          <div class="card" style="padding: 18px 20px; border-radius: 16px; border: 1px solid var(--border);">
+            <div style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Your Participations</div>
+            <div id="hlMyParticipations" style="font-size: 26px; font-weight: 900; color: var(--text); font-family: 'Rajdhani', sans-serif;">0</div>
+          </div>
+        </div>
+
+        <div class="card" style="padding: 24px; border-radius: 20px; width: 100%;">
+          <!-- Full Width Filters Bar -->
+          <div style="display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; align-items: center; justify-content: space-between; width: 100%;">
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; flex: 1;">
+              <input type="text" id="hlSearch" placeholder="Search student name or ID..." oninput="renderLeaderboardPage()" style="padding: 9px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 12px; min-width: 200px; background: var(--surface); flex: 1;" />
+              
+              <select id="hlFilterDept" onchange="renderLeaderboardPage()" style="padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; background: var(--surface); color: var(--text);">
+                <option value="ALL">Department</option>
+                <option value="Engineering">Engineering</option>
+                <option value="Management">Management</option>
+                <option value="Medical">Medical</option>
+                <option value="Commerce">Commerce</option>
+              </select>
+
+              <select id="hlFilterYear" onchange="renderLeaderboardPage()" style="padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; background: var(--surface); color: var(--text);">
+                <option value="ALL">Year</option>
+                <option value="FE">1st Year (FE)</option>
+                <option value="SE">2nd Year (SE)</option>
+                <option value="TY">3rd Year (TY)</option>
+                <option value="BE">4th Year (BE)</option>
+              </select>
+
+              <select id="hlFilterBranch" onchange="renderLeaderboardPage()" style="padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; background: var(--surface); color: var(--text);">
+                <option value="ALL">Branch</option>
+                <option value="CSE">Computer Science</option>
+                <option value="IT">Information Tech</option>
+                <option value="ECE">Electronics</option>
+                <option value="ME">Mechanical</option>
+              </select>
+
+              <select id="hlFilterDomain" onchange="renderLeaderboardPage()" style="padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; background: var(--surface); color: var(--text);">
+                <option value="ALL">Domain</option>
+                <option value="AI">AI & Machine Learning</option>
+                <option value="Cybersecurity">Cybersecurity</option>
+                <option value="Web Development">Web Development</option>
+                <option value="Healthcare">Healthcare</option>
+                <option value="IoT">IoT & Hardware</option>
+                <option value="Cloud">Cloud & DevOps</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Full Width Leaderboard Table -->
+          <div style="overflow-x: auto; width: 100%;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+              <thead>
+                <tr style="background: var(--surface-2); border-bottom: 2px solid var(--border); color: var(--text-2); font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;">
+                  <th style="padding: 12px 14px;">Rank</th>
+                  <th style="padding: 12px 14px;">Student</th>
+                  <th style="padding: 12px 14px;">Department</th>
+                  <th style="padding: 12px 14px;">Year</th>
+                  <th style="padding: 12px 14px;">Participations</th>
+                  <th style="padding: 12px 14px;">Wins</th>
+                  <th style="padding: 12px 14px;">Finalists</th>
+                  <th style="padding: 12px 14px;">Hackathon XP</th>
+                  <th style="padding: 12px 14px;">Innovation Score</th>
+                </tr>
+              </thead>
+              <tbody id="hlTableBody">
+                <!-- Populated via JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PAGE 4: ACHIEVEMENT TIMELINE ── -->
+      <div class="app-page fade-in" id="page-hackathon-timeline">
+        <div style="margin-bottom: 24px;">
+          <h2 style="font-size: 28px; font-weight: 900; color: var(--text); font-family: 'Rajdhani', sans-serif; margin: 0;">
+            Achievement Timeline
+          </h2>
+          <p style="font-size: 13px; color: var(--text-2); margin: 4px 0 0;">
+            Your complete hackathon journey and milestones.
+          </p>
+        </div>
+
+        <div class="card" style="padding: 28px; border-radius: 20px; width: 100%;">
+          <div id="htTimelineContainer" style="position: relative; padding-left: 24px; border-left: 2px solid var(--border); width: 100%;">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PAGE 5: ACHIEVEMENT BADGES ── -->
+      <div class="app-page fade-in" id="page-hackathon-badges">
+        <div style="margin-bottom: 24px;">
+          <h2 style="font-size: 28px; font-weight: 900; color: var(--text); font-family: 'Rajdhani', sans-serif; margin: 0;">
+            Achievement Badges
+          </h2>
+          <p style="font-size: 13px; color: var(--text-2); margin: 4px 0 0;">
+            Badges earned through your hackathon journey.
+          </p>
+        </div>
+
+        <!-- TOP SUMMARY ROW: 3 Stat Cards across full width -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6 w-full">
+          <div class="card" style="padding: 18px 20px; border-radius: 16px; border: 1px solid var(--border);">
+            <div style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Badges Earned</div>
+            <div id="hbBadgesEarnedVal" style="font-size: 26px; font-weight: 900; color: var(--primary); font-family: 'Rajdhani', sans-serif;">0 / 10</div>
+          </div>
+          <div class="card" style="padding: 18px 20px; border-radius: 16px; border: 1px solid var(--border);">
+            <div style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Total XP From Badges</div>
+            <div id="hbBadgesXPVal" style="font-size: 26px; font-weight: 900; color: var(--primary); font-family: 'Rajdhani', sans-serif;">+0 XP</div>
+          </div>
+          <div class="card" style="padding: 18px 20px; border-radius: 16px; border: 1px solid var(--border);">
+            <div style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px;">Next Badge Progress</div>
+            <div id="hbNextBadgeVal" style="font-size: 14px; font-weight: 800; color: var(--text); margin-top: 4px;">Consistent Participant</div>
+          </div>
+        </div>
+
+        <div class="card" style="padding: 24px; border-radius: 20px; width: 100%;">
+          <div id="hbBadgesGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 w-full">
+            <!-- Populated via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PAGE 6: ADD HACKATHON ENTRY (MULTI-STEP FULL PAGE) ── -->
+      <div class="app-page fade-in" id="page-hackathon-add">
+        <!-- Page Header -->
+        <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 24px; flex-wrap: wrap; width: 100%;">
+          <div style="display: flex; align-items: flex-start; gap: 14px;">
+            <div style="width: 5px; height: 38px; border-radius: 4px; background: linear-gradient(180deg, #c084fc 0%, #9333ea 100%); flex-shrink: 0; margin-top: 3px;"></div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #251b3e, #1a102f); border: 1px solid rgba(168, 85, 247, 0.4); display: flex; align-items: center; justify-content: center; color: #c084fc; flex-shrink: 0; box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);">
+                  <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </div>
+                <h2 style="font-size: 28px; font-weight: 900; color: var(--text); font-family: 'Rajdhani', sans-serif; margin: 0; letter-spacing: -0.01em;">
+                  Add Hackathon Entry
+                </h2>
+              </div>
+              <p style="font-size: 14px; color: #a855f7; font-weight: 600; margin: 4px 0 0 0;">
+                Create a verified hackathon portfolio entry to showcase your projects, achievements, and innovation journey.
+              </p>
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <button class="btn-outline" onclick="saveHackathonDraft()" style="padding: 9px 16px; font-size: 12px; font-weight: 700;">Save Draft</button>
+            <button class="btn-primary" onclick="submitHackathonEntry()" style="padding: 9px 18px; font-size: 12px; font-weight: 700;">Submit for Verification</button>
+          </div>
+        </div>
+
+        <!-- Horizontal Step Indicator Card -->
+        <div class="card" style="padding: 20px; border-radius: 20px; margin-bottom: 24px; width: 100%;">
+          <div id="haStepIndicator" style="display: flex; align-items: center; justify-content: space-between; position: relative; flex-wrap: wrap; gap: 12px;">
+            <!-- Rendered dynamically in JS -->
+          </div>
+        </div>
+
+        <!-- 2-Column Responsive Layout Grid (Matching Dashboard) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8 w-full">
+          <!-- Left Column: Step Forms -->
+          <div class="lg:col-span-8 space-y-6">
+            <!-- STEP 1: Hackathon Details -->
+            <div id="haStep1" class="card" style="padding: 28px; border-radius: 20px;">
+              <h3 style="font-size: 17px; font-weight: 800; color: var(--text); margin: 0 0 20px; display: flex; align-items: center; gap: 8px;">
+                <svg width="18" height="18" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                Step 1: Hackathon Details
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Hackathon Name *</label>
+                  <input type="text" id="haName" placeholder="e.g. Google Solution Challenge 2026" oninput="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;" />
+                </div>
+                <div>
+                  <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Organizer *</label>
+                  <input type="text" id="haOrganizer" placeholder="e.g. Google Developer Student Clubs" oninput="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;" />
+                </div>
+                <div>
+                  <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Website URL</label>
+                  <input type="url" id="haWebsite" placeholder="https://gdsc.community.dev" oninput="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;" />
+                </div>
+                <div>
+                  <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Date *</label>
+                  <input type="date" id="haDate" oninput="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;" />
+                </div>
+                <div>
+                  <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Duration</label>
+                  <select id="haDuration" onchange="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;">
+                    <option value="24 Hours">24 Hours</option>
+                    <option value="36 Hours">36 Hours</option>
+                    <option value="48 Hours">48 Hours</option>
+                    <option value="1 Week">1 Week</option>
+                    <option value="1 Month+">1 Month+</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Mode</label>
+                  <select id="haMode" onchange="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;">
+                    <option value="Online">Online</option>
+                    <option value="Offline">Offline</option>
+                    <option value="Hybrid">Hybrid</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Location</label>
+                  <input type="text" id="haLocation" placeholder="e.g. IIT Bombay / Virtual" oninput="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;" />
+                </div>
+                <div>
+                  <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Theme</label>
+                  <input type="text" id="haTheme" placeholder="e.g. UN Sustainable Development Goals" oninput="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;" />
+                </div>
+                <div style="grid-column: 1 / -1;">
+                  <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Participation Level</label>
+                  <select id="haLevel" onchange="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;">
+                    <option value="Campus">Campus / Institute Level</option>
+                    <option value="State">State / Zonal Level</option>
+                    <option value="National">National Level</option>
+                    <option value="International">International Level</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 2: Project Details -->
+            <div id="haStep2" class="card" style="padding: 28px; border-radius: 20px; display: none;">
+              <h3 style="font-size: 17px; font-weight: 800; color: var(--text); margin: 0 0 20px; display: flex; align-items: center; gap: 8px;">
+                <svg width="18" height="18" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                Step 2: Project Details
+              </h3>
+              <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div>
+                  <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Project Name *</label>
+                  <input type="text" id="haProjectName" placeholder="e.g. SmartPay AI Risk Engine" oninput="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;" />
+                </div>
+                <div>
+                  <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Problem Statement</label>
+                  <textarea id="haProblemStatement" rows="2" placeholder="What challenge or real-world problem were you trying to solve?" oninput="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;"></textarea>
+                </div>
+                <div>
+                  <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Project Description</label>
+                  <textarea id="haProjectDescription" rows="3" placeholder="Detailed explanation of your solution, architecture, and workflow..." oninput="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;"></textarea>
+                </div>
+                <div>
+                  <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Innovation / USP</label>
+                  <textarea id="haInnovationUSP" rows="2" placeholder="What makes your prototype unique, novel, or impactful?" oninput="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;"></textarea>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Technology Stack</label>
+                    <input type="text" id="haTechStack" placeholder="e.g. React, Python, PyTorch, MongoDB" oninput="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Project Domain</label>
+                    <select id="haDomain" onchange="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;">
+                      <option value="AI & Machine Learning">AI & Machine Learning</option>
+                      <option value="Web & Full Stack">Web & Full Stack</option>
+                      <option value="Cybersecurity">Cybersecurity</option>
+                      <option value="IoT & Hardware">IoT & Hardware</option>
+                      <option value="Healthcare & MedTech">Healthcare & MedTech</option>
+                      <option value="FinTech & Blockchain">FinTech & Blockchain</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">GitHub Repository</label>
+                    <input type="url" id="haGithubUrl" placeholder="https://github.com/username/project" oninput="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Demo Link</label>
+                    <input type="url" id="haDemoUrl" placeholder="https://my-app.vercel.app" oninput="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Presentation Link</label>
+                    <input type="url" id="haPptUrl" placeholder="https://docs.google.com/presentation/d/..." oninput="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Video Link</label>
+                    <input type="url" id="haVideoUrl" placeholder="https://youtube.com/watch?v=..." oninput="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 3: Team & Skills -->
+            <div id="haStep3" class="card" style="padding: 28px; border-radius: 20px; display: none;">
+              <h3 style="font-size: 17px; font-weight: 800; color: var(--text); margin: 0 0 20px; display: flex; align-items: center; gap: 8px;">
+                <svg width="18" height="18" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Step 3: Team & Skills
+              </h3>
+              <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Team Name</label>
+                    <input type="text" id="haTeamName" placeholder="e.g. Squad Innovation" oninput="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Your Role</label>
+                    <input type="text" id="haYourRole" placeholder="e.g. Full Stack Developer" oninput="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;" />
+                  </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <input type="checkbox" id="haIsLeader" checked onchange="updateDraftState()" style="accent-color: var(--primary); width: 16px; height: 16px;" />
+                  <label for="haIsLeader" style="font-size: 13px; font-weight: 700; color: var(--text);">I was the Team Leader</label>
+                </div>
+
+                <!-- Dynamic Team Members Container -->
+                <div style="background: var(--surface-2); padding: 16px; border-radius: 12px; border: 1px solid var(--border);">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <span style="font-size: 12px; font-weight: 800; color: var(--text); text-transform: uppercase;">Team Members</span>
+                    <button type="button" onclick="addDraftTeamMember()" style="background: var(--primary-light); color: var(--primary); border: none; padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; cursor: pointer;">+ Add Member</button>
+                  </div>
+                  <div id="haTeamMembersList" style="display: flex; flex-direction: column; gap: 8px;">
+                    <!-- Dynamically populated in JS -->
+                  </div>
+                </div>
+
+                <div>
+                  <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase; margin-bottom: 8px; display: block;">Primary Skills Utilized</label>
+                  <div id="haSkillChipsContainer" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                    <!-- Rendered in JS -->
+                  </div>
+                </div>
+
+                <div>
+                  <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Soft Skills & Collaboration</label>
+                  <input type="text" id="haSoftSkills" placeholder="e.g. Leadership, Rapid Prototyping, Pitching" oninput="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;" />
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 4: Documents & Verification -->
+            <div id="haStep4" class="card" style="padding: 28px; border-radius: 20px; display: none;">
+              <h3 style="font-size: 17px; font-weight: 800; color: var(--text); margin: 0 0 20px; display: flex; align-items: center; gap: 8px;">
+                <svg width="18" height="18" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                Step 4: Documents & Verification
+              </h3>
+              <div style="display: flex; flex-direction: column; gap: 16px;">
+                <!-- Drag & Drop Upload Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <div style="padding: 16px; border: 1.5px dashed var(--primary); border-radius: 12px; text-align: center; background: var(--primary-light); cursor: pointer;" onclick="document.getElementById('haCertFile').click()">
+                    <svg width="24" height="24" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24" style="margin: 0 auto 6px;"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+                    <div style="font-size: 12px; font-weight: 800; color: var(--primary);">Certificate Upload</div>
+                    <div style="font-size: 10px; color: var(--text-2); margin-top: 2px;">PDF, JPG (Max 5MB)</div>
+                    <input type="file" id="haCertFile" accept=".pdf,.jpg,.png" style="display: none;" onchange="handleCertFileSelect(this)" />
+                    <div id="haCertFileName" style="font-size: 10px; font-weight: 700; color: #16a34a; margin-top: 4px;"></div>
+                  </div>
+
+                  <div style="padding: 16px; border: 1.5px dashed var(--border); border-radius: 12px; text-align: center; background: var(--surface-2); cursor: pointer;" onclick="showToast('Screenshot uploaded!', 'info')">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin: 0 auto 6px;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    <div style="font-size: 12px; font-weight: 800; color: var(--text);">Screenshots</div>
+                    <div style="font-size: 10px; color: var(--text-2); margin-top: 2px;">Up to 5 images</div>
+                  </div>
+
+                  <div style="padding: 16px; border: 1.5px dashed var(--border); border-radius: 12px; text-align: center; background: var(--surface-2); cursor: pointer;" onclick="showToast('Project deck attached!', 'info')">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="margin: 0 auto 6px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/></svg>
+                    <div style="font-size: 12px; font-weight: 800; color: var(--text);">Project Deck</div>
+                    <div style="font-size: 10px; color: var(--text-2); margin-top: 2px;">PPTX, PDF</div>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Official Result Link</label>
+                    <input type="url" id="haResultLink" placeholder="Link to winner list or Devpost" oninput="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Certificate Number</label>
+                    <input type="text" id="haCertNumber" placeholder="e.g. CERT-12345-ABCD" oninput="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Organizer Contact Email</label>
+                    <input type="email" id="haOrganizerEmail" placeholder="verify@hackathon.com" oninput="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;" />
+                  </div>
+                  <div>
+                    <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Mentor / Judge Name</label>
+                    <input type="text" id="haMentorName" placeholder="Who reviewed your prototype?" oninput="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;" />
+                  </div>
+                </div>
+
+                <div>
+                  <label style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase;">Verification Notes</label>
+                  <textarea id="haVerificationNotes" rows="2" placeholder="Additional details or links to speed up college verification..." oninput="updateDraftState()" style="width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; font-size: 13px; background: var(--surface); color: var(--text); margin-top: 6px;"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 5: Review & Submit -->
+            <div id="haStep5" class="card" style="padding: 28px; border-radius: 20px; display: none;">
+              <h3 style="font-size: 17px; font-weight: 800; color: var(--text); margin: 0 0 20px; display: flex; align-items: center; gap: 8px;">
+                <svg width="18" height="18" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                Step 5: Review & Submit
+              </h3>
+              
+              <!-- Collapsible Review Accordions -->
+              <div id="haReviewAccordion" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+                <!-- Dynamically rendered in JS -->
+              </div>
+            </div>
+
+            <!-- Bottom Multi-Step Navigation Controls -->
+            <div class="card" style="padding: 16px 20px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center;">
+              <button type="button" id="haBtnPrev" class="btn-outline" onclick="goToAddHackathonStep(state.haCurrentStep - 1)" style="padding: 9px 18px; font-size: 12px; font-weight: 700; display: none;">← Previous</button>
+              <div style="display: flex; gap: 10px; margin-left: auto;">
+                <button type="button" class="btn-outline" onclick="saveHackathonDraft()" style="padding: 9px 16px; font-size: 12px; font-weight: 700;">Save Draft</button>
+                <button type="button" id="haBtnNext" class="btn-primary" onclick="handleAddStepNext()" style="padding: 9px 20px; font-size: 12px; font-weight: 700;">Next →</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Entry Summary & Portfolio Card Preview -->
+          <div class="lg:col-span-4 space-y-6">
+            <!-- Entry Summary Card -->
+            <div class="card" style="padding: 24px; border-radius: 20px;">
+              <h4 style="margin: 0 0 14px; font-size: 15px; font-weight: 800; color: var(--text);">Entry Summary</h4>
+              
+              <div style="margin-bottom: 16px;">
+                <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; color: var(--text-2); margin-bottom: 6px;">
+                  <span>PROJECT COMPLETION</span>
+                  <span id="haCompletionVal" style="color: var(--primary);">0%</span>
+                </div>
+                <div style="height: 6px; background: var(--surface-2); border-radius: 99px; overflow: hidden; border: 1px solid var(--border);">
+                  <div id="haProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #c084fc, #9333ea); border-radius: 99px; transition: width 0.3s ease;"></div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3 mb-16" style="margin-bottom: 16px;">
+                <div style="padding: 12px; background: var(--primary-light); border-radius: 12px; text-align: center;">
+                  <div style="font-size: 10px; font-weight: 800; color: var(--primary); text-transform: uppercase;">EST. XP</div>
+                  <div id="haEstXPVal" style="font-size: 20px; font-weight: 900; color: var(--primary); font-family: 'Rajdhani', sans-serif;">+100 XP</div>
+                </div>
+                <div style="padding: 12px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; text-align: center;">
+                  <div style="font-size: 10px; font-weight: 800; color: var(--text-3); text-transform: uppercase;">STATUS</div>
+                  <div style="font-size: 12px; font-weight: 800; color: #d97706; margin-top: 2px;">Drafting</div>
+                </div>
+              </div>
+
+              <div style="border-top: 1px solid var(--border); padding-top: 14px;">
+                <div style="font-size: 11px; font-weight: 800; color: var(--text-2); text-transform: uppercase; margin-bottom: 10px;">COMPLETION CHECKLIST</div>
+                <div id="haChecklistContainer" style="display: flex; flex-direction: column; gap: 8px; font-size: 12px;">
+                  <!-- Rendered dynamically -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Portfolio Card Preview -->
+            <div class="card" style="padding: 24px; border-radius: 20px;">
+              <div style="font-size: 11px; font-weight: 800; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">PORTFOLIO PREVIEW</div>
+              <div id="haPortfolioCardPreview" style="padding: 16px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 16px;">
+                <!-- Rendered dynamically in JS -->
+              </div>
+            </div>
+
+            <!-- Pro Tip Box -->
+            <div style="padding: 16px; background: rgba(147, 51, 234, 0.08); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 16px; display: flex; gap: 10px; align-items: flex-start;">
+              <svg width="18" height="18" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink: 0; margin-top: 2px;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              <div style="font-size: 12px; color: var(--text); line-height: 1.5;">
+                <strong style="color: var(--primary);">Pro Tip:</strong> Detailed problem statements and Innovation USPs increase your verification speed by 40%.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Badge Detail Modal -->
+      <div class="modal-overlay" id="badgeModalOverlay" style="z-index: 1250; display: none;" onclick="closeBadgeModal(event)">
+        <div class="modal-box" style="max-width: 480px; width: 92%; padding: 24px; border-radius: 20px;" onclick="event.stopPropagation()">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div id="badgeModalIconBox" style="width: 48px; height: 48px; border-radius: 12px; background: rgba(147, 51, 234, 0.12); color: var(--primary); display: flex; align-items: center; justify-content: center;">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+              </div>
+              <div>
+                <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: var(--text);" id="badgeModalTitle">Badge Details</h3>
+                <span id="badgeModalCategory" style="font-size: 11px; font-weight: 700; color: var(--primary); text-transform: uppercase;">CATEGORY</span>
+              </div>
+            </div>
+            <button onclick="closeBadgeModal()" style="background: none; border: none; font-size: 18px; color: var(--text-2); cursor: pointer;">✕</button>
+          </div>
+          
+          <div style="background: var(--surface-2); padding: 14px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 16px;">
+            <div style="font-size: 12px; color: var(--text-2); line-height: 1.5; margin-bottom: 10px;" id="badgeModalDesc">Description</div>
+            <div style="font-size: 11px; font-weight: 700; color: var(--text); border-top: 1px solid var(--border); padding-top: 8px;" id="badgeModalRequirement">Requirement: ...</div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px;">
+            <div style="padding: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; text-align: center;">
+              <div style="font-size: 10px; font-weight: 700; color: var(--text-3); text-transform: uppercase;">Status</div>
+              <div style="font-size: 12px; font-weight: 800; color: var(--text); margin-top: 2px;" id="badgeModalDate">Unlocked</div>
+            </div>
+            <div style="padding: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; text-align: center;">
+              <div style="font-size: 10px; font-weight: 700; color: var(--text-3); text-transform: uppercase;">XP Awarded</div>
+              <div style="font-size: 12px; font-weight: 800; color: var(--primary); margin-top: 2px;" id="badgeModalXP">+100 XP</div>
+            </div>
+          </div>
+
+          <button class="btn-primary" style="width: 100%; padding: 10px;" onclick="closeBadgeModal()">Close</button>
+        </div>
+      </div>
+
+      <!-- Add/Edit Hackathon Entry Modal -->
+      <div class="modal-overlay" id="hackathonModalOverlay" style="z-index: 1200;">
+        <div class="modal-box" style="max-width: 680px; width: 92%; max-height: 90vh; overflow-y: auto; padding: 24px; border-radius: 20px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border);">
+            <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: var(--primary);" id="hackathonModalTitle">Add Hackathon Entry</h3>
+            <button onclick="closeHackathonModal()" style="background: none; border: none; font-size: 18px; color: var(--text-2); cursor: pointer;">✕</button>
+          </div>
+
+          <form id="hackathonForm" onsubmit="handleSaveHackathon(event)">
+            <input type="hidden" id="hEditId" />
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+              <div>
+                <label class="form-label" style="font-size: 11px; font-weight: 700; color: var(--text); display: block; margin-bottom: 4px;">Hackathon Name *</label>
+                <input type="text" id="hName" class="form-input" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);" placeholder="e.g. Smart India Hackathon 2026" required />
+              </div>
+              <div>
+                <label class="form-label" style="font-size: 11px; font-weight: 700; color: var(--text); display: block; margin-bottom: 4px;">Organizer *</label>
+                <input type="text" id="hOrganizer" class="form-input" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);" placeholder="e.g. MoE Innovation Cell / IIT Bombay" required />
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+              <div>
+                <label class="form-label" style="font-size: 11px; font-weight: 700; color: var(--text); display: block; margin-bottom: 4px;">Date *</label>
+                <input type="date" id="hDate" class="form-input" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);" required />
+              </div>
+              <div>
+                <label class="form-label" style="font-size: 11px; font-weight: 700; color: var(--text); display: block; margin-bottom: 4px;">Mode *</label>
+                <select id="hMode" class="form-input" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface);" required>
+                  <option value="Offline">Offline / On-Campus</option>
+                  <option value="Online">Online / Virtual</option>
+                </select>
+              </div>
+              <div>
+                <label class="form-label" style="font-size: 11px; font-weight: 700; color: var(--text); display: block; margin-bottom: 4px;">Position Achieved *</label>
+                <select id="hPosition" class="form-input" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface);" required>
+                  <option value="Participant">Participant (20 XP)</option>
+                  <option value="College Qualified">College Qualified (40 XP)</option>
+                  <option value="State Qualified">State Qualified (70 XP)</option>
+                  <option value="National Qualified">National Qualified (120 XP)</option>
+                  <option value="Top 100">Top 100 (180 XP)</option>
+                  <option value="Top 50">Top 50 (220 XP)</option>
+                  <option value="Top 20">Top 20 (250 XP)</option>
+                  <option value="Finalist">Finalist (300 XP)</option>
+                  <option value="Runner Up">Runner Up (400 XP)</option>
+                  <option value="Winner">Winner (500 XP)</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+              <div>
+                <label class="form-label" style="font-size: 11px; font-weight: 700; color: var(--text); display: block; margin-bottom: 4px;">Theme / Track</label>
+                <input type="text" id="hTheme" class="form-input" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);" placeholder="e.g. AI & Healthcare, FinTech, Green Tech" />
+              </div>
+              <div>
+                <label class="form-label" style="font-size: 11px; font-weight: 700; color: var(--text); display: block; margin-bottom: 4px;">Team Name</label>
+                <input type="text" id="hTeamName" class="form-input" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);" placeholder="e.g. CodeCrafters" />
+              </div>
+            </div>
+
+            <div style="margin-bottom: 14px;">
+              <label class="form-label" style="font-size: 11px; font-weight: 700; color: var(--text); display: block; margin-bottom: 4px;">Team Members (comma separated)</label>
+              <input type="text" id="hTeamMembers" class="form-input" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);" placeholder="e.g. Priya Sharma, Rohan Mehta, Sneha Patil" />
+            </div>
+
+            <div style="margin-bottom: 14px;">
+              <label class="form-label" style="font-size: 11px; font-weight: 700; color: var(--text); display: block; margin-bottom: 4px;">Project Name *</label>
+              <input type="text" id="hProjectName" class="form-input" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);" placeholder="e.g. SmartPay AI Risk Engine" required />
+            </div>
+
+            <div style="margin-bottom: 14px;">
+              <label class="form-label" style="font-size: 11px; font-weight: 700; color: var(--text); display: block; margin-bottom: 4px;">Problem Statement</label>
+              <textarea id="hProblemStatement" rows="2" class="form-input" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); font-family: inherit; font-size: 12px; resize: vertical;" placeholder="Describe the problem your project solved during the hackathon..."></textarea>
+            </div>
+
+            <div style="margin-bottom: 14px;">
+              <label class="form-label" style="font-size: 11px; font-weight: 700; color: var(--text); display: block; margin-bottom: 4px;">Technologies Used (comma separated) *</label>
+              <input type="text" id="hTechnologies" class="form-input" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);" placeholder="e.g. Python, PyTorch, Node.js, MongoDB, React, REST APIs" required />
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+              <div>
+                <label class="form-label" style="font-size: 11px; font-weight: 700; color: var(--text); display: block; margin-bottom: 4px;">GitHub Repository Link (+20 XP)</label>
+                <input type="url" id="hGithubUrl" class="form-input" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);" placeholder="https://github.com/..." />
+              </div>
+              <div>
+                <label class="form-label" style="font-size: 11px; font-weight: 700; color: var(--text); display: block; margin-bottom: 4px;">Live Working Prototype Link (+30 XP)</label>
+                <input type="url" id="hDemoUrl" class="form-input" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);" placeholder="https://..." />
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+              <div>
+                <label class="form-label" style="font-size: 11px; font-weight: 700; color: var(--text); display: block; margin-bottom: 4px;">Demo Video Link (+20 XP)</label>
+                <input type="url" id="hVideoUrl" class="form-input" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);" placeholder="https://youtube.com/..." />
+              </div>
+              <div>
+                <label class="form-label" style="font-size: 11px; font-weight: 700; color: var(--text); display: block; margin-bottom: 4px;">Presentation Upload Link (+15 XP)</label>
+                <input type="url" id="hPptUrl" class="form-input" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);" placeholder="https://slideshare.net/..." />
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 14px; margin-bottom: 18px; align-items: center;">
+              <div>
+                <label class="form-label" style="font-size: 11px; font-weight: 700; color: var(--text); display: block; margin-bottom: 4px;">Certificate Image/PDF URL</label>
+                <input type="text" id="hCertificateUrl" class="form-input" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);" placeholder="https://..." />
+              </div>
+              <div style="padding-top: 16px;">
+                <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--text); cursor: pointer;">
+                  <input type="checkbox" id="hIsOpenSource" style="width: 16px; height: 16px; accent-color: var(--primary);" />
+                  <span>Open Source Project (+25 XP)</span>
+                </label>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border);">
+              <button type="button" class="btn-outline" onclick="closeHackathonModal()">Cancel</button>
+              <button type="submit" class="btn-primary" style="padding: 10px 24px; font-weight: 800; background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; border: none;">
+                Save Entry & Claim XP ⚡
+              </button>
+            </div>
+          </form>
         </div>
       </div>
 

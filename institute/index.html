@@ -172,6 +172,10 @@
             <div class="nav-icon-circle"><i class="ph ph-chart-line-up"></i></div>
             <span class="nav-text">Startup Analytics</span>
           </div>
+          <div class="nav-item" data-page="hackathon-analytics" onclick="navigateTo('hackathon-analytics')">
+            <div class="nav-icon-circle"><i class="ph ph-trophy"></i></div>
+            <span class="nav-text">Hackathon Analytics</span>
+          </div>
         </div>
 
         <!-- SECTION BOX 5: SYSTEM -->
@@ -673,7 +677,117 @@
         </div>
       </form>
     </div>
-  </div>
+        <!-- ============================================================
+           HACKATHON ANALYTICS & CERTIFICATE VERIFICATION HQ
+           ============================================================ -->
+        <section id="page-hackathon-analytics" class="page-content" style="display: none;">
+          
+          <!-- Hero Banner -->
+          <div style="background: linear-gradient(135deg, #1E193B 0%, #31295A 50%, #5B2D90 100%); border-radius: 24px; padding: 28px 32px; color: #fff; margin-bottom: 28px; position: relative; overflow: hidden; box-shadow: 0 10px 30px rgba(91, 45, 144, 0.25); display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; background: rgba(255,255,255,0.15); padding: 4px 12px; border-radius: 99px;">T&P Hackathon Intelligence & Verification</span>
+              <h1 style="font-family: 'Rajdhani', sans-serif; font-size: 30px; font-weight: 800; margin: 10px 0 4px; color: #ffffff;">Hackathon Analytics & Certificate Verification HQ</h1>
+              <p style="font-size: 13px; opacity: 0.85; margin: 0; max-width: 650px;">Track student hackathon participation, verify uploaded achievement certificates, and identify high-performing students for placement drives.</p>
+            </div>
+          </div>
+
+          <!-- Overview Cards -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 28px;">
+            <div style="background: #FFFFFF; border: 1.5px solid var(--border); border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+              <div style="font-size: 11px; font-weight: 800; color: var(--text-3); text-transform: uppercase;">Students Participated</div>
+              <div id="haStatTotalStudents" style="font-family: 'Rajdhani', sans-serif; font-size: 32px; font-weight: 900; color: #5B2D90; margin: 4px 0 2px;">48</div>
+              <div style="font-size: 11px; color: var(--success); font-weight: 700;">↑ 68.4% Batch Participation</div>
+            </div>
+
+            <div style="background: #FFFFFF; border: 1.5px solid var(--border); border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+              <div style="font-size: 11px; font-weight: 800; color: var(--text-3); text-transform: uppercase;">Total Hackathon Entries</div>
+              <div id="haStatTotalEntries" style="font-family: 'Rajdhani', sans-serif; font-size: 32px; font-weight: 900; color: #0284c7; margin: 4px 0 2px;">112</div>
+              <div style="font-size: 11px; color: var(--text-2); font-weight: 600;">Average 2.3 per student</div>
+            </div>
+
+            <div style="background: #FFFFFF; border: 1.5px solid var(--border); border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+              <div style="font-size: 11px; font-weight: 800; color: var(--text-3); text-transform: uppercase;">Winners & Finalists</div>
+              <div id="haStatTotalWinners" style="font-family: 'Rajdhani', sans-serif; font-size: 32px; font-weight: 900; color: #d97706; margin: 4px 0 2px;">14</div>
+              <div style="font-size: 11px; color: #d97706; font-weight: 700;">🥇 4 Winners · 10 Finalists</div>
+            </div>
+
+            <div style="background: #FFFFFF; border: 1.5px solid var(--border); border-radius: 16px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+              <div style="font-size: 11px; font-weight: 800; color: var(--text-3); text-transform: uppercase;">Pending Verification</div>
+              <div id="haStatPendingVerifications" style="font-family: 'Rajdhani', sans-serif; font-size: 32px; font-weight: 900; color: #ef4444; margin: 4px 0 2px;">1</div>
+              <div style="font-size: 11px; color: #ef4444; font-weight: 700;">⏳ Certificates to Review</div>
+            </div>
+          </div>
+
+          <!-- Section 1: Certificate Verification Queue Panel -->
+          <div style="background: #FFFFFF; border: 1.5px solid var(--border); border-radius: 20px; padding: 24px; margin-bottom: 28px; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+              <div>
+                <h3 style="font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 800; color: #5B2D90; margin: 0 0 4px;">Certificate Verification Queue</h3>
+                <p style="font-size: 12px; color: var(--text-2); margin: 0;">Teachers & Admin can review uploaded hackathon certificates. Only verified entries contribute full weight to placement rankings.</p>
+              </div>
+            </div>
+
+            <div style="overflow-x: auto;">
+              <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                <thead>
+                  <tr style="background: #F8F7FC; border-bottom: 2px solid var(--border); color: var(--text-2); font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;">
+                    <th style="padding: 12px 14px;">Student</th>
+                    <th style="padding: 12px 14px;">Hackathon Name</th>
+                    <th style="padding: 12px 14px;">Position</th>
+                    <th style="padding: 12px 14px;">Date & Mode</th>
+                    <th style="padding: 12px 14px;">Certificate</th>
+                    <th style="padding: 12px 14px;">Status</th>
+                    <th style="padding: 12px 14px; text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="haVerificationTableBody">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Section 2: Top Ranked & Most Active Students -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px;">
+            
+            <div style="background: #FFFFFF; border: 1.5px solid var(--border); border-radius: 20px; padding: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
+              <h3 style="font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 800; color: #5B2D90; margin: 0 0 16px;">🏆 Top Ranked Hackathon Students</h3>
+              <div id="haTopRankedList" style="display: flex; flex-direction: column; gap: 12px;">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+
+            <div style="background: #FFFFFF; border: 1.5px solid var(--border); border-radius: 20px; padding: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
+              <h3 style="font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 800; color: #5B2D90; margin: 0 0 16px;">🔥 Most Active Hackathon Competitors</h3>
+              <div id="haMostActiveList" style="display: flex; flex-direction: column; gap: 12px;">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Section 3: Technology Trends & Students Needing Encouragement -->
+          <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 24px;">
+            
+            <div style="background: #FFFFFF; border: 1.5px solid var(--border); border-radius: 20px; padding: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
+              <h3 style="font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 800; color: #5B2D90; margin: 0 0 16px;">🌐 Technology & Domain Trends</h3>
+              <div id="haTechTrendsList" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+
+            <div style="background: #FFFFFF; border: 1.5px solid var(--border); border-radius: 20px; padding: 24px; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
+              <h3 style="font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 800; color: #d97706; margin: 0 0 16px;">⚡ Students Needing Encouragement</h3>
+              <div id="haEncouragementList" style="display: flex; flex-direction: column; gap: 12px;">
+                <!-- Populated via JS -->
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+      </div><!-- end page container -->
 
   <!-- Student Batch Import Modal -->
   <div class="modal-overlay" id="importStudentModal" style="display: none; position: fixed; inset: 0; z-index: 2000; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); align-items: center; justify-content: center;" onclick="closeImportStudentModal(event)">

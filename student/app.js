@@ -400,7 +400,7 @@ function navigateTo(page) {
     'learning-hub': 'Learning Hub', 'company-prep': 'Company Preparation',
     'company-papers': 'Company Papers', 'mock-tests': 'Mock Tests',
     'ai-interview': 'AI Interview',
-    'hackathon-dashboard': 'Hackathon Dashboard', 'hackathon-my': 'My Hackathons', 'hackathon-leaderboard': 'Campus Leaderboard', 'hackathon-timeline': 'Achievement Timeline', 'hackathon-badges': 'Achievement Badges', 'hackathon-add': 'Add Hackathon Entry',
+    'hackathon-dashboard': 'Hackathon Dashboard', 'hackathon-leaderboard': 'Campus Leaderboard & Badges', 'hackathon-timeline': 'Achievement Timeline', 'hackathon-add': 'Verify Hackathon Participation',
     'all-startups': 'All Startups', 'my-startup': 'Pitch My Startup', 'mentors': 'Startup Mentors',
     'profile': 'Profile', 'settings': 'Settings',
     'college-dashboard': 'T&P Dashboard', 'college-students': 'Student Monitoring',
@@ -419,10 +419,8 @@ function navigateTo(page) {
   if (page === 'skill-report') initSkillReport();
   if (page === 'roadmap') initRoadmap();
   if (page === 'hackathon-dashboard') initHackathonDashboard();
-  if (page === 'hackathon-my') initMyHackathonsPage();
   if (page === 'hackathon-leaderboard') initLeaderboardPage();
   if (page === 'hackathon-timeline') initTimelinePage();
-  if (page === 'hackathon-badges') initBadgesPage();
   if (page === 'hackathon-add') initAddHackathonPage();
   if (page === 'hackathon-ai') initAIPage();
   if (page === 'all-startups') renderAllStartupsList();
@@ -4341,10 +4339,6 @@ function showSkillGapResults(report) {
   }
 }
 
-/* ============================================================
-   HACKATHON MODULE — 6 PAGE SPA LOGIC
-   ============================================================ */
-
 async function initProfilePage() {
   const studentId = state.student.id || 'GHRCE2024047';
   const student = await window.db.getStudentById(studentId) || state.student;
@@ -4407,6 +4401,9 @@ async function initHackathonDashboard() {
     const finalistsEl = document.getElementById('hdFinalistsVal');
     if (finalistsEl) finalistsEl.textContent = `${finalistsCount}`;
 
+    // Render My Hackathons Cards Grid (integrated directly into Dashboard)
+    renderMyHackathonsPage();
+
     // Render Recent Activity List
     const recentActivityEl = document.getElementById('hdRecentActivityList');
     if (recentActivityEl) {
@@ -4436,48 +4433,6 @@ async function initHackathonDashboard() {
       }
     }
 
-    // Render Recommended List
-    const recEl = document.getElementById('hdRecommendedList');
-    if (recEl) {
-      recEl.innerHTML = `
-        <div style="padding: 14px; background: var(--surface-2); border-radius: 12px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
-          <div>
-            <div style="font-weight: 700; font-size: 14px; color: var(--text);">Niti Aayog National AI Grand Challenge 2026</div>
-            <div style="font-size: 11px; color: var(--text-2);">Prize Pool: ₹10 Lakhs • 96% Match with Python & PyTorch</div>
-          </div>
-          <button class="btn-outline" style="padding: 6px 12px; font-size: 11px;" onclick="showToast('Hackathon details: Healthcare & Agriculture track open for entries.', 'info')">View Details</button>
-        </div>
-        <div style="padding: 14px; background: var(--surface-2); border-radius: 12px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
-          <div>
-            <div style="font-weight: 700; font-size: 14px; color: var(--text);">Smart India Hackathon (SIH) 2026</div>
-            <div style="font-size: 11px; color: var(--text-2);">Hardware & Software Edition • 92% Skill Match</div>
-          </div>
-          <button class="btn-outline" style="padding: 6px 12px; font-size: 11px;" onclick="showToast('Hackathon details: Campus round registrations closing soon.', 'info')">View Details</button>
-        </div>
-      `;
-    }
-
-    // Render Upcoming Deadlines List
-    const upcomingEl = document.getElementById('hdUpcomingList');
-    if (upcomingEl) {
-      upcomingEl.innerHTML = `
-        <div style="padding: 12px; background: var(--surface-2); border-radius: 10px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
-          <div>
-            <div style="font-weight: 700; font-size: 12px; color: var(--text);">FinSpark '26 Final Demo</div>
-            <div style="font-size: 10px; color: var(--text-2);">Feb 28, 2026</div>
-          </div>
-          <span style="font-size: 10px; font-weight: 800; color: var(--primary); background: var(--primary-light); padding: 2px 6px; border-radius: 4px;">Upcoming</span>
-        </div>
-        <div style="padding: 12px; background: var(--surface-2); border-radius: 10px; border: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
-          <div>
-            <div style="font-weight: 700; font-size: 12px; color: var(--text);">SIH Campus Screening</div>
-            <div style="font-size: 10px; color: var(--text-2);">Mar 15, 2026</div>
-          </div>
-          <span style="font-size: 10px; font-weight: 800; color: var(--text-2); background: var(--border-light); padding: 2px 6px; border-radius: 4px;">Upcoming</span>
-        </div>
-      `;
-    }
-
     // Render Latest Badges List
     const latestBadgesEl = document.getElementById('hdLatestBadgesList');
     if (latestBadgesEl) {
@@ -4495,7 +4450,7 @@ async function initHackathonDashboard() {
   }
 }
 
-/* 2. MY HACKATHONS PAGE */
+/* 2. MY HACKATHONS (INTEGRATED DASHBOARD PORTFOLIO CARDS) */
 async function initMyHackathonsPage() {
   renderMyHackathonsPage();
 }
@@ -4551,11 +4506,11 @@ async function renderMyHackathonsPage() {
     grid.innerHTML = `
       <div class="card" style="padding: 60px 24px; text-align: center; border-radius: 20px; grid-column: 1 / -1; width: 100%; border: 1px dashed var(--border);">
         <div style="width: 56px; height: 56px; border-radius: 16px; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
-          <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/><path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/></svg>
+          <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
         </div>
-        <h3 style="font-size: 18px; font-weight: 800; color: var(--text); margin: 0 0 6px;">No hackathons added yet.</h3>
-        <p style="font-size: 13px; color: var(--text-2); max-width: 440px; margin: 0 auto 20px; line-height: 1.5;">Start building your hackathon portfolio by adding your first participation.</p>
-        <button class="btn-primary" onclick="openAddHackathonModal()" style="padding: 10px 20px; font-size: 13px; font-weight: 700;">+ Add First Hackathon</button>
+        <h3 style="font-size: 18px; font-weight: 800; color: var(--text); margin: 0 0 6px;">No hackathon participations verified yet.</h3>
+        <p style="font-size: 13px; color: var(--text-2); max-width: 440px; margin: 0 auto 20px; line-height: 1.5;">Start building your verified hackathon portfolio by submitting your first participation proof.</p>
+        <button class="btn-primary" onclick="navigateTo('hackathon-add')" style="padding: 10px 20px; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">✔ Verify First Participation</button>
       </div>
     `;
     return;
@@ -4573,7 +4528,7 @@ async function renderMyHackathonsPage() {
               ${h.position}
             </span>
             <div style="display: flex; gap: 6px; align-items: center;">
-              ${h.verified ? '<span style="background: rgba(34, 197, 94, 0.15); color: #16a34a; border: 1px solid rgba(34, 197, 94, 0.3); font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 99px;">Verified</span>' : '<span style="background: rgba(245, 158, 11, 0.15); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.3); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px;">Pending Verification</span>'}
+              ${h.verified ? '<span style="background: rgba(34, 197, 94, 0.15); color: #16a34a; border: 1px solid rgba(34, 197, 94, 0.3); font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 99px;">✔ Verified</span>' : '<span style="background: rgba(245, 158, 11, 0.15); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.3); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px;">⏳ Pending Verification</span>'}
               <span style="font-size: 12px; font-weight: 800; color: var(--primary); background: var(--primary-light); padding: 2px 8px; border-radius: 8px;">+${xp} XP</span>
             </div>
           </div>
@@ -4598,12 +4553,12 @@ async function renderMyHackathonsPage() {
           <div style="display: flex; gap: 6px; flex-wrap: wrap;">
             ${h.githubUrl ? `<a href="${h.githubUrl}" target="_blank" title="GitHub Repo" style="color: var(--text); font-size: 11px; font-weight: 700; text-decoration: none; padding: 4px 8px; background: var(--surface-2); border-radius: 6px; border: 1px solid var(--border);">Repository</a>` : ''}
             ${h.demoUrl ? `<a href="${h.demoUrl}" target="_blank" title="Working Prototype" style="color: var(--primary); font-size: 11px; font-weight: 700; text-decoration: none; padding: 4px 8px; background: var(--primary-light); border-radius: 6px;">Demo</a>` : ''}
-            ${h.certificateUrl ? `<a href="${h.certificateUrl}" target="_blank" title="Certificate" style="color: #16a34a; font-size: 11px; font-weight: 700; text-decoration: none; padding: 4px 8px; background: rgba(34, 197, 94, 0.1); border-radius: 6px;">Certificate</a>` : ''}
+            ${h.certificateUrl ? `<a href="${h.certificateUrl}" target="_blank" title="Certificate" style="color: #16a34a; font-size: 11px; font-weight: 700; text-decoration: none; padding: 4px 8px; background: rgba(34, 197, 94, 0.1); border-radius: 6px;">Proof Doc</a>` : ''}
           </div>
 
           <div style="display: flex; gap: 6px;">
             <button onclick="viewHackathonEntry('${h.id}')" style="background: none; border: 1px solid var(--border); padding: 4px 8px; border-radius: 6px; font-size: 11px; color: var(--text); cursor: pointer;">View</button>
-            <button onclick="openAddHackathonModal('${h.id}')" style="background: none; border: 1px solid var(--border); padding: 4px 8px; border-radius: 6px; font-size: 11px; color: var(--text-2); cursor: pointer;">Edit</button>
+            <button onclick="openAddHackathonModal('${h.id}')" style="background: none; border: 1px solid var(--border); padding: 4px 8px; border-radius: 6px; font-size: 11px; color: var(--text-2); cursor: pointer;">Verify Info</button>
             <button onclick="deleteHackathonEntry('${h.id}')" style="background: none; border: 1px solid var(--border); padding: 4px 8px; border-radius: 6px; font-size: 11px; color: var(--error); cursor: pointer;">Delete</button>
           </div>
         </div>
@@ -4618,16 +4573,18 @@ function viewHackathonEntry(id) {
   if (!h) return;
 
   const xp = window.db.calculateHackathonXP(h);
-  showToast(`Viewing details for ${h.name}: ${h.projectName} (+${xp} XP)`, 'info');
+  showToast(`Viewing verified details for ${h.name}: ${h.projectName} (+${xp} XP)`, 'info');
 }
 
-/* 3. CAMPUS LEADERBOARD PAGE */
+/* 3. CAMPUS LEADERBOARD & BADGES PAGE (MERGED & VIBRANT) */
 async function initLeaderboardPage() {
   renderLeaderboardPage();
+  initBadgesPage();
 }
 
 async function renderLeaderboardPage() {
   const tbody = document.getElementById('hlTableBody');
+  const podiumContainer = document.getElementById('hlPodiumContainer');
   if (!tbody) return;
 
   const students = await window.db.getStudents();
@@ -4655,6 +4612,57 @@ async function renderLeaderboardPage() {
   });
 
   studentStats.sort((a, b) => b.xp - a.xp);
+
+  // Render Top 3 Champions Podium Highlights
+  if (podiumContainer && studentStats.length >= 3) {
+    const top1 = studentStats[0];
+    const top2 = studentStats[1];
+    const top3 = studentStats[2];
+
+    podiumContainer.innerHTML = `
+      <!-- Rank 2 Podium -->
+      <div class="card" style="padding: 24px; border-radius: 20px; border: 2px solid #94a3b8; background: linear-gradient(180deg, var(--surface) 0%, rgba(148, 163, 184, 0.08) 100%); text-align: center; position: relative; box-shadow: 0 8px 24px rgba(148, 163, 184, 0.15);">
+        <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #94a3b8; color: white; padding: 2px 14px; border-radius: 99px; font-size: 11px; font-weight: 900; letter-spacing: 0.05em; box-shadow: 0 2px 8px rgba(148, 163, 184, 0.4);">
+          🥈 RANK 2
+        </div>
+        <div style="font-size: 40px; margin: 8px 0 4px;">🥈</div>
+        <div style="font-size: 18px; font-weight: 900; color: var(--text); font-family: 'Rajdhani', sans-serif;">${top2.name}</div>
+        <div style="font-size: 11px; color: var(--text-2); font-weight: 600; margin-top: 2px;">${top2.dept} • ${top2.year || '3rd Year'}</div>
+        <div style="margin-top: 12px; display: flex; justify-content: center; gap: 8px; align-items: center;">
+          <span style="font-size: 18px; font-weight: 900; color: #3b82f6; font-family: 'Rajdhani', sans-serif;">${top2.xp} XP</span>
+          <span style="font-size: 11px; background: rgba(59, 130, 246, 0.12); color: #3b82f6; font-weight: 800; padding: 2px 8px; border-radius: 6px;">⚡ ${top2.wins} Wins</span>
+        </div>
+      </div>
+
+      <!-- Rank 1 Grand Champion Podium -->
+      <div class="card" style="padding: 28px 24px; border-radius: 22px; border: 2px solid #f59e0b; background: linear-gradient(180deg, var(--surface) 0%, rgba(245, 158, 11, 0.15) 100%); text-align: center; position: relative; box-shadow: 0 12px 32px rgba(245, 158, 11, 0.3); transform: translateY(-8px);">
+        <div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #f59e0b, #ef4444); color: white; padding: 4px 18px; border-radius: 99px; font-size: 12px; font-weight: 900; letter-spacing: 0.08em; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.5);">
+          👑 GRAND CHAMPION #1
+        </div>
+        <div style="font-size: 52px; margin: 6px 0 2px;">🥇</div>
+        <div style="font-size: 22px; font-weight: 900; color: var(--text); font-family: 'Rajdhani', sans-serif;">${top1.name} ✨</div>
+        <div style="font-size: 12px; color: #d97706; font-weight: 700; margin-top: 2px;">${top1.dept} • ${top1.branch || 'CSE'}</div>
+        <div style="margin-top: 14px; display: flex; justify-content: center; gap: 10px; align-items: center;">
+          <span style="font-size: 22px; font-weight: 900; color: #d97706; font-family: 'Rajdhani', sans-serif;">${top1.xp} XP</span>
+          <span style="font-size: 11px; background: rgba(245, 158, 11, 0.2); color: #b45309; font-weight: 900; padding: 3px 10px; border-radius: 8px; border: 1px solid rgba(245, 158, 11, 0.4);">🏆 ${top1.wins} First Places</span>
+        </div>
+      </div>
+
+      <!-- Rank 3 Podium -->
+      <div class="card" style="padding: 24px; border-radius: 20px; border: 2px solid #b45309; background: linear-gradient(180deg, var(--surface) 0%, rgba(180, 83, 9, 0.08) 100%); text-align: center; position: relative; box-shadow: 0 8px 24px rgba(180, 83, 9, 0.15);">
+        <div style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: #b45309; color: white; padding: 2px 14px; border-radius: 99px; font-size: 11px; font-weight: 900; letter-spacing: 0.05em; box-shadow: 0 2px 8px rgba(180, 83, 9, 0.4);">
+          🥉 RANK 3
+        </div>
+        <div style="font-size: 40px; margin: 8px 0 4px;">🥉</div>
+        <div style="font-size: 18px; font-weight: 900; color: var(--text); font-family: 'Rajdhani', sans-serif;">${top3.name}</div>
+        <div style="font-size: 11px; color: var(--text-2); font-weight: 600; margin-top: 2px;">${top3.dept} • ${top3.year || '4th Year'}</div>
+        <div style="margin-top: 12px; display: flex; justify-content: center; gap: 8px; align-items: center;">
+          <span style="font-size: 18px; font-weight: 900; color: #b45309; font-family: 'Rajdhani', sans-serif;">${top3.xp} XP</span>
+          <span style="font-size: 11px; background: rgba(180, 83, 9, 0.12); color: #b45309; font-weight: 800; padding: 2px 8px; border-radius: 6px;">🎯 ${top3.count} Joined</span>
+        </div>
+      </div>
+    `;
+  }
 
   // Update Top Summary Stat Cards for active logged-in student
   const myStat = studentStats.find(s => s.id === currentStudentId);
@@ -4701,27 +4709,32 @@ async function renderLeaderboardPage() {
   tbody.innerHTML = filtered.map((s, idx) => {
     const isMe = s.id === currentStudentId;
     let rankBadge = `<span style="font-weight: 800; color: var(--text);">${idx + 1}</span>`;
-    if (idx === 0) rankBadge = `<span style="background: rgba(147, 51, 234, 0.15); color: var(--primary); font-weight: 800; padding: 3px 9px; border-radius: 99px;">Rank 1</span>`;
-    if (idx === 1) rankBadge = `<span style="background: var(--surface-2); color: var(--text); font-weight: 800; padding: 3px 9px; border-radius: 99px;">Rank 2</span>`;
-    if (idx === 2) rankBadge = `<span style="background: var(--surface-2); color: var(--text-2); font-weight: 800; padding: 3px 9px; border-radius: 99px;">Rank 3</span>`;
+    if (idx === 0) rankBadge = `<span style="background: linear-gradient(135deg, #f59e0b, #ef4444); color: #ffffff; font-weight: 900; padding: 4px 10px; border-radius: 99px; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);">🥇 Rank 1</span>`;
+    if (idx === 1) rankBadge = `<span style="background: #94a3b8; color: #ffffff; font-weight: 800; padding: 3px 9px; border-radius: 99px;">🥈 Rank 2</span>`;
+    if (idx === 2) rankBadge = `<span style="background: #b45309; color: #ffffff; font-weight: 800; padding: 3px 9px; border-radius: 99px;">🥉 Rank 3</span>`;
 
     return `
       <tr style="border-bottom: 1px solid var(--border); ${isMe ? 'background: rgba(147, 51, 234, 0.08); font-weight: 700; border-left: 4px solid var(--primary);' : ''}">
         <td style="padding: 12px 14px;">${rankBadge}</td>
         <td style="padding: 12px 14px;">
-          <div style="font-weight: 700; color: var(--text);">${s.name} ${isMe ? '<span style="font-size: 10px; color: var(--primary); background: var(--primary-light); padding: 2px 6px; border-radius: 4px; margin-left: 6px;">YOU</span>' : ''}</div>
+          <div style="font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 6px;">
+            ${s.name} ${idx === 0 ? '👑' : ''} ${isMe ? '<span style="font-size: 10px; color: var(--primary); background: var(--primary-light); padding: 2px 6px; border-radius: 4px;">YOU</span>' : ''}
+          </div>
           <div style="font-size: 11px; color: var(--text-2);">${s.branch || s.dept}</div>
         </td>
         <td style="padding: 12px 14px; color: var(--text-2);">${s.dept}</td>
         <td style="padding: 12px 14px; color: var(--text-2);">${s.year || 'TY'}</td>
         <td style="padding: 12px 14px; font-weight: 700; color: var(--text);">${s.count}</td>
-        <td style="padding: 12px 14px; color: var(--success); font-weight: 700;">${s.wins}</td>
+        <td style="padding: 12px 14px; color: var(--success); font-weight: 700;">${s.wins > 0 ? `🏆 ${s.wins}` : '0'}</td>
         <td style="padding: 12px 14px; color: var(--primary); font-weight: 700;">${s.finalists}</td>
-        <td style="padding: 12px 14px; font-weight: 900; color: var(--primary); font-family: 'Rajdhani', sans-serif; font-size: 15px;">${s.xp} XP</td>
+        <td style="padding: 12px 14px; font-weight: 900; color: var(--primary); font-family: 'Rajdhani', sans-serif; font-size: 16px;">${s.xp} XP</td>
         <td style="padding: 12px 14px; font-weight: 700; color: var(--text);">${s.score} / 100</td>
       </tr>
     `;
   }).join('');
+
+  // Automatically load Badges section below Leaderboard
+  initBadgesPage();
 }
 
 /* 4. ACHIEVEMENT TIMELINE PAGE */
@@ -4735,7 +4748,7 @@ async function initTimelinePage() {
   const hackathons = student.hackathons || [];
 
   if (hackathons.length === 0) {
-    container.innerHTML = '<div style="color: var(--text-2); font-size: 13px; text-align: center; padding: 30px;">No timeline entries yet. Add your first hackathon entry!</div>';
+    container.innerHTML = '<div style="color: var(--text-2); font-size: 13px; text-align: center; padding: 30px;">No timeline entries yet. Verify your first hackathon participation!</div>';
     return;
   }
 
@@ -4764,7 +4777,7 @@ async function initTimelinePage() {
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; flex-wrap: wrap; gap: 8px;">
                 <strong style="font-size: 16px; color: var(--text);">${h.name} — ${h.position}</strong>
                 <div style="display: flex; gap: 8px; align-items: center;">
-                  ${h.verified ? '<span style="background: rgba(34, 197, 94, 0.15); color: #16a34a; border: 1px solid rgba(34, 197, 94, 0.3); font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 99px;">Verified</span>' : ''}
+                  ${h.verified ? '<span style="background: rgba(34, 197, 94, 0.15); color: #16a34a; border: 1px solid rgba(34, 197, 94, 0.3); font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 99px;">✔ Verified</span>' : '<span style="background: rgba(245, 158, 11, 0.15); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.3); font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 99px;">⏳ Pending Verification</span>'}
                   <span style="font-size: 12px; font-weight: 800; color: var(--primary); background: var(--primary-light); padding: 3px 10px; border-radius: 99px;">
                     XP Earned: +${xp}
                   </span>
@@ -4792,7 +4805,7 @@ async function initTimelinePage() {
   `).join('');
 }
 
-/* 5. ACHIEVEMENT BADGES PAGE */
+/* 5. ACHIEVEMENT BADGES SECTION LOGIC */
 async function initBadgesPage() {
   const studentId = state.student.id || 'GHRCE2024047';
   const student = await window.db.getStudentById(studentId);
@@ -4803,7 +4816,7 @@ async function initBadgesPage() {
   const earned = window.db.getEarnedBadges(student);
 
   const all10Badges = [
-    { title: 'First Hackathon', desc: 'Completed your very first hackathon entry on Elevate', category: 'Milestone', req: 'Add 1 Hackathon entry', xp: 50 },
+    { title: 'First Hackathon', desc: 'Verified your very first hackathon participation on Elevate', category: 'Milestone', req: 'Verify 1 Hackathon participation', xp: 50 },
     { title: 'Hackathon Explorer', desc: 'Consistently participating in hackathons across domains', category: 'Dedication', req: 'Participate in 3+ hackathons', xp: 100 },
     { title: 'Finalist', desc: 'Reached finalist round in campus or national hackathons', category: 'Achievement', req: 'Achieve Finalist status in any hackathon', xp: 150 },
     { title: 'National Finalist', desc: 'Achieved National level qualification or placement in hackathons', category: 'Achievement', req: 'Qualify for National Hackathon Finals', xp: 200 },
@@ -4836,9 +4849,9 @@ async function initBadgesPage() {
   grid.innerHTML = all10Badges.map(badge => {
     const isEarned = earned.some(b => b.title.toLowerCase() === badge.title.toLowerCase());
     return `
-      <div class="card" style="padding: 18px; border-radius: 16px; border: 1.5px solid ${isEarned ? 'var(--primary)' : 'var(--border)'}; background: ${isEarned ? 'var(--surface)' : 'var(--surface-2)'}; opacity: ${isEarned ? '1' : '0.55'}; display: flex; align-items: flex-start; gap: 14px; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'" onclick="openBadgeModal('${badge.title}')">
-        <div style="width: 44px; height: 44px; border-radius: 12px; background: ${isEarned ? 'var(--primary-light)' : 'var(--border-light)'}; color: ${isEarned ? 'var(--primary)' : 'var(--text-3)'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>
+      <div class="card" style="padding: 18px; border-radius: 16px; border: 1.5px solid ${isEarned ? 'var(--primary)' : 'var(--border)'}; background: ${isEarned ? 'var(--surface)' : 'var(--surface-2)'}; opacity: ${isEarned ? '1' : '0.55'}; display: flex; align-items: flex-start; gap: 14px; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'" onclick="openBadgeModal('${badge.title}')">
+        <div style="width: 44px; height: 44px; border-radius: 12px; background: ${isEarned ? 'linear-gradient(135deg, rgba(168,85,247,0.2), rgba(59,130,246,0.2))' : 'var(--border-light)'}; color: ${isEarned ? 'var(--primary)' : 'var(--text-3)'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 20px;">
+          ${isEarned ? '🏅' : '🔒'}
         </div>
         <div style="flex: 1;">
           <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 2px;">
@@ -4854,7 +4867,7 @@ async function initBadgesPage() {
 
 function openBadgeModal(badgeTitle) {
   const allPossibleBadges = [
-    { title: 'First Hackathon', desc: 'Completed your very first hackathon entry on Elevate', category: 'Milestone', req: 'Add 1 Hackathon entry', xp: 50 },
+    { title: 'First Hackathon', desc: 'Verified your very first hackathon participation on Elevate', category: 'Milestone', req: 'Verify 1 Hackathon participation', xp: 50 },
     { title: 'Hackathon Explorer', desc: 'Consistently participating in hackathons across domains', category: 'Dedication', req: 'Participate in 3+ hackathons', xp: 100 },
     { title: 'Finalist', desc: 'Reached finalist round in campus or national hackathons', category: 'Achievement', req: 'Achieve Finalist status in any hackathon', xp: 150 },
     { title: 'National Finalist', desc: 'Achieved National level qualification or placement in hackathons', category: 'Achievement', req: 'Qualify for National Hackathon Finals', xp: 200 },
@@ -4897,7 +4910,7 @@ async function openAddHackathonModal(editId = null) {
   if (form) form.reset();
 
   document.getElementById('hEditId').value = editId || '';
-  document.getElementById('hackathonModalTitle').textContent = editId ? 'Edit Hackathon Entry' : 'Add Hackathon Entry';
+  document.getElementById('hackathonModalTitle').textContent = editId ? 'Edit Verification Details' : 'Verify Hackathon Participation';
 
   if (editId) {
     const studentId = state.student.id || 'GHRCE2024047';
@@ -4959,19 +4972,17 @@ async function handleSaveHackathon(e) {
 
   if (editId) {
     await window.db.updateHackathon(studentId, editId, data);
-    showToast('Hackathon entry updated successfully!', 'success');
+    showToast('Hackathon verification details updated successfully!', 'success');
   } else {
     await window.db.addHackathon(studentId, data);
-    showToast('Hackathon entry added & Hackathon XP awarded!', 'success');
+    showToast('Hackathon participation submitted for verification (+XP awarded)!', 'success');
   }
 
   closeHackathonModal();
   
   if (state.currentPage === 'hackathon-dashboard') initHackathonDashboard();
-  if (state.currentPage === 'hackathon-my') initMyHackathonsPage();
   if (state.currentPage === 'hackathon-leaderboard') initLeaderboardPage();
   if (state.currentPage === 'hackathon-timeline') initTimelinePage();
-  if (state.currentPage === 'hackathon-badges') initBadgesPage();
 }
 
 async function deleteHackathonEntry(hackathonId) {
@@ -4980,15 +4991,13 @@ async function deleteHackathonEntry(hackathonId) {
     await window.db.deleteHackathon(studentId, hackathonId);
     showToast('Hackathon entry deleted.', 'info');
     if (state.currentPage === 'hackathon-dashboard') initHackathonDashboard();
-    if (state.currentPage === 'hackathon-my') initMyHackathonsPage();
     if (state.currentPage === 'hackathon-leaderboard') initLeaderboardPage();
     if (state.currentPage === 'hackathon-timeline') initTimelinePage();
-    if (state.currentPage === 'hackathon-badges') initBadgesPage();
   }
 }
 
 /* ============================================================
-   PAGE 6: ADD HACKATHON ENTRY (MULTI-STEP FULL PAGE)
+   PAGE 4: VERIFY HACKATHON PARTICIPATION (MULTI-STEP FULL PAGE)
    ============================================================ */
 
 state.haCurrentStep = 1;
@@ -5028,52 +5037,6 @@ state.haDraft = {
 };
 
 const ALL_SKILL_OPTIONS = ['Python', 'Java', 'React', 'TypeScript', 'AWS', 'PyTorch', 'TensorFlow', 'Node.js', 'Docker', 'SQL', 'Flutter', 'Figma'];
-
-async function openAddHackathonModal(editId = null) {
-  if (editId) {
-    const studentId = state.student.id || 'GHRCE2024047';
-    const student = await window.db.getStudentById(studentId);
-    const entry = (student.hackathons || []).find(h => h.id === editId);
-    if (entry) {
-      state.haDraft = {
-        id: entry.id,
-        name: entry.name || '',
-        organizer: entry.organizer || '',
-        website: entry.website || '',
-        date: entry.date || '',
-        duration: entry.duration || '36 Hours',
-        mode: entry.mode || 'Online',
-        location: entry.location || '',
-        theme: entry.theme || '',
-        level: entry.level || 'National',
-        projectName: entry.projectName || '',
-        problemStatement: entry.problemStatement || '',
-        projectDescription: entry.projectDescription || '',
-        innovationUSP: entry.innovationUSP || '',
-        techStack: entry.technologies || entry.techStack || '',
-        domain: entry.domain || 'AI & Machine Learning',
-        githubUrl: entry.githubUrl || '',
-        demoUrl: entry.demoUrl || '',
-        pptUrl: entry.pptUrl || '',
-        videoUrl: entry.videoUrl || '',
-        teamName: entry.teamName || '',
-        yourRole: entry.yourRole || 'Developer',
-        isLeader: true,
-        teamMembers: [{ name: 'Alex Johnson (You)', role: 'Lead Developer' }],
-        selectedSkills: ['Python', 'React'],
-        softSkills: '',
-        certFileName: entry.certificateUrl ? 'certificate.pdf' : '',
-        resultLink: '',
-        certNumber: '',
-        organizerEmail: '',
-        mentorName: '',
-        mentorEmail: '',
-        verificationNotes: ''
-      };
-    }
-  }
-  navigateTo('hackathon-add');
-}
 
 function initAddHackathonPage() {
   populateDraftFormValues();
@@ -5137,7 +5100,7 @@ function goToAddHackathonStep(stepNum) {
   if (prevBtn) prevBtn.style.display = stepNum > 1 ? 'block' : 'none';
   if (nextBtn) {
     if (stepNum === 5) {
-      nextBtn.textContent = 'Submit for Verification';
+      nextBtn.textContent = 'Submit Verification Details';
       nextBtn.className = 'btn-primary';
     } else {
       nextBtn.textContent = 'Next →';
@@ -5159,8 +5122,8 @@ function renderStepIndicator() {
   const steps = [
     { num: 1, label: 'Hackathon Details' },
     { num: 2, label: 'Project Details' },
-    { num: 3, label: 'Team & Skills' },
-    { num: 4, label: 'Documents & Verification' },
+    { num: 3, label: 'Team & Role' },
+    { num: 4, label: 'Documents & Verification Proof' },
     { num: 5, label: 'Review & Submit' }
   ];
 
@@ -5371,7 +5334,7 @@ function handleCertFileSelect(input) {
 function saveHackathonDraft() {
   updateDraftState();
   localStorage.setItem('elevate_hackathon_draft', JSON.stringify(state.haDraft));
-  showToast('Draft saved successfully!', 'success');
+  showToast('Verification draft saved successfully!', 'success');
 }
 
 function renderReviewAccordion() {
@@ -5382,8 +5345,8 @@ function renderReviewAccordion() {
   const sections = [
     { title: 'Step 1: Hackathon Details', step: 1, content: `${d.name || 'Not specified'} (${d.organizer || 'Organizer N/A'}) • ${d.date || 'Date N/A'} • ${d.mode || 'Online'} • ${d.level || 'National'}` },
     { title: 'Step 2: Project Details', step: 2, content: `Project: ${d.projectName || 'Not specified'} | Domain: ${d.domain || 'AI'} | Stack: ${d.techStack || 'React, Python'}` },
-    { title: 'Step 3: Team Information & Skills', step: 3, content: `Team: ${d.teamName || 'Solo'} | Role: ${d.yourRole || 'Lead'} | Skills: ${(d.selectedSkills || []).join(', ')}` },
-    { title: 'Step 4: Proof & Verification', step: 4, content: `Cert: ${d.certFileName || 'Attached'} | Result Link: ${d.resultLink || 'Provided'} | Status: Pending Verification` }
+    { title: 'Step 3: Team Information & Role', step: 3, content: `Team: ${d.teamName || 'Solo'} | Role: ${d.yourRole || 'Lead'} | Skills: ${(d.selectedSkills || []).join(', ')}` },
+    { title: 'Step 4: Proof & Verification Documents', step: 4, content: `Cert: ${d.certFileName || 'Attached'} | Result Link: ${d.resultLink || 'Provided'} | Status: Pending Verification` }
   ];
 
   container.innerHTML = sections.map(s => `
@@ -5435,16 +5398,16 @@ async function submitHackathonEntry() {
 
   if (d.id) {
     await window.db.updateHackathon(studentId, d.id, entryData);
-    showToast('Hackathon entry updated & submitted for verification!', 'success');
+    showToast('Hackathon verification details updated successfully!', 'success');
   } else {
     await window.db.addHackathon(studentId, entryData);
-    showToast('Hackathon Entry Submitted! +450 XP awarded.', 'success');
+    showToast('Hackathon Participation submitted for college verification! (+XP awarded)', 'success');
   }
 
   // Reset draft
   localStorage.removeItem('elevate_hackathon_draft');
   state.haDraft = null;
 
-  // Navigate to My Hackathons page
-  navigateTo('hackathon-my');
+  // Navigate back to Hackathon Dashboard
+  navigateTo('hackathon-dashboard');
 }

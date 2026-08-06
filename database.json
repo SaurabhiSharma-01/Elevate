@@ -1,0 +1,639 @@
+{
+  "tnpOfficers": [
+    {
+      "id": "04f3c246-5570-4ed7-b9d5-83cb716a6448",
+      "name": "Saurabhi Sharma",
+      "email": "saurabhi@raisoni.net",
+      "passwordHash": "$2b$10$8Tnm9LxawYufq2Ocy9K3dulNTMmwzcf46nt/Fdxe5VnwOQyfPvj4m",
+      "college": "Raisoni College",
+      "role": "tnp",
+      "createdAt": "2026-07-23T16:13:19.962Z"
+    },
+    {
+      "id": "42d1633b-715f-472b-9168-e207b08c0dd2",
+      "name": "Saurabhi Sharma",
+      "email": "saurabhi.sharma@raisoni.net",
+      "passwordHash": "$2b$10$7S.klTQhomSqQcie2agGG.6v0Z6Mtc8uyHG573l33h1imHTdY1Y7O",
+      "college": "Raisoni College",
+      "role": "tnp",
+      "createdAt": "2026-07-23T16:14:06.682Z"
+    },
+    {
+      "id": "e57576c2-c8df-432a-bd7b-90bdb7b7afb0",
+      "name": "saurabhi sharma",
+      "email": "saurabhi.utkarsh@raisoni.net",
+      "passwordHash": "$2b$10$j0rMFkZ6sjubs4nh7WGiJ.9iDmVu6ssV.9/y0G42thSFvsXPUN8Z2",
+      "college": "Raisoni College",
+      "role": "tnp",
+      "createdAt": "2026-07-24T14:13:01.951Z"
+    },
+    {
+      "id": "c3969880-dd13-4df9-80ff-ff5d010aaa9d",
+      "name": "Saurabhi Sharma",
+      "email": "saurabhi.sharma01@raisoni.net",
+      "passwordHash": "$2b$10$2t580RSfVdbP.C34QK4i9u3Egi7VvotN.E3DMBp6JNehOwjsmjWge",
+      "college": "Raisoni College",
+      "role": "tnp",
+      "createdAt": "2026-07-24T15:52:27.198Z"
+    },
+    {
+      "id": "9a33448a-1da2-45af-aff7-274f2f4aa912",
+      "name": "Saurabhi Sharma",
+      "email": "saurabhi.shar@raisoni.net",
+      "passwordHash": "$2b$10$4vEjQ7PbEqByLiJUPxBLCeYmQ2joVIoyggsM423TvXLPQZZ23wylK",
+      "college": "Raisoni College",
+      "role": "tnp",
+      "createdAt": "2026-07-29T10:24:30.082Z"
+    },
+    {
+      "id": "5529ac13-d307-4358-867d-bda29fe8cd6c",
+      "name": "Saurabhi Sharma",
+      "email": "saurabhi.sharmablah@raisoni.net",
+      "passwordHash": "$2b$10$n1WQK3PI.LMbjlYz9SsHHOQ0PKVe/uJYCjbr/fPpViQZHpae7gv9u",
+      "college": "Raisoni College",
+      "role": "tnp",
+      "createdAt": "2026-08-02T18:29:23.047Z"
+    },
+    {
+      "id": "1a7f486b-4cf3-4706-958c-9d9698fd441f",
+      "name": "Saurabhi Sharma",
+      "email": "saurabhi.sharm@raisoni.net",
+      "passwordHash": "$2b$10$CG3cXOWI8miE/SBja1.U6OIsSJoqWq7CwVfUeWLh8MFfoUK4RaD/e",
+      "college": "Raisoni College",
+      "role": "tnp",
+      "createdAt": "2026-08-03T09:23:40.991Z"
+    }
+  ],
+  "studentAccounts": [
+    {
+      "prn": "GHRCE2024047",
+      "name": "Saurabhi Sharma",
+      "email": "saurabhi.sharma@ghrce.ac.in",
+      "dob": "2006-01-01",
+      "passingYear": 2028,
+      "passwordHash": "$2b$10$MFtogeWWWzPDz8jeOvmtjeYmHqkSLYGGCUPEjMsVxpJctghl7rANy",
+      "role": "student",
+      "firstLogin": true,
+      "importedBy": "system",
+      "createdAt": "2026-07-22T08:00:00.000Z",
+      "lastLogin": "2026-08-06T07:17:57.671Z"
+    }
+  ],
+  "companyAccounts": [
+    {
+      "id": "4da1f008-6113-4b25-8724-cd7c5ee618e7",
+      "name": "saurabhi@gmail.com",
+      "email": "hr@gmail.com",
+      "passwordHash": "$2b$10$MO4OnRDjOXrGd8T/NSH65u/oWMnLqWSkZ26IlokGaC/ff0S3nBK2K",
+      "industry": "IT",
+      "contactPerson": "8261064178",
+      "role": "company",
+      "createdAt": "2026-07-24T14:07:21.476Z"
+    },
+    {
+      "id": "9ebea9d1-38b1-4790-9733-b5a4ab713a13",
+      "name": "microsoft tech",
+      "email": "saurabhi.sharma178@gmail.com",
+      "passwordHash": "$2b$10$S4LZwe7sG7buKEMmyV324OKsSCJFe0LYagQPBGOW5l.eQ1LTdjJvu",
+      "industry": "sales",
+      "contactPerson": "Saurabhi Sharma",
+      "role": "company",
+      "createdAt": "2026-07-24T15:58:14.061Z"
+    },
+    {
+      "id": "26cf740f-1abe-4b09-a97a-48e3be050136",
+      "name": "saurabhi@gmail.com",
+      "email": "saurabhi.sharma01@gmail.com",
+      "passwordHash": "$2b$10$Yx20nmqFcJPhHRPsZ7NFceiV/plismiur4zm7ZIBCHqNON8EP.dpS",
+      "industry": "IT",
+      "contactPerson": "Saurabhi Sharma",
+      "role": "company",
+      "createdAt": "2026-07-29T10:18:26.880Z"
+    },
+    {
+      "id": "9a423565-b387-4a17-8381-f56ad939e28f",
+      "name": "saurabhi@gmail.com",
+      "email": "he@company.com",
+      "passwordHash": "$2b$10$8/Myhd/OUARz/lCGG62P5u.DCU40VtPM2bATKm8YV54wT0.jokc6y",
+      "industry": "it",
+      "contactPerson": "kritish",
+      "role": "company",
+      "createdAt": "2026-08-03T09:25:47.221Z"
+    }
+  ],
+  "students": [
+    {
+      "id": "GHRCE2024047",
+      "name": "Saurabhi Sharma",
+      "email": "saurabhi.sharma@ghrce.ac.in",
+      "dept": "Engineering",
+      "branch": "TY COE",
+      "semester": "5th Semester",
+      "passingYear": 2028,
+      "cgpa": 7,
+      "readiness": 37,
+      "rank": "--",
+      "targetCompany": "--",
+      "resumeVerified": "Pending",
+      "resumeText": "",
+      "coursesCompleted": 0,
+      "todayHours": 0,
+      "mockTestsCompleted": 0,
+      "weakSkills": [
+        "Technical Aptitude",
+        "Data Structures",
+        "Computer Science",
+        "Database",
+        "Programming",
+        "Aptitude",
+        "Operating Systems",
+        "Networks",
+        "Logical Reasoning",
+        "Algorithms",
+        "General Tech"
+      ],
+      "interviewHistory": [],
+      "hackathons": [
+        {
+          "id": "h_101",
+          "name": "FinSpark'26",
+          "organizer": "National Fintech Innovation Forum",
+          "date": "2026-03-15",
+          "mode": "Offline",
+          "theme": "FinTech & AI Solutions",
+          "teamName": "CodeCrafters",
+          "teamMembers": "Saurabhi Sharma, Rohan Mehta, Sneha Patil",
+          "projectName": "SmartPay AI Risk Engine",
+          "problemStatement": "Building a real-time fraudulent transaction detection model for UPI payments using graph AI.",
+          "technologies": "Python, PyTorch, Node.js, MongoDB, React, REST APIs",
+          "githubUrl": "https://github.com/saurabhi/smartpay-ai",
+          "demoUrl": "https://smartpay-demo.vercel.app",
+          "videoUrl": "https://youtube.com/watch?v=demo123",
+          "pptUrl": "https://slideshare.net/smartpay-pitch",
+          "isOpenSource": true,
+          "certificateUrl": "https://images.unsplash.com/photo-1589330694653-ded6df03f754?auto=format&fit=crop&w=600&q=80",
+          "position": "Top 20",
+          "verified": true,
+          "verifiedBy": "Dr. Rajesh Kumar (Head T&P)"
+        },
+        {
+          "id": "h_102",
+          "name": "SIH Internal Hackathon 2026",
+          "organizer": "GH Raisoni College T&P Cell",
+          "date": "2026-01-20",
+          "mode": "Offline",
+          "theme": "Smart Education & Campus AI",
+          "teamName": "ByteBusters",
+          "teamMembers": "Saurabhi Sharma, Aditya Sen",
+          "projectName": "Elevate AI Proctoring Hub",
+          "problemStatement": "Automated gaze detection and tab switching prevention for high-stakes online campus assessments.",
+          "technologies": "Python, OpenCV, Express, React, WebSockets",
+          "githubUrl": "https://github.com/saurabhi/proctor-ai",
+          "demoUrl": "https://proctor-demo.vercel.app",
+          "videoUrl": "https://youtube.com/watch?v=proctor456",
+          "pptUrl": "",
+          "isOpenSource": true,
+          "certificateUrl": "https://images.unsplash.com/photo-1589330694653-ded6df03f754?auto=format&fit=crop&w=600&q=80",
+          "position": "College Qualified",
+          "verified": true,
+          "verifiedBy": "Saurabhi Sharma (Head T&P)"
+        },
+        {
+          "id": "h_103",
+          "name": "HackFest Pune 2025",
+          "organizer": "Pune Tech Foundation",
+          "date": "2025-11-10",
+          "mode": "Online",
+          "theme": "Healthcare & Smart Diagnosis",
+          "teamName": "HealthNexus",
+          "teamMembers": "Saurabhi Sharma, Sneha Patil",
+          "projectName": "MediScan AI",
+          "problemStatement": "Rapid X-Ray diagnostic analyzer using deep neural networks to assist rural clinics.",
+          "technologies": "Python, TensorFlow, Flask, Flutter, Firebase",
+          "githubUrl": "https://github.com/saurabhi/mediscan-ai",
+          "demoUrl": "https://mediscan.dev",
+          "videoUrl": "https://youtube.com/watch?v=medi789",
+          "pptUrl": "https://slideshare.net/mediscan-pitch",
+          "isOpenSource": false,
+          "certificateUrl": "https://images.unsplash.com/photo-1589330694653-ded6df03f754?auto=format&fit=crop&w=600&q=80",
+          "position": "Winner",
+          "verified": true,
+          "verifiedBy": "Saurabhi Sharma (Head T&P)"
+        },
+        {
+          "id": "h_104",
+          "name": "CyberShield National Hackathon",
+          "organizer": "IIT Bombay Techfest",
+          "date": "2025-08-05",
+          "mode": "Offline",
+          "theme": "Cybersecurity & Zero Trust",
+          "teamName": "SentinelSaurabhi",
+          "teamMembers": "Saurabhi Sharma",
+          "projectName": "ZeroTrust Auth Vault",
+          "problemStatement": "Biometric authentication and multi-factor hardware security key interface.",
+          "technologies": "Node.js, Cryptography, OAuth, Security, PostgreSQL",
+          "githubUrl": "https://github.com/saurabhi/zerotrust-vault",
+          "demoUrl": "https://zerotrust-vault.io",
+          "videoUrl": "",
+          "pptUrl": "",
+          "isOpenSource": true,
+          "certificateUrl": "https://images.unsplash.com/photo-1589330694653-ded6df03f754?auto=format&fit=crop&w=600&q=80",
+          "position": "Finalist",
+          "verified": false,
+          "verifiedBy": ""
+        }
+      ],
+      "tasks": [],
+      "strengths": [
+        "Basic Logic",
+        "Attention to Detail"
+      ],
+      "skillProfile": {
+        "DSA": "Beginner",
+        "DBMS": "Beginner",
+        "OS": "Beginner",
+        "Networks": "Beginner",
+        "Aptitude": "Beginner",
+        "Communication": "Beginner",
+        "SystemDesign": "Beginner"
+      },
+      "estimatedReadinessLevel": "Needs Improvement",
+      "summary": "Assessment score is 37%. Immediate focus needed on Technical Aptitude and Data Structures to build foundational strength.",
+      "improvementSuggestions": [
+        "Revise Technical Aptitude modules and solve 10+ practice questions daily.",
+        "Revise Data Structures modules and solve 10+ practice questions daily.",
+        "Revise Computer Science modules and solve 10+ practice questions daily.",
+        "Revise Database modules and solve 10+ practice questions daily.",
+        "Revise Programming modules and solve 10+ practice questions daily.",
+        "Revise Aptitude modules and solve 10+ practice questions daily.",
+        "Revise Operating Systems modules and solve 10+ practice questions daily.",
+        "Revise Networks modules and solve 10+ practice questions daily.",
+        "Revise Logical Reasoning modules and solve 10+ practice questions daily.",
+        "Revise Algorithms modules and solve 10+ practice questions daily.",
+        "Revise General Tech modules and solve 10+ practice questions daily."
+      ],
+      "priorityAreas": [
+        "Technical Aptitude",
+        "Data Structures"
+      ],
+      "technicalSkillScore": 35,
+      "aptitudeScore": 30,
+      "communicationScore": 55,
+      "logicalReasoningScore": 35
+    },
+    {
+      "id": "GHRCE2024012",
+      "name": "Rohan Mehta",
+      "email": "rohan.mehta@ghrce.ac.in",
+      "dept": "Engineering",
+      "branch": "Information Technology",
+      "semester": "6th Semester",
+      "cgpa": 7.9,
+      "readiness": 65,
+      "rank": 112,
+      "targetCompany": "Wipro",
+      "resumeVerified": "Pending",
+      "resumeText": "Rohan Mehta. B.Tech IT. Core skills: C++, Web Development, HTML, CSS. Projects: Portfolio page.",
+      "coursesCompleted": 5,
+      "todayHours": 1.5,
+      "mockTestsCompleted": 9,
+      "weakSkills": [
+        "Quantitative Aptitude",
+        "DBMS"
+      ],
+      "appliedJobs": [],
+      "interviewHistory": []
+    },
+    {
+      "id": "GHRCE2024089",
+      "name": "Sneha Patil",
+      "email": "sneha.patil@ghrce.ac.in",
+      "dept": "Engineering",
+      "branch": "Electronics",
+      "semester": "6th Semester",
+      "cgpa": 9.1,
+      "readiness": 85,
+      "rank": 12,
+      "targetCompany": "Amazon / Microsoft",
+      "resumeVerified": "Verified",
+      "resumeText": "Sneha Patil. B.Tech Electronics. Strong programming in Python, C, and Embedded Systems. 3 stars on LeetCode.",
+      "coursesCompleted": 12,
+      "todayHours": 3.2,
+      "mockTestsCompleted": 18,
+      "weakSkills": [
+        "System Design"
+      ],
+      "appliedJobs": [],
+      "interviewHistory": [
+        {
+          "company": "Amazon",
+          "type": "Technical",
+          "date": "2026-07-12",
+          "score": 92,
+          "reportId": "rep_002",
+          "feedback": "Excellent DSA and logical reasoning capabilities. Fast problem-solving."
+        }
+      ]
+    },
+    {
+      "id": "GHRCE24M002",
+      "name": "Aditya Sen",
+      "email": "aditya.sen@ghrce.ac.in",
+      "dept": "Management",
+      "branch": "MBA Finance",
+      "semester": "3rd Semester",
+      "cgpa": 8.2,
+      "readiness": 58,
+      "rank": 35,
+      "targetCompany": "Deloitte",
+      "resumeVerified": "Pending",
+      "resumeText": "Aditya Sen. MBA Finance. Core skills: Financial modeling, valuation, Excel, Accounting.",
+      "coursesCompleted": 4,
+      "todayHours": 1,
+      "mockTestsCompleted": 5,
+      "weakSkills": [
+        "Technical Aptitude",
+        "Logical Reasoning"
+      ],
+      "appliedJobs": [],
+      "interviewHistory": []
+    }
+  ],
+  "jobs": [
+    {
+      "id": "job_001",
+      "company": "Microsoft",
+      "logo": "MSFT",
+      "role": "Software Engineer Intern",
+      "type": "Full Time",
+      "ctc": "₹15 LPA",
+      "location": "Bangalore / Remote",
+      "desc": "Looking for a passionate Software Engineer Intern with strong DSA, OOPs, and problem-solving skills.",
+      "eligibility": {
+        "cgpa": 7.5,
+        "branches": [
+          "Computer Science",
+          "Information Technology"
+        ],
+        "backlogs": 0
+      },
+      "applicants": []
+    },
+    {
+      "id": "job_002",
+      "company": "TCS",
+      "logo": "TCS",
+      "role": "System Engineer (NQT Digital)",
+      "type": "Full Time",
+      "ctc": "₹7.0 LPA",
+      "location": "PAN India",
+      "desc": "Hiring through TCS NQT Digital. Focus on advanced technical aptitude, programming, and system skills.",
+      "eligibility": {
+        "cgpa": 6,
+        "branches": [
+          "Any Engineering Branch"
+        ],
+        "backlogs": 0
+      },
+      "applicants": []
+    },
+    {
+      "id": "job_003",
+      "company": "Infosys",
+      "logo": "INF",
+      "role": "Systems Engineer",
+      "type": "Full Time",
+      "ctc": "₹3.6 LPA",
+      "location": "PAN India",
+      "desc": "Hiring for Systems Engineer role. Logical reasoning, verbal ability, and pseudocode assessment is mandatory.",
+      "eligibility": {
+        "cgpa": 6.5,
+        "branches": [
+          "Any Graduate"
+        ],
+        "backlogs": 1
+      },
+      "applicants": []
+    }
+  ],
+  "drives": [
+    {
+      "id": "drv_001",
+      "company": "TCS",
+      "date": "2026-07-25",
+      "status": "Scheduled",
+      "dept": "Engineering"
+    },
+    {
+      "id": "drv_002",
+      "company": "Infosys",
+      "date": "2026-07-28",
+      "status": "Scheduled",
+      "dept": "Engineering"
+    },
+    {
+      "id": "drv_003",
+      "company": "Microsoft",
+      "date": "2026-08-05",
+      "status": "Proposed",
+      "dept": "Engineering"
+    }
+  ],
+  "assessments": [
+    {
+      "id": "asm_001",
+      "name": "TCS Comprehensive",
+      "questions": 30,
+      "duration": 90,
+      "createdBy": "College T&P"
+    },
+    {
+      "id": "asm_002",
+      "name": "General Aptitude Drill",
+      "questions": 20,
+      "duration": 45,
+      "createdBy": "College T&P"
+    }
+  ],
+  "companies": [
+    {
+      "id": "comp_001",
+      "name": "Synthetix Cloud",
+      "industry": "Enterprise SaaS • Cloud Tech",
+      "contact": "Sarah Jenkins",
+      "status": "Connected",
+      "avatar": "SC",
+      "previousVisits": 2,
+      "connectionDate": "2026-06-01"
+    },
+    {
+      "id": "comp_002",
+      "name": "Apex Financials",
+      "industry": "Investment Banking • FinTech",
+      "contact": "Michael Chen",
+      "status": "Pending",
+      "avatar": "AF",
+      "previousVisits": 0,
+      "connectionDate": null
+    },
+    {
+      "id": "comp_003",
+      "name": "Velocity Motors",
+      "industry": "Auto-Tech • EV Systems",
+      "contact": "Robert Walton",
+      "status": "Connected",
+      "avatar": "VM",
+      "previousVisits": 1,
+      "connectionDate": "2026-05-15"
+    },
+    {
+      "id": "comp_004",
+      "name": "EcoSystemic Ltd",
+      "industry": "Green Tech • Sustainability",
+      "contact": "Anna Sokolov",
+      "status": "Connected",
+      "avatar": "ES",
+      "previousVisits": 3,
+      "connectionDate": "2026-03-20"
+    },
+    {
+      "id": "comp_005",
+      "name": "Infosys HR",
+      "industry": "IT Services • Consulting",
+      "contact": "Rajesh Gupta",
+      "status": "Requested",
+      "avatar": "IN",
+      "previousVisits": 5,
+      "connectionDate": "2026-07-10"
+    },
+    {
+      "id": "comp_006",
+      "name": "Cognizant Genc",
+      "industry": "IT Services • Digital",
+      "contact": "Priya Nair",
+      "status": "Requested",
+      "avatar": "CG",
+      "previousVisits": 4,
+      "connectionDate": "2026-07-12"
+    },
+    {
+      "id": "comp_007",
+      "name": "Amazon AWS",
+      "industry": "Cloud • E-Commerce",
+      "contact": "David Kim",
+      "status": "Connected",
+      "avatar": "AA",
+      "previousVisits": 2,
+      "connectionDate": "2026-04-10"
+    },
+    {
+      "id": "comp_008",
+      "name": "Deloitte India",
+      "industry": "Consulting • Analytics",
+      "contact": "Meera Shah",
+      "status": "Pending",
+      "avatar": "DI",
+      "previousVisits": 1,
+      "connectionDate": null
+    }
+  ],
+  "startups": [
+    {
+      "id": "st_001",
+      "name": "EcoSync Systems",
+      "tagline": "Smart AI-driven irrigation for institutional vertical gardens.",
+      "category": "Sustainability",
+      "problem": "Traditional irrigation wastes 40% of water in institutional buildings.",
+      "solution": "AI-based sensors with real-time moisture analytics optimize watering schedules.",
+      "upvotes": 1200,
+      "comments": 48,
+      "team": [
+        "JD",
+        "AS",
+        "RK"
+      ],
+      "gradient": "linear-gradient(135deg, #1a472a 0%, #2d6a4f 50%, #40916c 100%)",
+      "trending": true
+    },
+    {
+      "id": "st_002",
+      "name": "EduPulse AI",
+      "tagline": "Personalized learning paths using large language models for STEM students.",
+      "category": "EduTech",
+      "problem": "One-size-fits-all curriculum leaves 60% of students behind.",
+      "solution": "LLM-powered adaptive learning that adjusts content difficulty in real time.",
+      "upvotes": 856,
+      "comments": 32,
+      "team": [
+        "MK",
+        "RL"
+      ],
+      "gradient": "linear-gradient(135deg, #0f3460 0%, #16213e 50%, #533483 100%)",
+      "trending": false
+    },
+    {
+      "id": "st_003",
+      "name": "QuantumFlow",
+      "tagline": "Quantum-inspired optimization for logistics supply chains.",
+      "category": "AI & ML",
+      "problem": "Supply chain inefficiencies cost SMEs ₹2.3 crore annually on average.",
+      "solution": "Quantum annealing algorithms reduce route optimization time by 78%.",
+      "upvotes": 8200,
+      "comments": 124,
+      "team": [
+        "SK",
+        "PB",
+        "AM",
+        "VR"
+      ],
+      "gradient": "linear-gradient(135deg, #2c0735 0%, #4a0e5e 50%, #7b2d8b 100%)",
+      "trending": false
+    }
+  ],
+  "meetings": [
+    {
+      "id": "mtg_001",
+      "company": "Google Online Meet",
+      "companyId": "comp_007",
+      "type": "Tech Talk",
+      "date": "2026-07-18",
+      "time": "10:30",
+      "mode": "online",
+      "link": "https://meet.google.com/abc-def",
+      "description": "Discussing intern hiring process for final year CSE students."
+    },
+    {
+      "id": "mtg_002",
+      "company": "Deloitte",
+      "companyId": "comp_008",
+      "type": "Campus Visit",
+      "date": "2026-07-18",
+      "time": "14:00",
+      "mode": "offline",
+      "venue": "Seminar Hall A",
+      "description": "Pre-placement talk for MBA and CSE batch 2026."
+    },
+    {
+      "id": "mtg_003",
+      "company": "Synthetix Cloud",
+      "companyId": "comp_001",
+      "type": "Follow-up",
+      "date": "2026-07-25",
+      "time": "11:00",
+      "mode": "online",
+      "link": "https://zoom.us/j/123456",
+      "description": "Follow-up on candidate shortlist submission."
+    },
+    {
+      "id": "mtg_004",
+      "company": "Amazon AWS",
+      "companyId": "comp_007",
+      "type": "Recruitment Drive",
+      "date": "2026-08-05",
+      "time": "09:00",
+      "mode": "offline",
+      "venue": "Main Auditorium",
+      "description": "AWS campus recruitment for SDE and cloud engineer roles."
+    }
+  ]
+}

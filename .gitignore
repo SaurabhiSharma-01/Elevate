@@ -5,7 +5,7 @@ node_modules/
 .env
 
 # Database
-database.json
+# database.json
 
 # OS files
 .DS_Store

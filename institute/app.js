@@ -29,16 +29,175 @@ const state = {
 // ──────────────────────────────────────────────────────────────
 // INITIALIZATION
 // ──────────────────────────────────────────────────────────────
+// ──────────────────────────────────────────────────────────────
+// INITIALIZATION
+// ──────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   await window.db.initPromise;
+  checkAccess();
   setupEventListeners();
   setupKeyboardShortcuts();
   populateClassDropdowns();
-  navigateTo('college-dashboard');
+  navigateTo(state.currentPage || 'college-dashboard');
 });
 
+function decodeTokenPayload(token) {
+  if (!token) return null;
+  try {
+    const parts = token.split('.');
+    if (parts.length === 3) {
+      const base64Url = parts[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(atob(base64));
+    }
+  } catch (err) {
+    console.warn('[Auth] Token decode error:', err);
+  }
+
+  try {
+    const userStr = sessionStorage.getItem('elevate_user');
+    const roleStr = sessionStorage.getItem('elevate_role');
+    if (userStr && roleStr) {
+      const user = JSON.parse(userStr);
+      return {
+        userId: user.id || user.prn,
+        role: roleStr,
+        name: user.name,
+        email: user.email,
+        yearOfStudy: user.yearOfStudy || sessionStorage.getItem('elevate_yearOfStudy') || 'Final'
+      };
+    }
+  } catch (err) {
+    console.warn('[Auth] Session fallback error:', err);
+  }
+
+  return null;
+}
+
+function checkAccess() {
+  const token = sessionStorage.getItem('elevate_token');
+  if (!token) {
+    window.location.href = '/login.html';
+    return null;
+  }
+
+  const payload = decodeTokenPayload(token);
+  if (!payload) {
+    window.location.href = '/login.html';
+    return null;
+  }
+
+  if (payload.role === 'STUDENT' || payload.role === 'student') {
+    window.location.href = '/student/index.html';
+    return null;
+  }
+  if (payload.role === 'COMPANY' || payload.role === 'company') {
+    window.location.href = '/industry/index.html';
+    return null;
+  }
+
+  state.currentUser = payload;
+  state.role = payload.role;
+
+  const roleTitleMap = {
+    'SUPER_ADMIN':      'Super Administrator',
+    'TNP_ADMIN':        'Head T&P Officer',
+    'TNP':              'Head T&P Officer',
+    'INCUBATION_ADMIN': 'Incubation Cell Lead',
+    'FACULTY':          'HOD / Faculty Member'
+  };
+
+  const nameEl = document.getElementById('tnpOfficerName');
+  const initEl = document.getElementById('tnpOfficerInitials');
+  const roleEl = document.getElementById('tnpOfficerRoleText');
+  if (nameEl) nameEl.textContent = payload.name || 'Staff User';
+  if (roleEl) roleEl.textContent = roleTitleMap[payload.role] || payload.role;
+  if (initEl) {
+    const parts = (payload.name || 'Staff User').split(' ');
+    initEl.textContent = (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
+  }
+
+  renderNavForRole(payload.role);
+  return payload;
+}
+
+function renderNavForRole(role) {
+  const roleUpper = (role || '').toUpperCase();
+
+  // Reset all nav items & section boxes
+  document.querySelectorAll('.nav-item, .sb-section-box').forEach(el => el.classList.remove('nav-hidden'));
+
+  let allowedPages = [];
+
+  if (roleUpper === 'SUPER_ADMIN') {
+    allowedPages = [
+      'college-dashboard', 'institute-details', 'resource-management', 'learning-materials',
+      'placement-drives', 'applications', 'company-management',
+      'startup-showcase', 'mentor-management', 'startup-analytics', 'hackathon-analytics', 'hackathon-dashboard',
+      'announcements', 'settings'
+    ];
+  } else if (roleUpper === 'TNP_ADMIN' || roleUpper === 'TNP') {
+    allowedPages = [
+      'college-dashboard', 'institute-details', 'resource-management', 'learning-materials',
+      'placement-drives', 'applications', 'company-management', 'hackathon-dashboard',
+      'startup-analytics', 'announcements', 'settings'
+    ];
+  } else if (roleUpper === 'INCUBATION_ADMIN') {
+    allowedPages = [
+      'college-dashboard', 'startup-showcase', 'mentor-management', 'startup-analytics',
+      'hackathon-analytics', 'hackathon-dashboard', 'announcements', 'settings'
+    ];
+  } else if (roleUpper === 'FACULTY') {
+    allowedPages = [
+      'college-dashboard', 'institute-details', 'learning-materials', 'startup-showcase', 'mentor-management',
+      'startup-analytics', 'hackathon-dashboard', 'announcements', 'settings'
+    ];
+    setTimeout(() => {
+      document.querySelectorAll('#studentDirectoryTableBody button, #studentRecordsTableWrap button').forEach(btn => {
+        btn.disabled = true;
+        btn.style.opacity = '0.5';
+        btn.style.cursor = 'not-allowed';
+      });
+    }, 300);
+  } else {
+    allowedPages = ['college-dashboard', 'institute-details', 'announcements', 'settings'];
+  }
+
+  state.allowedPages = allowedPages;
+
+  // Hide disallowed nav items
+  document.querySelectorAll('.nav-item').forEach(item => {
+    const page = item.getAttribute('data-page');
+    if (page && !allowedPages.includes(page)) {
+      item.classList.add('nav-hidden');
+    }
+  });
+
+  // Hide section boxes if all child nav items are hidden
+  document.querySelectorAll('.sb-section-box').forEach(box => {
+    const items = box.querySelectorAll('.nav-item');
+    if (items.length > 0) {
+      const visibleItems = Array.from(items).filter(it => !it.classList.contains('nav-hidden'));
+      if (visibleItems.length === 0) {
+        box.classList.add('nav-hidden');
+      }
+    }
+  });
+
+  // Redirect if current page is disallowed
+  if (state.currentPage && !allowedPages.includes(state.currentPage)) {
+    navigateTo('college-dashboard');
+  }
+}
+
+function handleLogout() {
+  sessionStorage.removeItem('elevate_token');
+  sessionStorage.removeItem('elevate_user');
+  sessionStorage.removeItem('elevate_role');
+  window.location.href = '/login.html';
+}
+
 function setupEventListeners() {
-  // Global search keyboard shortcuts
   document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
       e.preventDefault();
@@ -51,6 +210,7 @@ function setupEventListeners() {
       closeCreateCourseModal();
       closeCreateDriveModal();
       closeStartupReviewModal();
+      closeCreateHackathonModal();
     }
   });
 }
@@ -60,23 +220,100 @@ function setupKeyboardShortcuts() {
 }
 
 // ──────────────────────────────────────────────────────────────
+// SIDEBAR SECTION ACCORDION
+// ──────────────────────────────────────────────────────────────
+
+const INST_PAGE_SECTION_MAP = {
+  'college-dashboard':    'main',
+  'institute-details':    'students',
+  'learning-materials':   'students',
+  'resource-management':  'students',
+  'placement-drives':     'placement',
+  'applications':         'placement',
+  'company-management':   'placement',
+  'startup-showcase':     'innovation',
+  'hackathon-dashboard':  'innovation',
+  'mentor-management':    'innovation',
+  'startup-analytics':    'innovation',
+  'hackathon-analytics':  'innovation',
+  'announcements':        'system',
+  'settings':             'system'
+};
+
+const INST_ALL_SECTION_IDS = ['main', 'students', 'placement', 'innovation', 'system'];
+
+let isSidebarPinned = false;
+
+function toggleSidebarPin() {
+  isSidebarPinned = !isSidebarPinned;
+  const sidebar = document.getElementById('appSidebar');
+  if (!sidebar) return;
+  
+  if (isSidebarPinned) {
+    sidebar.classList.remove('collapsed');
+  } else {
+    sidebar.classList.add('collapsed');
+  }
+}
+
+function expandSidebar() {
+  const sidebar = document.getElementById('appSidebar');
+  if (sidebar) sidebar.classList.remove('collapsed');
+}
+
+function collapseSidebar() {
+  if (isSidebarPinned) return;
+  const sidebar = document.getElementById('appSidebar');
+  if (sidebar) sidebar.classList.add('collapsed');
+}
+
+function hoverExpandSectionBox(sectionId) {
+  expandSidebar();
+  toggleSectionBox(sectionId);
+}
+
+function toggleSectionBox(sectionId) {
+  const box = document.getElementById(`sectionBox-${sectionId}`);
+  if (!box) return;
+  const sidebar = document.getElementById('appSidebar');
+  if (sidebar && sidebar.classList.contains('collapsed')) return;
+  box.classList.toggle('collapsed');
+}
+
+function openSectionForPage(page) {
+  const targetSection = INST_PAGE_SECTION_MAP[page];
+  if (!targetSection) return;
+  INST_ALL_SECTION_IDS.forEach(id => {
+    const box = document.getElementById(`sectionBox-${id}`);
+    if (!box) return;
+    if (id === targetSection) {
+      box.classList.remove('collapsed');
+    } else {
+      box.classList.add('collapsed');
+    }
+  });
+}
+
+// ──────────────────────────────────────────────────────────────
 // NAVIGATION & SPA ROUTER
 // ──────────────────────────────────────────────────────────────
 function navigateTo(pageId) {
+  if (state.allowedPages && !state.allowedPages.includes(pageId)) {
+    pageId = 'college-dashboard';
+  }
+
+  openSectionForPage(pageId);
   state.currentPage = pageId;
 
-  // Hide all sections
   document.querySelectorAll('.page-content').forEach(el => {
     el.style.display = 'none';
   });
 
-  // Show target section
   const targetPage = document.getElementById(`page-${pageId}`);
   if (targetPage) {
     targetPage.style.display = 'block';
   }
 
-  // Update active sidebar nav items
   document.querySelectorAll('.nav-item, .nav-sub-item').forEach(el => {
     if (el.getAttribute('data-page') === pageId) {
       el.classList.add('active');
@@ -85,11 +322,14 @@ function navigateTo(pageId) {
     }
   });
 
-  // Page specific data initialization
   if (pageId === 'college-dashboard') {
     renderDashboard();
   } else if (pageId === 'institute-details') {
     renderStudentDirectory();
+  } else if (pageId === 'learning-materials') {
+    renderLearningMaterials();
+  } else if (pageId === 'hackathon-dashboard') {
+    renderInstituteHackathons();
   } else if (pageId === 'resource-management') {
     renderResourceManagement();
   } else if (pageId === 'placement-drives') {
@@ -1405,5 +1645,314 @@ async function verifyStudentHackathon(studentId, hackathonId) {
     renderHackathonAnalytics();
   } else {
     showToast('Verification failed: ' + (res.message || 'Error'), 'error');
+  }
+}
+
+/* ============================================================
+   LEARNING MATERIALS & HACKATHON DASHBOARD & INTERNSHIP REPORTS
+   ============================================================ */
+
+async function renderLearningMaterials() {
+  const container = document.getElementById('materialsListGrid');
+  if (!container) return;
+
+  try {
+    const token = sessionStorage.getItem('elevate_token');
+    const res = await fetch('/api/learning-materials', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    const materials = data.materials || [];
+
+    if (materials.length === 0) {
+      container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-2);">No learning materials posted yet.</div>`;
+      return;
+    }
+
+    const canDelete = ['SUPER_ADMIN', 'TNP_ADMIN', 'FACULTY'].includes((state.role || '').toUpperCase());
+
+    container.innerHTML = materials.map(m => `
+      <div style="background: #F8F7FC; border: 1px solid var(--border); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+          <div style="display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap;">
+            <span style="font-size: 10px; font-weight: 800; background: #EDE9F7; color: #5B2D90; padding: 3px 8px; border-radius: 99px;">Branch: ${m.targetBranch || 'ALL'}</span>
+            <span style="font-size: 10px; font-weight: 800; background: #DCFCE7; color: #16a34a; padding: 3px 8px; border-radius: 99px;">Year: ${m.targetYear || 'ALL'}</span>
+          </div>
+          <h4 style="font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 800; color: var(--text); margin: 0 0 6px;">${m.title}</h4>
+          <p style="font-size: 12px; color: var(--text-2); margin: 0 0 14px; line-height: 1.4;">${m.description}</p>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 12px; margin-top: 8px;">
+          <a href="${m.link}" target="_blank" style="font-size: 12px; font-weight: 700; color: #5B2D90; text-decoration: none; display: flex; align-items: center; gap: 4px;">
+            Open Resource <i class="ph ph-arrow-square-out"></i>
+          </a>
+          ${canDelete ? `
+            <button onclick="handleDeleteLearningMaterial('${m.id}')" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; border-radius: 8px; padding: 4px 10px; font-size: 11px; font-weight: 700; cursor: pointer;">
+              Delete
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    console.error('Error rendering learning materials:', err);
+  }
+}
+
+async function handleUploadLearningMaterial(e) {
+  e.preventDefault();
+  const title = document.getElementById('matTitle').value;
+  const targetBranch = document.getElementById('matTargetBranch').value;
+  const targetYear = document.getElementById('matTargetYear').value;
+  const link = document.getElementById('matLink').value;
+  const description = document.getElementById('matDescription').value;
+
+  try {
+    const token = sessionStorage.getItem('elevate_token');
+    const res = await fetch('/api/learning-materials', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ title, description, link, targetBranch, targetYear })
+    });
+    const data = await res.json();
+    if (data.success) {
+      if (typeof showToast === 'function') showToast('Learning resource posted successfully!', 'success');
+      document.getElementById('matTitle').value = '';
+      document.getElementById('matLink').value = '';
+      document.getElementById('matDescription').value = '';
+      renderLearningMaterials();
+    } else {
+      if (typeof showToast === 'function') showToast(data.message || 'Failed to post material', 'error');
+    }
+  } catch (err) {
+    console.error('Error uploading material:', err);
+  }
+}
+
+async function handleDeleteLearningMaterial(id) {
+  if (!confirm('Are you sure you want to delete this resource?')) return;
+  try {
+    const token = sessionStorage.getItem('elevate_token');
+    const res = await fetch(`/api/learning-materials/${id}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.success) {
+      if (typeof showToast === 'function') showToast('Learning resource deleted.', 'success');
+      renderLearningMaterials();
+    }
+  } catch (err) {
+    console.error('Error deleting material:', err);
+  }
+}
+
+async function renderInstituteHackathons() {
+  const container = document.getElementById('instituteHackathonsList');
+  const lbContainer = document.getElementById('instituteHackathonsLeaderboard');
+  if (!container) return;
+
+  try {
+    const token = sessionStorage.getItem('elevate_token');
+    const res = await fetch('/api/hackathons', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    const hackathons = data.hackathons || [];
+
+    const addBtn = document.getElementById('addHackathonBtn');
+    if (addBtn) {
+      const canManage = ['SUPER_ADMIN', 'TNP_ADMIN'].includes((state.role || '').toUpperCase());
+      addBtn.style.display = canManage ? 'flex' : 'none';
+    }
+
+    const activeCount = hackathons.filter(h => h.status === 'Active').length;
+    const totalParticipants = hackathons.reduce((sum, h) => sum + (h.registeredCount || 0), 0);
+    const topPerformersCount = hackathons.reduce((sum, h) => sum + ((h.topPerformers || []).length), 0);
+
+    const elActive = document.getElementById('instActiveHackathonsCount');
+    const elPart = document.getElementById('instTotalHackathonParticipants');
+    const elTop = document.getElementById('instTopPerformersCount');
+    if (elActive) elActive.textContent = activeCount;
+    if (elPart) elPart.textContent = totalParticipants;
+    if (elTop) elTop.textContent = topPerformersCount;
+
+    container.innerHTML = hackathons.map(h => `
+      <div style="background: #F8F7FC; border: 1.5px solid var(--border); border-radius: 18px; padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+          <span style="font-size: 10px; font-weight: 800; background: ${h.status === 'Active' ? '#DCFCE7' : '#E2E8F0'}; color: ${h.status === 'Active' ? '#16a34a' : '#64748b'}; padding: 3px 10px; border-radius: 99px; text-transform: uppercase;">
+            ${h.status || 'Active'}
+          </span>
+          <span style="font-size: 11px; color: var(--text-2); font-weight: 600;"><i class="ph ph-calendar"></i> ${h.date}</span>
+        </div>
+        <h4 style="font-family: 'Rajdhani', sans-serif; font-size: 19px; font-weight: 800; color: var(--text); margin: 0 0 6px;">${h.title}</h4>
+        <p style="font-size: 12px; color: var(--text-2); margin: 0 0 12px;">Organizer: <strong>${h.organizer}</strong> &bull; Mode: ${h.mode || 'Offline'}</p>
+        <div style="background: #FFFFFF; border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 12px; font-weight: 600; color: var(--text-2);">Registered Students</span>
+          <span style="font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 800; color: #5B2D90;">${h.registeredCount || 0}</span>
+        </div>
+      </div>
+    `).join('');
+
+    if (lbContainer) {
+      const allPerformers = [];
+      hackathons.forEach(h => {
+        (h.topPerformers || []).forEach(tp => {
+          allPerformers.push({ ...tp, hackathon: h.title });
+        });
+      });
+      allPerformers.sort((a, b) => (a.rank - b.rank) || (b.score - a.score));
+
+      if (allPerformers.length === 0) {
+        lbContainer.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 20px; color: var(--text-2);">No top performers recorded yet.</td></tr>`;
+      } else {
+        lbContainer.innerHTML = allPerformers.map(tp => `
+          <tr style="border-bottom: 1px solid var(--border);">
+            <td style="padding: 12px 16px; font-weight: 800; color: #5B2D90;">#${tp.rank}</td>
+            <td style="padding: 12px 16px; font-weight: 700; color: var(--text);">${tp.name}</td>
+            <td style="padding: 12px 16px; color: var(--text-2);">${tp.team || 'Solo'}</td>
+            <td style="padding: 12px 16px; font-weight: 800; color: #16a34a;">${tp.score} XP</td>
+          </tr>
+        `).join('');
+      }
+    }
+  } catch (err) {
+    console.error('Error rendering institute hackathons:', err);
+  }
+}
+
+function openCreateHackathonModal() {
+  const m = document.getElementById('createHackathonModal');
+  if (m) m.style.display = 'flex';
+}
+
+function closeCreateHackathonModal() {
+  const m = document.getElementById('createHackathonModal');
+  if (m) m.style.display = 'none';
+}
+
+async function handleCreateHackathonSubmit(e) {
+  e.preventDefault();
+  const title = document.getElementById('hkTitle').value;
+  const organizer = document.getElementById('hkOrganizer').value;
+  const date = document.getElementById('hkDate').value;
+  const mode = document.getElementById('hkMode').value;
+  const theme = document.getElementById('hkTheme').value;
+
+  try {
+    const token = sessionStorage.getItem('elevate_token');
+    const res = await fetch('/api/hackathons', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ title, organizer, date, mode, theme })
+    });
+    const data = await res.json();
+    if (data.success) {
+      if (typeof showToast === 'function') showToast('Hackathon entry added!', 'success');
+      closeCreateHackathonModal();
+      renderInstituteHackathons();
+    }
+  } catch (err) {
+    console.error('Error creating hackathon:', err);
+  }
+}
+
+function switchStudentMonitoringSubTab(tab) {
+  const recWrap = document.getElementById('studentRecordsTableWrap');
+  const repWrap = document.getElementById('internshipReportsWrap');
+  const btnRec = document.getElementById('tabBtnStudentRecords');
+  const btnRep = document.getElementById('tabBtnInternshipReports');
+
+  if (tab === 'records') {
+    if (recWrap) recWrap.style.display = 'block';
+    if (repWrap) repWrap.style.display = 'none';
+    if (btnRec) { btnRec.style.background = '#5B2D90'; btnRec.style.color = '#fff'; btnRec.style.borderColor = '#5B2D90'; }
+    if (btnRep) { btnRep.style.background = '#FFFFFF'; btnRep.style.color = 'var(--text)'; btnRep.style.borderColor = 'var(--border)'; }
+  } else {
+    if (recWrap) recWrap.style.display = 'none';
+    if (repWrap) repWrap.style.display = 'block';
+    if (btnRep) { btnRep.style.background = '#5B2D90'; btnRep.style.color = '#fff'; btnRep.style.borderColor = '#5B2D90'; }
+    if (btnRec) { btnRec.style.background = '#FFFFFF'; btnRec.style.color = 'var(--text)'; btnRec.style.borderColor = 'var(--border)'; }
+    renderInternshipReports();
+  }
+}
+
+async function renderInternshipReports() {
+  const container = document.getElementById('internshipReportsTableBody');
+  if (!container) return;
+
+  try {
+    const token = sessionStorage.getItem('elevate_token');
+    const res = await fetch('/api/internship-reports', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    const reports = data.reports || [];
+
+    if (reports.length === 0) {
+      container.innerHTML = `<tr><td colspan="9" style="text-align: center; padding: 24px; color: var(--text-2);">No internship reports submitted yet.</td></tr>`;
+      return;
+    }
+
+    const canVerify = ['SUPER_ADMIN', 'TNP_ADMIN'].includes((state.role || '').toUpperCase());
+
+    container.innerHTML = reports.map(r => `
+      <tr style="border-bottom: 1px solid var(--border);">
+        <td style="padding: 12px 16px; font-weight: 700; color: var(--text);">${r.studentName || 'Priya Sharma'}</td>
+        <td style="padding: 12px 16px; color: var(--text-2); font-family: monospace;">${r.prn || 'GHRCE2024047'}</td>
+        <td style="padding: 12px 16px;">
+          <strong style="color: #5B2D90; display: block;">${r.companyName}</strong>
+          <span style="font-size: 11px; color: var(--text-2);">${r.role}</span>
+        </td>
+        <td style="padding: 12px 16px; font-size: 12px;">
+          <div>${r.startDate} to ${r.endDate}</div>
+          <span style="font-size: 10px; font-weight: 700; background: #EDE9F7; color: #5B2D90; padding: 2px 6px; border-radius: 4px;">${r.type || 'In-Person'}</span>
+        </td>
+        <td style="padding: 12px 16px; font-weight: 700; color: #16a34a;">${r.stipend || 'N/A'}</td>
+        <td style="padding: 12px 16px; font-size: 12px; color: var(--text-2); max-width: 200px;">${r.keyLearnings || '-'}</td>
+        <td style="padding: 12px 16px;">
+          <div style="display: flex; flex-direction: column; gap: 4px; font-size: 11px;">
+            ${r.offerLetter ? `<a href="#" onclick="showToast('Viewing Offer Letter...','info'); return false;" style="color: #2563eb; text-decoration: none;">📄 Offer Letter</a>` : ''}
+            ${r.completionCertificate ? `<a href="#" onclick="showToast('Viewing Certificate...','info'); return false;" style="color: #16a34a; text-decoration: none;">📜 Certificate</a>` : ''}
+          </div>
+        </td>
+        <td style="padding: 12px 16px;">
+          <span style="font-size: 11px; font-weight: 800; background: ${r.status === 'Verified by T&P' ? '#DCFCE7' : '#FEF3C7'}; color: ${r.status === 'Verified by T&P' ? '#16a34a' : '#d97706'}; padding: 4px 10px; border-radius: 99px;">
+            ${r.status || 'Submitted'}
+          </span>
+        </td>
+        <td style="padding: 12px 16px; text-align: right;">
+          ${r.status !== 'Verified by T&P' && canVerify ? `
+            <button onclick="handleVerifyInternshipReport('${r.id}')" style="background: #5B2D90; color: #fff; border: none; padding: 6px 12px; border-radius: 8px; font-size: 11px; font-weight: 700; cursor: pointer;">
+              Verify Report
+            </button>
+          ` : '<span style="font-size: 11px; color: var(--text-3);">Verified</span>'}
+        </td>
+      </tr>
+    `).join('');
+  } catch (err) {
+    console.error('Error rendering internship reports:', err);
+  }
+}
+
+async function handleVerifyInternshipReport(id) {
+  try {
+    const token = sessionStorage.getItem('elevate_token');
+    const res = await fetch(`/api/internship-reports/${id}/verify`, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    if (data.success) {
+      if (typeof showToast === 'function') showToast('Internship report verified by T&P!', 'success');
+      renderInternshipReports();
+    }
+  } catch (err) {
+    console.error('Error verifying internship report:', err);
   }
 }

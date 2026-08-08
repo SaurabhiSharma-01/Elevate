@@ -74,7 +74,7 @@
   <div id="screen-app" class="screen flex-screen active" style="display: flex; min-height: 100vh;">
     
     <!-- Static Fixed Sidebar matching Student Portal Card Structure -->
-    <aside class="sidebar" id="appSidebar">
+    <aside class="sidebar collapsed" id="appSidebar" onmouseenter="expandSidebar()" onmouseleave="collapseSidebar()">
       
       <!-- Brand Header -->
       <div class="sidebar-brand" style="padding: 18px 16px 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); position: relative;">
@@ -108,79 +108,119 @@
         </div>
       </div>
 
-      <!-- Floating Sidebar Toggle Button -->
-      <button class="sidebar-arrow-toggle" onclick="toggleSidebar()" title="Toggle Sidebar" style="position: absolute; right: -14px; top: 22px; width: 28px; height: 28px; border-radius: 50%; background: #5B2D90; color: #fff; display: flex; align-items: center; justify-content: center; z-index: 10; border: 2px solid #fff; box-shadow: 0 4px 10px rgba(91, 45, 144, 0.3); cursor: pointer;">
-        <i class="ph ph-caret-left" id="sidebarArrowIcon"></i>
-      </button>
-
       <!-- Sidebar Section Navigation -->
       <nav class="sidebar-nav" style="padding: 14px 12px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;">
         
         <!-- SECTION BOX 1: MAIN -->
-        <div class="sb-section-box">
-          <div class="nav-section-label" style="padding: 4px 8px 6px; font-size: 10px; font-weight: 800; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em;">Main</div>
+        <div class="sb-section-box main-box" id="sectionBox-main">
+          <div class="nav-section-header" onclick="toggleSectionBox('main')">
+            <div class="nav-section-icon">
+              <i class="ph ph-house"></i>
+            </div>
+            <span class="nsh-label">Main</span>
+            <svg class="nsh-chevron" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="nav-section-body">
           <div class="nav-item active" data-page="college-dashboard" onclick="navigateTo('college-dashboard')">
             <div class="nav-icon-circle"><i class="ph ph-squares-four"></i></div>
             <span class="nav-text">Dashboard</span>
           </div>
+          </div><!-- end nav-section-body -->
         </div>
 
         <!-- SECTION BOX 2: STUDENT MONITORING -->
-        <div class="sb-section-box">
-          <div class="nav-section-label" style="padding: 4px 8px 6px; font-size: 10px; font-weight: 800; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em;">Student Monitoring</div>
-          <div class="nav-item" data-page="institute-details" onclick="navigateTo('institute-details')">
+        <div class="sb-section-box learning-box collapsed" id="sectionBox-students">
+          <div class="nav-section-header" onclick="toggleSectionBox('students')">
+            <div class="nav-section-icon">
+              <i class="ph ph-users-three"></i>
+            </div>
+            <span class="nsh-label">Student Monitoring</span>
+            <svg class="nsh-chevron" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="nav-section-body">
+          <div class="nav-item" data-page="institute-details" id="nav-institute-details" onclick="navigateTo('institute-details')">
             <div class="nav-icon-circle"><i class="ph ph-users-three"></i></div>
             <span class="nav-text">Student Directory</span>
           </div>
-          <div class="nav-item" data-page="resource-management" onclick="navigateTo('resource-management')">
+          <div class="nav-item" data-page="learning-materials" id="nav-learning-materials" onclick="navigateTo('learning-materials')">
+            <div class="nav-icon-circle"><i class="ph ph-books"></i></div>
+            <span class="nav-text">Learning Materials</span>
+          </div>
+          <div class="nav-item" data-page="resource-management" id="nav-resource-management" onclick="navigateTo('resource-management')">
             <div class="nav-icon-circle"><i class="ph ph-book-open"></i></div>
             <span class="nav-text">Resource LMS HQ</span>
           </div>
+          </div><!-- end nav-section-body -->
         </div>
 
         <!-- SECTION BOX 3: PLACEMENT HQ -->
-        <div class="sb-section-box">
-          <div class="nav-section-label" style="padding: 4px 8px 6px; font-size: 10px; font-weight: 800; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em;">Placement HQ</div>
-          <div class="nav-item" data-page="placement-drives" onclick="navigateTo('placement-drives')">
+        <div class="sb-section-box main-box collapsed" id="sectionBox-placement">
+          <div class="nav-section-header" onclick="toggleSectionBox('placement')">
+            <div class="nav-section-icon">
+              <i class="ph ph-briefcase"></i>
+            </div>
+            <span class="nsh-label">Placement HQ</span>
+            <svg class="nsh-chevron" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="nav-section-body">
+          <div class="nav-item" data-page="placement-drives" id="nav-placement-drives" onclick="navigateTo('placement-drives')">
             <div class="nav-icon-circle"><i class="ph ph-briefcase"></i></div>
             <span class="nav-text">Placement Drives</span>
           </div>
-          <div class="nav-item" data-page="applications" onclick="navigateTo('applications')">
+          <div class="nav-item" data-page="applications" id="nav-applications" onclick="navigateTo('applications')">
             <div class="nav-icon-circle"><i class="ph ph-paper-plane"></i></div>
             <span class="nav-text">Applications Pipeline</span>
           </div>
-          <div class="nav-item" data-page="company-management" onclick="navigateTo('company-management')">
+          <div class="nav-item" data-page="company-management" id="nav-company-management" onclick="navigateTo('company-management')">
             <div class="nav-icon-circle"><i class="ph ph-buildings"></i></div>
             <span class="nav-text">Company CRM</span>
           </div>
+          </div><!-- end nav-section-body -->
         </div>
 
         <!-- SECTION BOX 4: INNOVATION HUB (DARK PURPLE CARD MATCHING STARTUPS BOX IN IMAGE 1) -->
-        <div class="sb-section-box innovation-box">
-          <div class="nav-section-label" style="padding: 4px 8px 6px; font-size: 10px; font-weight: 800; color: #E9D5FF; text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px;">
-            <span>🚀 Innovation Hub</span>
+        <div class="sb-section-box innovation-box startup-box collapsed" id="sectionBox-innovation">
+          <div class="nav-section-header" onclick="toggleSectionBox('innovation')">
+            <div class="nav-section-icon">
+              <i class="ph ph-rocket-launch"></i>
+            </div>
+            <span class="nsh-label">Innovation Hub</span>
+            <svg class="nsh-chevron" width="12" height="12" fill="none" stroke="rgba(233,213,255,0.7)" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
-          <div class="nav-item" data-page="startup-showcase" onclick="navigateTo('startup-showcase')">
+          <div class="nav-section-body">
+          <div class="nav-item" data-page="startup-showcase" id="nav-startup-showcase" onclick="navigateTo('startup-showcase')">
             <div class="nav-icon-circle"><i class="ph ph-rocket-launch"></i></div>
             <span class="nav-text">Startup Showcase</span>
           </div>
-          <div class="nav-item" data-page="mentor-management" onclick="navigateTo('mentor-management')">
+          <div class="nav-item" data-page="hackathon-dashboard" id="nav-hackathon-dashboard" onclick="navigateTo('hackathon-dashboard')">
+            <div class="nav-icon-circle"><i class="ph ph-trophy"></i></div>
+            <span class="nav-text">Hackathon Dashboard</span>
+          </div>
+          <div class="nav-item" data-page="mentor-management" id="nav-mentor-management" onclick="navigateTo('mentor-management')">
             <div class="nav-icon-circle"><i class="ph ph-user-gear"></i></div>
             <span class="nav-text">Mentor Network</span>
           </div>
-          <div class="nav-item" data-page="startup-analytics" onclick="navigateTo('startup-analytics')">
+          <div class="nav-item" data-page="startup-analytics" id="nav-startup-analytics" onclick="navigateTo('startup-analytics')">
             <div class="nav-icon-circle"><i class="ph ph-chart-line-up"></i></div>
             <span class="nav-text">Startup Analytics</span>
           </div>
-          <div class="nav-item" data-page="hackathon-analytics" onclick="navigateTo('hackathon-analytics')">
+          <div class="nav-item" data-page="hackathon-analytics" id="nav-hackathon-analytics" onclick="navigateTo('hackathon-analytics')">
             <div class="nav-icon-circle"><i class="ph ph-trophy"></i></div>
             <span class="nav-text">Hackathon Analytics</span>
           </div>
+          </div><!-- end nav-section-body -->
         </div>
 
         <!-- SECTION BOX 5: SYSTEM -->
-        <div class="sb-section-box">
-          <div class="nav-section-label" style="padding: 4px 8px 6px; font-size: 10px; font-weight: 800; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em;">System</div>
+        <div class="sb-section-box learning-box collapsed" id="sectionBox-system">
+          <div class="nav-section-header" onclick="toggleSectionBox('system')">
+            <div class="nav-section-icon">
+              <i class="ph ph-gear"></i>
+            </div>
+            <span class="nsh-label">System</span>
+            <svg class="nsh-chevron" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="nav-section-body">
           <div class="nav-item" data-page="announcements" onclick="navigateTo('announcements')">
             <div class="nav-icon-circle"><i class="ph ph-megaphone"></i></div>
             <span class="nav-text">Communication Center</span>
@@ -189,6 +229,7 @@
             <div class="nav-icon-circle"><i class="ph ph-gear"></i></div>
             <span class="nav-text">Settings</span>
           </div>
+          </div><!-- end nav-section-body -->
         </div>
 
       </nav>
@@ -199,7 +240,7 @@
           <div style="width: 36px; height: 36px; border-radius: 50%; background: #5B2D90; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;" id="tnpOfficerInitials">SY</div>
           <div style="flex: 1; overflow: hidden;">
             <div style="font-weight: 700; font-size: 13px; color: var(--text);" id="tnpOfficerName">Saurabhi Sharma</div>
-            <div style="font-size: 11px; color: var(--text-3);">Head T&P Officer</div>
+            <div style="font-size: 11px; color: var(--text-3);" id="tnpOfficerRoleText">Head T&amp;P Officer</div>
           </div>
           <button onclick="handleLogout()" title="Logout" style="color: var(--text-3); background: none; border: none; cursor: pointer;">
             <i class="ph ph-sign-out" style="font-size: 18px;"></i>
@@ -208,8 +249,13 @@
       </div>
     </aside>
 
+    <!-- Floating Edge Toggle Button -->
+    <button class="sidebar-toggle-btn" id="sidebarEdgeToggle" onclick="toggleSidebarPin()" title="Pin/Unpin Sidebar">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+
     <!-- Main Content Area -->
-    <main style="flex: 1; min-width: 0; display: flex; flex-direction: column; background: #F5F4F8; margin-left: 270px;">
+    <main class="main-content">
       
       <!-- Top Navigation Header -->
       <header style="height: 68px; background: #FFFFFF; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 28px; position: sticky; top: 0; z-index: 100;">
@@ -410,8 +456,18 @@
             </div>
           </div>
 
+          <!-- Student Sub-Tabs -->
+          <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+            <button id="tabBtnStudentRecords" onclick="switchStudentMonitoringSubTab('records')" style="padding: 10px 20px; border-radius: 12px; border: 1.5px solid #5B2D90; background: #5B2D90; color: #fff; font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 800; cursor: pointer;">
+              <i class="ph ph-users-three"></i> Student Records
+            </button>
+            <button id="tabBtnInternshipReports" onclick="switchStudentMonitoringSubTab('internships')" style="padding: 10px 20px; border-radius: 12px; border: 1.5px solid var(--border); background: #FFFFFF; color: var(--text); font-family: 'Rajdhani', sans-serif; font-size: 15px; font-weight: 800; cursor: pointer;">
+              <i class="ph ph-briefcase"></i> View Internship Reports
+            </button>
+          </div>
+
           <!-- Student Table Container -->
-          <div style="background: #FFFFFF; border: 1px solid var(--border); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-sm);">
+          <div id="studentRecordsTableWrap" style="background: #FFFFFF; border: 1px solid var(--border); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-sm);">
             <div style="padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
               <h3 style="font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 800; margin: 0; color: #5B2D90;">Student Records</h3>
               <button onclick="openImportStudentModal()" style="background: #5B2D90; color: #fff; border: none; padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer;">
@@ -434,6 +490,37 @@
                 </thead>
                 <tbody id="studentDirectoryTableBody">
                   <!-- Dynamically rendered student rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Internship Reports Container -->
+          <div id="internshipReportsWrap" style="display: none; background: #FFFFFF; border: 1px solid var(--border); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-sm);">
+            <div style="padding: 16px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+              <div>
+                <h3 style="font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 800; margin: 0; color: #5B2D90;">Submitted Internship Reports</h3>
+                <p style="font-size: 12px; color: var(--text-2); margin: 2px 0 0;">Review and verify student internship submissions, offer letters, and certificates.</p>
+              </div>
+            </div>
+            
+            <div style="overflow-x: auto;">
+              <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                <thead>
+                  <tr style="background: #F8F7FC; color: var(--text-2); border-bottom: 1px solid var(--border);">
+                    <th style="padding: 12px 16px;">Student</th>
+                    <th style="padding: 12px 16px;">PRN</th>
+                    <th style="padding: 12px 16px;">Company & Role</th>
+                    <th style="padding: 12px 16px;">Duration & Type</th>
+                    <th style="padding: 12px 16px;">Stipend</th>
+                    <th style="padding: 12px 16px;">Key Learnings</th>
+                    <th style="padding: 12px 16px;">Documents</th>
+                    <th style="padding: 12px 16px;">Status</th>
+                    <th style="padding: 12px 16px; text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="internshipReportsTableBody">
+                  <!-- Dynamically populated -->
                 </tbody>
               </table>
             </div>
@@ -783,8 +870,128 @@
               </div>
             </div>
 
+        <!-- ============================================================
+           LEARNING MATERIAL DISTRIBUTION PAGE
+           ============================================================ -->
+        <section id="page-learning-materials" class="page-content" style="display: none;">
+          <div style="background: #FFFFFF; border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-bottom: 24px;">
+            <h1 style="font-family: 'Rajdhani', sans-serif; font-size: 26px; font-weight: 800; color: #5B2D90; margin: 0 0 6px;">Learning Material Distribution</h1>
+            <p style="font-size: 13px; color: var(--text-2); margin: 0;">Upload and distribute study materials, prep guides, and resources targeted by branch and academic year.</p>
           </div>
 
+          <!-- Upload Form Panel (Admins Only) -->
+          <div id="learningMaterialUploadPanel" style="background: #FFFFFF; border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-bottom: 24px;">
+            <h3 style="font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 800; color: #5B2D90; margin: 0 0 16px;">Post New Learning Resource</h3>
+            <form onsubmit="handleUploadLearningMaterial(event)">
+              <div style="display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+                <div>
+                  <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 4px;">Resource Title</label>
+                  <input type="text" id="matTitle" placeholder="e.g. Full Stack Interview Handbook 2026" required style="width:100%; border:1px solid var(--border); padding:10px; border-radius:10px; background:#F8F7FC;" />
+                </div>
+                <div>
+                  <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 4px;">Target Branch</label>
+                  <select id="matTargetBranch" style="width:100%; border:1px solid var(--border); padding:10px; border-radius:10px; background:#F8F7FC;">
+                    <option value="ALL">All Branches</option>
+                    <option value="CSE">CSE</option>
+                    <option value="IT">Information Technology</option>
+                    <option value="ECE">Electronics</option>
+                    <option value="MECH">Mechanical</option>
+                    <option value="CIVIL">Civil</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 4px;">Target Year</label>
+                  <select id="matTargetYear" style="width:100%; border:1px solid var(--border); padding:10px; border-radius:10px; background:#F8F7FC;">
+                    <option value="ALL">All Years</option>
+                    <option value="FY">First Year (FY)</option>
+                    <option value="SY">Second Year (SY)</option>
+                    <option value="TY">Third Year (TY)</option>
+                    <option value="Final">Final Year</option>
+                  </select>
+                </div>
+              </div>
+              <div style="margin-bottom: 12px;">
+                <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 4px;">Resource File/Link URL</label>
+                <input type="url" id="matLink" placeholder="https://drive.google.com/... or https://example.com/material.pdf" required style="width:100%; border:1px solid var(--border); padding:10px; border-radius:10px; background:#F8F7FC;" />
+              </div>
+              <div style="margin-bottom: 16px;">
+                <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 4px;">Description</label>
+                <textarea id="matDescription" rows="2" placeholder="Brief summary of what this resource covers..." required style="width:100%; border:1px solid var(--border); padding:10px; border-radius:10px; background:#F8F7FC;"></textarea>
+              </div>
+              <div style="display: flex; justify-content: flex-end;">
+                <button type="submit" style="background: #5B2D90; color: #fff; border: none; padding: 10px 22px; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;">
+                  <i class="ph ph-upload-simple"></i> Post Resource
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Material Grid List -->
+          <div style="background: #FFFFFF; border: 1px solid var(--border); border-radius: 20px; padding: 24px;">
+            <h3 style="font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 800; color: #5B2D90; margin: 0 0 16px;">Active Learning Resources</h3>
+            <div id="materialsListGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================
+           HACKATHON DASHBOARD PAGE (INSTITUTE PORTAL)
+           ============================================================ -->
+        <section id="page-hackathon-dashboard" class="page-content" style="display: none;">
+          <div style="background: #FFFFFF; border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <h1 style="font-family: 'Rajdhani', sans-serif; font-size: 26px; font-weight: 800; color: #5B2D90; margin: 0 0 6px;">Hackathon Dashboard</h1>
+              <p style="font-size: 13px; color: var(--text-2); margin: 0;">Institutional overview of active hackathons, student participation metrics, and campus leaderboards.</p>
+            </div>
+            <button id="addHackathonBtn" onclick="openCreateHackathonModal()" style="display: flex; align-items: center; gap: 6px; background: #5B2D90; color: #fff; border: none; padding: 10px 18px; border-radius: 12px; font-size: 13px; font-weight: 700; cursor: pointer;">
+              <i class="ph ph-plus-circle"></i> Add Hackathon Entry
+            </button>
+          </div>
+
+          <!-- Hackathon Stat Metrics Row -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px;">
+            <div style="background: #FFFFFF; border: 1px solid var(--border); border-radius: 18px; padding: 20px;">
+              <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--text-3); margin-bottom: 4px;">ACTIVE HACKATHONS</div>
+              <div style="font-family: 'Rajdhani', sans-serif; font-size: 32px; font-weight: 800; color: #5B2D90;" id="instActiveHackathonsCount">2</div>
+            </div>
+            <div style="background: #FFFFFF; border: 1px solid var(--border); border-radius: 18px; padding: 20px;">
+              <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--text-3); margin-bottom: 4px;">TOTAL PARTICIPANTS</div>
+              <div style="font-family: 'Rajdhani', sans-serif; font-size: 32px; font-weight: 800; color: #2563eb;" id="instTotalHackathonParticipants">162</div>
+            </div>
+            <div style="background: #FFFFFF; border: 1px solid var(--border); border-radius: 18px; padding: 20px;">
+              <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--text-3); margin-bottom: 4px;">TOP PERFORMERS</div>
+              <div style="font-family: 'Rajdhani', sans-serif; font-size: 32px; font-weight: 800; color: #16a34a;" id="instTopPerformersCount">12</div>
+            </div>
+          </div>
+
+          <!-- Active & Past Hackathons List Grid -->
+          <div style="background: #FFFFFF; border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-bottom: 24px;">
+            <h3 style="font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 800; color: #5B2D90; margin: 0 0 16px;">Campus Hackathons</h3>
+            <div id="instituteHackathonsList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 18px;">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Leaderboard / Top Performers Table -->
+          <div style="background: #FFFFFF; border: 1px solid var(--border); border-radius: 20px; padding: 24px;">
+            <h3 style="font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 800; color: #5B2D90; margin: 0 0 16px;">Hackathon Campus Leaderboard</h3>
+            <div style="overflow-x: auto;">
+              <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+                <thead>
+                  <tr style="background: #F8F7FC; color: var(--text-2); border-bottom: 1px solid var(--border);">
+                    <th style="padding: 12px 16px;">Rank</th>
+                    <th style="padding: 12px 16px;">Student Name</th>
+                    <th style="padding: 12px 16px;">Team Name</th>
+                    <th style="padding: 12px 16px;">Score / XP</th>
+                  </tr>
+                </thead>
+                <tbody id="instituteHackathonsLeaderboard">
+                  <!-- Populated via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
         </section>
 
       </div><!-- end page container -->
@@ -956,6 +1163,45 @@
       <div id="startupReviewModalContent">
         <!-- Dynamically rendered startup review & YouTube style comments -->
       </div>
+    </div>
+  </div>
+
+  <!-- Create Hackathon Modal -->
+  <div class="modal-overlay" id="createHackathonModal" style="display: none; position: fixed; inset: 0; z-index: 2000; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); align-items: center; justify-content: center;" onclick="closeCreateHackathonModal(event)">
+    <div style="width: 92%; max-width: 580px; background: #FFFFFF; border-radius: 24px; border: 1px solid var(--border); padding: 28px;" onclick="event.stopPropagation()">
+      <h3 style="font-family: 'Rajdhani', sans-serif; font-size: 24px; font-weight: 800; margin-top: 0; color: #5B2D90;">Add Hackathon Entry</h3>
+      <form onsubmit="handleCreateHackathonSubmit(event)">
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 4px;">Hackathon Title</label>
+          <input type="text" id="hkTitle" placeholder="e.g. HackFin 2026 National Competition" required style="width:100%; border:1px solid var(--border); padding:10px; border-radius:10px; background:#F8F7FC;" />
+        </div>
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 4px;">Organizer</label>
+          <input type="text" id="hkOrganizer" placeholder="e.g. GH Raisoni College & IEEE" required style="width:100%; border:1px solid var(--border); padding:10px; border-radius:10px; background:#F8F7FC;" />
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+          <div>
+            <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 4px;">Event Date</label>
+            <input type="date" id="hkDate" required style="width:100%; border:1px solid var(--border); padding:10px; border-radius:10px; background:#F8F7FC;" />
+          </div>
+          <div>
+            <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 4px;">Mode</label>
+            <select id="hkMode" style="width:100%; border:1px solid var(--border); padding:10px; border-radius:10px; background:#F8F7FC;">
+              <option value="Offline">Offline Campus</option>
+              <option value="Online">Online Virtual</option>
+              <option value="Hybrid">Hybrid</option>
+            </select>
+          </div>
+        </div>
+        <div style="margin-bottom: 16px;">
+          <label style="font-size: 12px; font-weight: 600; display: block; margin-bottom: 4px;">Theme / Focus</label>
+          <input type="text" id="hkTheme" placeholder="e.g. Generative AI & FinTech Innovations" required style="width:100%; border:1px solid var(--border); padding:10px; border-radius:10px; background:#F8F7FC;" />
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+          <button type="button" onclick="closeCreateHackathonModal()" style="padding: 8px 16px; border-radius: 10px; border: 1px solid var(--border); background: transparent; cursor: pointer;">Cancel</button>
+          <button type="submit" style="padding: 8px 22px; border-radius: 10px; border: none; background: #5B2D90; color: #fff; font-weight: 700; cursor: pointer;">Save Hackathon</button>
+        </div>
+      </form>
     </div>
   </div>
 

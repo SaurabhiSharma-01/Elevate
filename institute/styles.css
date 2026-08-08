@@ -51,6 +51,125 @@
   --bg-sidebar:     #E8E7EE; /* Darker sidebar background in light mode */
 }
 
+/* ─── Navigation Visibility & Responsive Layout ─── */
+.nav-hidden {
+  display: none !important;
+}
+
+/* ============================================================
+   SIDEBAR & MAIN CONTENT TRANSITIONS (MATCHING STUDENT PORTAL)
+   ============================================================ */
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 260px;
+  background: var(--surface, #FFFFFF);
+  border-right: 1px solid var(--border, #E2E2EC);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  transition: width 0.3s cubic-bezier(.4,0,.2,1), transform 0.3s cubic-bezier(.4,0,.2,1);
+  overflow: hidden;
+}
+
+.sidebar.collapsed {
+  width: 72px !important;
+}
+
+.sidebar.collapsed .sb-name-wrapper,
+.sidebar.collapsed .nsh-label,
+.sidebar.collapsed .nsh-chevron,
+.sidebar.collapsed .nav-text,
+.sidebar.collapsed #tnpOfficerName,
+.sidebar.collapsed #tnpOfficerRoleText {
+  display: none !important;
+}
+
+.sidebar.collapsed .nav-section-header {
+  justify-content: center !important;
+  padding: 8px 0 !important;
+}
+
+.sidebar.collapsed .nav-section-icon,
+.sidebar.collapsed .nav-icon-circle {
+  margin: 0 auto !important;
+}
+
+.sidebar.collapsed .sb-section-box {
+  padding: 6px 0 !important;
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+.sidebar.collapsed .sb-section-box.startup-box {
+  background: linear-gradient(145deg, rgba(24, 18, 43, 0.98) 0%, rgba(37, 27, 62, 0.98) 50%, rgba(26, 16, 47, 0.98) 100%) !important;
+  border-radius: 14px !important;
+}
+
+.sidebar.collapsed .nav-section-body {
+  display: none !important;
+}
+
+.sidebar.collapsed:hover .nav-section-body {
+  display: flex !important;
+}
+
+/* Floating Edge Toggle Button on sidebar right border */
+.sidebar-toggle-btn {
+  position: fixed;
+  top: 50%;
+  left: 242px;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #5B2D90;
+  border: 1.5px solid #FFFFFF;
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(91, 45, 144, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 250;
+  transition: left 0.3s cubic-bezier(.4,0,.2,1), transform 0.2s ease, background 0.2s ease;
+}
+
+.sidebar-toggle-btn:hover {
+  background: #4A2476;
+  transform: translateY(-50%) scale(1.1);
+}
+
+.sidebar.collapsed ~ .sidebar-toggle-btn,
+#appSidebar.collapsed ~ #sidebarEdgeToggle {
+  left: 54px;
+}
+
+.sidebar.collapsed ~ .sidebar-toggle-btn svg,
+#appSidebar.collapsed ~ #sidebarEdgeToggle svg {
+  transform: rotate(180deg);
+}
+
+/* Main Content Area adjusting to sidebar width with ZERO gap */
+.main-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg, #F5F4F8);
+  margin-left: 260px;
+  transition: margin-left 0.3s cubic-bezier(.4,0,.2,1);
+}
+
+.sidebar.collapsed ~ .main-content,
+#appSidebar.collapsed ~ .main-content {
+  margin-left: 72px !important;
+}
+
 /* Dark Mode overrides */
 body.dark {
   --bg:             #0A0B10; /* Darkened gray-black space background */
@@ -4585,18 +4704,43 @@ main {
   background: #F5F4F8 !important;
 }
 
-/* Sidebar Section Box Container Cards */
+/* Sidebar Section Box Container Cards with Alternating Colors & Accordion */
 .sb-section-box {
-  background: #FFFFFF;
-  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 10px;
   margin-bottom: 12px;
+  transition: all var(--transition);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Alternating White / Purple / Dark Purple */
+.sb-section-box.main-box {
+  background: #FFFFFF;
+  border: 1.5px solid var(--border);
   box-shadow: 0 2px 8px rgba(0,0,0,0.02);
 }
+body.dark .sb-section-box.main-box {
+  background: #181c2b;
+  border: 1.5px solid #2e354f;
+}
+
+.sb-section-box.learning-box {
+  background: linear-gradient(135deg, #ede9f7 0%, #f3f0f8 100%);
+  border: 1.5px solid #b3a0d6;
+  box-shadow: 0 2px 8px rgba(91, 45, 144, 0.08);
+}
+body.dark .sb-section-box.learning-box {
+  background: #151226;
+  border: 1.5px solid #4a3475;
+}
+
 .sb-section-box.innovation-box, .sb-section-box.startup-box {
-  background: #1E193B !important;
-  border: 1px solid #31295A !important;
+  background: linear-gradient(145deg, rgba(24, 18, 43, 0.98) 0%, rgba(37, 27, 62, 0.98) 50%, rgba(26, 16, 47, 0.98) 100%) !important;
+  border: 1.5px solid rgba(168, 85, 247, 0.45) !important;
+  box-shadow: 0 10px 25px rgba(15, 10, 30, 0.35);
+  color: #fff;
 }
 .sb-section-box.innovation-box .nav-section-label {
   color: #E9D5FF !important;
@@ -4619,6 +4763,136 @@ main {
 .sb-section-box.innovation-box .nav-item.active .nav-icon-circle {
   background: #FFFFFF !important;
   color: #5B2D90 !important;
+}
+
+/* ── Section Dropdown Header (clickable) ── */
+.nav-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-start;
+  padding: 6px 8px;
+  cursor: pointer;
+  user-select: none;
+  border-radius: 10px;
+  transition: background var(--transition);
+}
+.nav-section-header:hover {
+  background: rgba(91, 45, 144, 0.06);
+}
+.innovation-box .nav-section-header:hover {
+  background: rgba(168, 85, 247, 0.12);
+}
+.nav-section-header .nsh-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  flex: 1;
+}
+.innovation-box .nav-section-header .nsh-label {
+  color: #e9d5ff;
+}
+.nav-section-header .nsh-chevron {
+  transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+  color: var(--text-3);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.innovation-box .nav-section-header .nsh-chevron {
+  color: rgba(233, 213, 255, 0.7);
+}
+.sb-section-box.collapsed .nav-section-header .nsh-chevron {
+  transform: rotate(-90deg);
+}
+
+/* Section Icon Styles */
+.nav-section-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition);
+  border: 1px solid transparent;
+}
+/* White boxes (Main & Placement HQ) */
+.sb-section-box.main-box .nav-section-icon {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  color: var(--text-2);
+}
+/* Purple tint boxes (Student Monitoring & System) */
+.sb-section-box.learning-box .nav-section-icon {
+  background: #f5f2fc;
+  border: 1px solid #dcd3f1;
+  color: var(--primary);
+}
+/* Dark purple boxes (Innovation Hub) */
+.sb-section-box.innovation-box .nav-section-icon {
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  color: #c084fc;
+}
+
+/* Hover States */
+.nav-section-header:hover .nav-section-icon {
+  background: var(--primary) !important;
+  color: #fff !important;
+  border-color: var(--primary) !important;
+}
+.sb-section-box.innovation-box .nav-section-header:hover .nav-section-icon {
+  background: linear-gradient(135deg, #9333ea, #c084fc) !important;
+  color: #fff !important;
+  border-color: #c084fc !important;
+}
+
+/* Center sidebar-nav vertically when collapsed - REMOVED justify-content: center */
+.sidebar.collapsed .sidebar-nav {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
+/* Hide system section box when collapsed to show only 4 main logos and avoid redundancy with avatar */
+.sidebar.collapsed #sectionBox-system {
+  display: none !important;
+}
+
+/* ── Section Body (collapsible items) ── */
+.nav-section-body {
+  overflow: hidden;
+  max-height: 500px;
+  transition: max-height 0.35s cubic-bezier(.4,0,.2,1), opacity 0.25s ease, padding 0.25s ease;
+  opacity: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 2px;
+}
+.sb-section-box.collapsed .nav-section-body {
+  max-height: 0 !important;
+  opacity: 0;
+  padding-top: 0;
+}
+
+/* Hide section body in collapsed sidebar */
+.sidebar.collapsed .nav-section-body {
+  display: none !important;
+}
+.sidebar.collapsed .nav-section-header .nsh-chevron {
+  display: none !important;
+}
+.sidebar.collapsed .nav-section-header .nsh-label {
+  display: none !important;
+}
+.sidebar.collapsed .nav-section-header {
+  padding: 4px 0 !important;
+  justify-content: center !important;
+  gap: 0 !important;
 }
 
 /* Sidebar Navigation Items & Icon Circles */

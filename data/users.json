@@ -1,0 +1,63 @@
+{
+  "admins": [
+    {
+      "id": "admin_001",
+      "name": "Super Admin",
+      "email": "admin@elevate.in",
+      "password": "$2a$10$r.251KjP2S23c7b.Fm8q7.w2g9M1W.v91v.kR5m.s7.N8Z.yW8Z75",
+      "role": "SUPER_ADMIN"
+    }
+  ],
+  "tnp_staff": [
+    {
+      "id": "tnp_001",
+      "name": "T&P Officer",
+      "email": "tnp@raisoni.net",
+      "password": "$2a$10$r.251KjP2S23c7b.Fm8q7.w2g9M1W.v91v.kR5m.s7.N8Z.yW8Z75",
+      "role": "TNP_ADMIN"
+    }
+  ],
+  "incubation_staff": [
+    {
+      "id": "inc_001",
+      "name": "Incubation Head",
+      "email": "incubation@raisoni.net",
+      "password": "$2a$10$r.251KjP2S23c7b.Fm8q7.w2g9M1W.v91v.kR5m.s7.N8Z.yW8Z75",
+      "role": "INCUBATION_ADMIN"
+    }
+  ],
+  "faculty": [
+    {
+      "id": "fac_001",
+      "name": "HOD CSE",
+      "email": "hod.cse@raisoni.net",
+      "password": "$2a$10$r.251KjP2S23c7b.Fm8q7.w2g9M1W.v91v.kR5m.s7.N8Z.yW8Z75",
+      "role": "FACULTY",
+      "department": "CSE"
+    }
+  ],
+  "students": [
+    {
+      "id": "STU_001",
+      "prn": "GHRCE2024047",
+      "name": "Priya Sharma",
+      "email": "priya@student.raisoni.net",
+      "password": "$2a$10$r.251KjP2S23c7b.Fm8q7.w2g9M1W.v91v.kR5m.s7.N8Z.yW8Z75",
+      "role": "STUDENT",
+      "yearOfStudy": "Final",
+      "department": "CSE",
+      "cgpa": 8.5
+    },
+    {
+      "id": "STU_002",
+      "prn": "GHRCE2024012",
+      "name": "Rohan Mehta",
+      "email": "rohan@student.raisoni.net",
+      "password": "$2a$10$r.251KjP2S23c7b.Fm8q7.w2g9M1W.v91v.kR5m.s7.N8Z.yW8Z75",
+      "role": "STUDENT",
+      "yearOfStudy": "TY",
+      "department": "IT",
+      "cgpa": 7.9
+    }
+  ]
+}

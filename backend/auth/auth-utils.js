@@ -80,23 +80,54 @@ function verifyToken(token) {
 
 /**
  * Express middleware: require a valid JWT in Authorization header.
- * Sets req.user = decoded payload on success.
+ * Optionally checks if user's role is in allowedRoles.
+ * @param {string|string[]} [allowedRoles]
  */
-function requireAuth(req, res, next) {
-  const authHeader = req.headers['authorization'] || '';
-  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+function requireAuth(allowedRoles) {
+  return (req, res, next) => {
+    // Handle case where requireAuth is called directly as Express middleware: requireAuth(req, res, next)
+    if (req && req.headers && typeof next === 'function') {
+      const authHeader = req.headers['authorization'] || '';
+      const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+      if (!token) {
+        return res.status(401).json({ success: false, message: 'Authentication required. No token provided.' });
+      }
+      const decoded = verifyToken(token);
+      if (!decoded) {
+        return res.status(401).json({ success: false, message: 'Invalid or expired token. Please log in again.' });
+      }
+      req.user = decoded;
+      return next();
+    }
 
-  if (!token) {
-    return res.status(401).json({ success: false, message: 'Authentication required. No token provided.' });
-  }
+    // Returned middleware function for parameterized call: requireAuth(['TNP_ADMIN'])
+    return (req, res, next) => {
+      const authHeader = req.headers['authorization'] || '';
+      const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
 
-  const decoded = verifyToken(token);
-  if (!decoded) {
-    return res.status(401).json({ success: false, message: 'Invalid or expired token. Please log in again.' });
-  }
+      if (!token) {
+        return res.status(401).json({ success: false, message: 'Authentication required. No token provided.' });
+      }
 
-  req.user = decoded;
-  next();
+      const decoded = verifyToken(token);
+      if (!decoded) {
+        return res.status(401).json({ success: false, message: 'Invalid or expired token. Please log in again.' });
+      }
+
+      req.user = decoded;
+
+      if (allowedRoles) {
+        const roles = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
+        // Match either uppercase role (SUPER_ADMIN) or lowercase legacy role (tnp, student)
+        const userRole = (req.user.role || '').toUpperCase();
+        const allowedUpper = roles.map(r => r.toUpperCase());
+        if (!allowedUpper.includes(userRole) && !roles.includes(req.user.role)) {
+          return res.status(403).json({ success: false, message: `Access denied. Required role: ${roles.join(', ')}` });
+        }
+      }
+      next();
+    };
+  };
 }
 
 /**

@@ -51,6 +51,11 @@
   --bg-sidebar:     #E8E7EE; /* Darker sidebar background in light mode */
 }
 
+/* ─── Navigation Visibility ─── */
+.nav-hidden {
+  display: none !important;
+}
+
 /* Dark Mode overrides */
 body.dark {
   --bg:             #0A0B10; /* Darkened gray-black space background */
@@ -677,15 +682,18 @@ ul { list-style: none; }
   width: var(--sidebar-w);
   flex-shrink: 0;
   background: var(--bg-sidebar);
-  border-right: 1px solid var(--border);
+  border: 1px solid var(--border);
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
   position: fixed;
-  top: 0; left: 0;
-  height: 100vh;
+  top: 50%; left: 16px;
+  transform: translateY(-50%);
+  height: calc(100vh - 32px);
   z-index: 200;
   transition: width 0.3s cubic-bezier(.4,0,.2,1), transform 0.3s cubic-bezier(.4,0,.2,1), background-color var(--transition);
   overflow: hidden; /* Stop sidebar from scrolling */
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
 }
 .sidebar-brand {
   padding: 20px 20px 0;
@@ -794,7 +802,7 @@ ul { list-style: none; }
 
 /* ─── Main Content Area ─── */
 .app-main {
-  padding-left: var(--sidebar-w);
+  padding-left: calc(var(--sidebar-w) + 16px);
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -3724,6 +3732,7 @@ ul { list-style: none; }
   gap: 4px;
   transition: all var(--transition);
 }
+/* Alternating White / Purple pattern */
 .sb-section-box.main-box {
   background: #ffffff;
   border: 1.5px solid #d1d5db;
@@ -3734,16 +3743,18 @@ body.dark .sb-section-box.main-box {
   border: 1.5px solid #2e354f;
 }
 
+/* Purple-tinted box (Learning) */
 .sb-section-box.learning-box {
-  background: #f3f0f8;
+  background: linear-gradient(135deg, #ede9f7 0%, #f3f0f8 100%);
   border: 1.5px solid #b3a0d6;
-  box-shadow: 0 2px 8px rgba(91, 45, 144, 0.06);
+  box-shadow: 0 2px 8px rgba(91, 45, 144, 0.08);
 }
 body.dark .sb-section-box.learning-box {
   background: #151226;
   border: 1.5px solid #4a3475;
 }
 
+/* Dark purple gradient (Startups & Hackathons) */
 .sb-section-box.startup-box {
   background: linear-gradient(145deg, rgba(24, 18, 43, 0.98) 0%, rgba(37, 27, 62, 0.98) 50%, rgba(26, 16, 47, 0.98) 100%);
   border: 1.5px solid rgba(168, 85, 247, 0.45);
@@ -3751,12 +3762,148 @@ body.dark .sb-section-box.learning-box {
   color: #fff;
 }
 
+/* White box (Account) */
 .sb-section-box.account-box {
-  background: var(--surface);
+  background: #ffffff;
   border: 1.5px solid #d1d5db;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 body.dark .sb-section-box.account-box {
+  background: #181c2b;
   border: 1.5px solid #2e354f;
+}
+
+/* ── Section Dropdown Header (clickable) ── */
+.nav-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-start;
+  padding: 6px 8px;
+  cursor: pointer;
+  user-select: none;
+  border-radius: 10px;
+  transition: background var(--transition);
+}
+.nav-section-header:hover {
+  background: rgba(91, 45, 144, 0.06);
+}
+.startup-box .nav-section-header:hover {
+  background: rgba(168, 85, 247, 0.12);
+}
+.nav-section-header .nsh-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  flex: 1;
+}
+.startup-box .nav-section-header .nsh-label {
+  color: #e9d5ff;
+}
+.nav-section-header .nsh-chevron {
+  transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+  color: var(--text-3);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.startup-box .nav-section-header .nsh-chevron {
+  color: rgba(233, 213, 255, 0.7);
+}
+.sb-section-box.collapsed .nav-section-header .nsh-chevron {
+  transform: rotate(-90deg);
+}
+
+/* Section Icon Styles */
+.nav-section-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition);
+  border: 1px solid transparent;
+}
+/* White boxes (Main & Account) */
+.sb-section-box.main-box .nav-section-icon,
+.sb-section-box.account-box .nav-section-icon {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  color: var(--text-2);
+}
+/* Purple tint boxes (Learning) */
+.sb-section-box.learning-box .nav-section-icon {
+  background: #f5f2fc;
+  border: 1px solid #dcd3f1;
+  color: var(--primary);
+}
+/* Dark purple boxes (Startups & Hackathons) */
+.sb-section-box.startup-box .nav-section-icon,
+.sb-section-box.hackathon-box .nav-section-icon {
+  background: rgba(168, 85, 247, 0.15);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  color: #c084fc;
+}
+
+/* Hover States */
+.nav-section-header:hover .nav-section-icon {
+  background: var(--primary) !important;
+  color: #fff !important;
+  border-color: var(--primary) !important;
+}
+.sb-section-box.startup-box .nav-section-header:hover .nav-section-icon,
+.sb-section-box.hackathon-box .nav-section-header:hover .nav-section-icon {
+  background: linear-gradient(135deg, #9333ea, #c084fc) !important;
+  color: #fff !important;
+  border-color: #c084fc !important;
+}
+
+/* Center sidebar-nav vertically when collapsed - REMOVED justify-content: center */
+.sidebar.collapsed .sidebar-nav {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important; /* normal gap */
+}
+
+/* Hide account section box when collapsed to show only 4 main logos and avoid redundancy with avatar */
+.sidebar.collapsed #sectionBox-account {
+  display: none !important;
+}
+
+/* ── Section Body (collapsible items) ── */
+.nav-section-body {
+  overflow: hidden;
+  max-height: 500px; /* Large enough for all items */
+  transition: max-height 0.35s cubic-bezier(.4,0,.2,1), opacity 0.25s ease, padding 0.25s ease;
+  opacity: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 2px;
+}
+.sb-section-box.collapsed .nav-section-body {
+  max-height: 0 !important;
+  opacity: 0;
+  padding-top: 0;
+}
+
+/* Hide section body in collapsed sidebar */
+.sidebar.collapsed .nav-section-body {
+  display: none !important;
+}
+.sidebar.collapsed .nav-section-header .nsh-chevron {
+  display: none !important;
+}
+.sidebar.collapsed .nav-section-header .nsh-label {
+  display: none !important;
+}
+.sidebar.collapsed .nav-section-header {
+  padding: 4px 0 !important;
+  justify-content: center !important;
+  gap: 0 !important;
 }
 
 /* Circular Dark Icons for Page Nav Items */
@@ -3863,7 +4010,7 @@ input::placeholder, textarea::placeholder, select::placeholder {
 }
 
 .sidebar.collapsed ~ .app-main {
-  padding-left: 60px;
+  padding-left: 92px;
 }
 
 /* Sidebar Controls Header */
@@ -4262,4 +4409,204 @@ input::placeholder, textarea::placeholder, select::placeholder {
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
 }
+
+/* ── Redesigned Sidebar Profile Card ── */
+.sidebar-profile-card {
+  margin: 14px 12px;
+  padding: 14px 12px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+body.dark .sidebar-profile-card {
+  background: #181c2b;
+  border: 1.5px solid #2e354f;
+}
+.profile-card-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+.profile-card-inner #sidebarAvatar {
+  width: 52px;
+  height: 52px;
+  font-size: 18px;
+  font-weight: 800;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--primary), #a855f7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 14px rgba(91, 45, 144, 0.25);
+  border: 2px solid var(--surface);
+  transition: all var(--transition);
+}
+.profile-dropdown-container {
+  position: relative;
+  width: 100%;
+}
+.profile-dropdown-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  transition: all var(--transition);
+}
+.profile-dropdown-btn:hover {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  color: var(--primary);
+}
+body.dark .profile-dropdown-btn {
+  background: #131622;
+}
+body.dark .profile-dropdown-btn:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+.profile-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  margin-top: 6px;
+  z-index: 500;
+  overflow: hidden;
+  animation: pdmSlide 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes pdmSlide {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.pdm-item {
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  color: var(--text-2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pdm-item svg {
+  color: var(--text-3);
+  transition: color 0.2s;
+}
+.pdm-item:hover {
+  background: var(--surface-2);
+  color: var(--primary);
+}
+.pdm-item:hover svg {
+  color: var(--primary);
+}
+.pdm-item.logout {
+  border-top: 1px solid var(--border);
+  color: var(--error);
+}
+.pdm-item.logout:hover {
+  background: var(--error-light);
+  color: var(--error);
+}
+.pdm-item.logout:hover svg {
+  color: var(--error);
+}
+
+/* ── Sidebar Support Button Container ── */
+.sidebar-support-container {
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--bg-sidebar);
+  transition: all var(--transition);
+}
+.support-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-2);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
+}
+.support-btn:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+.support-btn svg {
+  flex-shrink: 0;
+  color: var(--text-2);
+  transition: color var(--transition);
+}
+.support-btn:hover svg {
+  color: var(--primary);
+}
+
+/* ── Collapsed Sidebar Overrides for Profile & Support ── */
+.sidebar.collapsed .sidebar-profile-card {
+  margin: 8px 4px !important;
+  padding: 6px 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.sidebar.collapsed .sidebar-profile-card .profile-dropdown-container {
+  display: none !important;
+}
+.sidebar.collapsed .sidebar-profile-card #sidebarAvatar {
+  width: 36px !important;
+  height: 36px !important;
+  font-size: 13px !important;
+  border-width: 1px !important;
+}
+.sidebar.collapsed .sidebar-support-container {
+  padding: 10px 0 !important;
+  display: flex !important;
+  justify-content: center !important;
+}
+.sidebar.collapsed .support-btn {
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.sidebar.collapsed .support-text {
+  display: none !important;
+}
+
 

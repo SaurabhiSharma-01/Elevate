@@ -224,8 +224,57 @@ async function loadDatabaseData() {
   }
 }
 
+// ─── SIDEBAR SECTION ACCORDION ───
+const IND_PAGE_SECTION_MAP = {
+  'dashboard':            'recruitment',
+  'talent-search':        'recruitment',
+  'placement-drives':     'recruitment',
+  'candidate-pipeline':   'recruitment',
+  'interviews':           'recruitment',
+  'startup-collaboration':'ecosystem',
+  'mentorship':           'ecosystem',
+  'analytics':            'ecosystem',
+  'company-profile':      'account'
+};
+
+const IND_ALL_SECTION_IDS = ['recruitment', 'ecosystem', 'account'];
+
+function expandSidebar() {
+  const sidebar = document.getElementById('appSidebar');
+  if (sidebar) sidebar.classList.remove('collapsed');
+}
+
+function collapseSidebar() {
+  const sidebar = document.getElementById('appSidebar');
+  if (sidebar) sidebar.classList.add('collapsed');
+}
+
+function toggleSectionBox(sectionId) {
+  const box = document.getElementById(`sectionBox-${sectionId}`);
+  if (!box) return;
+  const sidebar = document.getElementById('appSidebar');
+  if (sidebar && sidebar.classList.contains('collapsed')) return;
+  box.classList.toggle('collapsed');
+}
+
+function openSectionForPage(page) {
+  const targetSection = IND_PAGE_SECTION_MAP[page];
+  if (!targetSection) return;
+  IND_ALL_SECTION_IDS.forEach(id => {
+    const box = document.getElementById(`sectionBox-${id}`);
+    if (!box) return;
+    if (id === targetSection) {
+      box.classList.remove('collapsed');
+    } else {
+      box.classList.add('collapsed');
+    }
+  });
+}
+
 // ─── ROUTING & PAGE NAVIGATION ───
 function navigateTo(pageId) {
+  // Auto-expand the section containing this page
+  openSectionForPage(pageId);
   state.currentPage = pageId;
 
   // Update Nav Active State

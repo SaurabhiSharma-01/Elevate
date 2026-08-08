@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/student/styles.css" />
+  <link rel="stylesheet" href="styles.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
@@ -457,21 +457,21 @@
      MAIN APP (SCREENS 4–13 CONTAINER)
      ============================================================ -->
   <div id="screen-app" class="screen flex-screen active">
-    <!-- Sidebar -->
-    <nav class="sidebar" id="mainSidebar">
+    <!-- Sidebar (Default collapsed, opens on mouse hover) -->
+    <nav class="sidebar collapsed" id="mainSidebar" onmouseenter="expandSidebar()" onmouseleave="collapseSidebar()">
 
       <!-- Sidebar Brand Header + Controls Side-by-Side -->
       <div class="sidebar-brand" style="display: flex; align-items: center; justify-content: space-between; padding: 18px 16px 14px; border-bottom: 1px solid var(--border); position: relative;">
         <!-- Brand Logo & Name -->
         <div style="display: flex; align-items: center; gap: 10px;">
-          <div class="sb-logo">E</div>
+          <div class="sb-logo" style="width: 32px; height: 32px; font-size: 14px; background: linear-gradient(135deg, var(--primary), #a855f7); border-radius: 8px;">E</div>
           <div class="sb-name-wrapper">
-            <div class="sb-name" style="font-family: 'Montserrat', 'Rajdhani', sans-serif; font-weight: 900; font-size: 19px; letter-spacing: -0.02em; background: linear-gradient(135deg, var(--primary), #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Elevate</div>
-            <div class="sb-sub" style="font-size: 10px; color: var(--text-3); font-weight: 600;">Career Portal</div>
+            <div class="sb-name" style="font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 17px; letter-spacing: 0.08em; color: var(--text); text-transform: uppercase;">ELEVATE</div>
+            <div class="sb-sub" style="font-size: 9px; color: var(--text-3); font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">University</div>
           </div>
         </div>
 
-        <!-- Controls (Shifted beside Elevate header) -->
+        <!-- Controls -->
         <div style="display: flex; align-items: center; gap: 6px;">
           <div class="icon-btn" onclick="toggleNotifications()" id="notifBtn" style="position: relative; cursor: pointer; color: var(--text-2); display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border);">
             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -479,13 +479,6 @@
               <path d="M13.73 21a2 2 0 0 1-3.46 0" />
             </svg>
             <div class="notif-dot" style="position: absolute; top: 5px; right: 5px; width: 7px; height: 7px; background: var(--error); border-radius: 50%;"></div>
-          </div>
-          <div class="icon-btn tooltip" data-tip="Help Center" style="cursor: pointer; color: var(--text-2); display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border);">
-            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-              <line x1="12" y1="17" x2="12.01" y2="17" />
-            </svg>
           </div>
         </div>
 
@@ -514,11 +507,46 @@
         </div>
       </div>
 
+      <!-- USER PROFILE CARD (Directly below brand header) -->
+      <div class="sidebar-profile-card">
+        <div class="profile-card-inner">
+          <div class="user-avatar" id="sidebarAvatar">PS</div>
+          
+          <div class="profile-dropdown-container" onmouseenter="showProfileDropdown()" onmouseleave="hideProfileDropdown()">
+            <button onclick="toggleProfileDropdown(event)" class="profile-dropdown-btn" type="button">
+              <span id="sidebarName">Priya Sharma</span>
+              <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" style="transition: transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div id="profileDropdownMenu" class="profile-dropdown-menu">
+              <div class="pdm-item" onclick="navigateTo('profile')">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+                My Profile
+              </div>
+              <div class="pdm-item" onclick="navigateTo('settings')">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg>
+                Settings
+              </div>
+              <div class="pdm-item logout" onclick="showToast('Simulating sign out...', 'info')">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+                Sign Out
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <nav class="sidebar-nav" style="padding: 14px 12px; display: flex; flex-direction: column; gap: 14px;">
         
         <!-- SECTION BOX 1: MAIN -->
-        <div class="sb-section-box main-box">
-          <div class="nav-section-label student-only" style="padding: 4px 8px 6px; font-size: 10px; font-weight: 800; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em;">Main</div>
+        <div class="sb-section-box main-box collapsed" id="sectionBox-main" onmouseenter="hoverExpandSectionBox('main')">
+          <div class="nav-section-header" onclick="toggleSectionBox('main')">
+            <div class="nav-section-icon">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </div>
+            <span class="nsh-label student-only">Main</span>
+            <svg class="nsh-chevron" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="nav-section-body">
           <div class="nav-item student-only active" data-page="dashboard" onclick="navigateTo('dashboard')">
             <div class="nav-icon-circle">
               <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -548,11 +576,28 @@
             </div>
             <span class="nav-text">Roadmap</span>
           </div>
+          <div class="nav-item student-only" data-page="internship-report" id="nav-internship-report" onclick="navigateTo('internship-report')">
+            <div class="nav-icon-circle">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+              </svg>
+            </div>
+            <span class="nav-text">Internship Report</span>
+          </div>
+          </div><!-- end nav-section-body -->
         </div>
 
         <!-- SECTION BOX 2: LEARNING -->
-        <div class="sb-section-box learning-box">
-          <div class="nav-section-label student-only" style="padding: 4px 8px 6px; font-size: 10px; font-weight: 800; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em;">Learning</div>
+        <div class="sb-section-box learning-box collapsed" id="sectionBox-learning" onmouseenter="hoverExpandSectionBox('learning')">
+          <div class="nav-section-header" onclick="toggleSectionBox('learning')">
+            <div class="nav-section-icon">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5v-15z"/></svg>
+            </div>
+            <span class="nsh-label student-only">Learning</span>
+            <svg class="nsh-chevron" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="nav-section-body">
           <div class="nav-item student-only" data-page="learning-hub" onclick="navigateTo('learning-hub')">
             <div class="nav-icon-circle">
               <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -590,13 +635,19 @@
             </div>
             <span class="nav-text">AI Interview</span>
           </div>
+          </div><!-- end nav-section-body -->
         </div>
 
         <!-- SECTION BOX 3: STARTUPS (UNIQUE DARK PURPLE BACKGROUND BOX) -->
-        <div class="sb-section-box startup-box">
-          <div class="nav-section-label student-only" style="padding: 4px 8px 6px; font-size: 10px; font-weight: 800; color: #e9d5ff; text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px;">
-            <span>Startups</span>
+        <div class="sb-section-box startup-box collapsed" id="sectionBox-startups" onmouseenter="hoverExpandSectionBox('startups')">
+          <div class="nav-section-header" onclick="toggleSectionBox('startups')">
+            <div class="nav-section-icon">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
+            </div>
+            <span class="nsh-label student-only">Startups</span>
+            <svg class="nsh-chevron" width="12" height="12" fill="none" stroke="rgba(233,213,255,0.7)" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
+          <div class="nav-section-body">
           <div class="nav-item student-only startup-item" data-page="all-startups" onclick="navigateTo('all-startups')">
             <div class="nav-icon-circle dark-purple">
               <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -626,13 +677,19 @@
             </div>
             <span class="nav-text">Mentors</span>
           </div>
+          </div><!-- end nav-section-body -->
         </div>
 
         <!-- SECTION BOX 4: HACKATHONS (MATCHING STARTUPS MODULE STYLE) -->
-        <div class="sb-section-box hackathon-box startup-box">
-          <div class="nav-section-label student-only" style="padding: 4px 8px 6px; font-size: 10px; font-weight: 800; color: #e9d5ff; text-transform: uppercase; letter-spacing: 0.08em; display: flex; align-items: center; gap: 6px;">
-            <span>Hackathons</span>
+        <div class="sb-section-box hackathon-box startup-box collapsed" id="sectionBox-hackathons" onmouseenter="hoverExpandSectionBox('hackathons')">
+          <div class="nav-section-header" onclick="toggleSectionBox('hackathons')">
+            <div class="nav-section-icon">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+            </div>
+            <span class="nsh-label student-only">Hackathons</span>
+            <svg class="nsh-chevron" width="12" height="12" fill="none" stroke="rgba(233,213,255,0.7)" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
+          <div class="nav-section-body">
           <div class="nav-item student-only startup-item" data-page="hackathon-dashboard" onclick="navigateTo('hackathon-dashboard')">
             <div class="nav-icon-circle dark-purple">
               <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -672,11 +729,19 @@
             </div>
             <span class="nav-text">Verify Participation</span>
           </div>
+          </div><!-- end nav-section-body -->
         </div>
 
-        <!-- SECTION BOX 4: ACCOUNT & USER PROFILE (UNFIXED, SCROLLS WITH SIDEBAR) -->
-        <div class="sb-section-box account-box">
-          <div class="nav-section-label student-only" style="padding: 4px 8px 6px; font-size: 10px; font-weight: 800; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em;">Account</div>
+        <!-- SECTION BOX 5: ACCOUNT & USER PROFILE -->
+        <div class="sb-section-box account-box collapsed" id="sectionBox-account" onmouseenter="hoverExpandSectionBox('account')">
+          <div class="nav-section-header" onclick="toggleSectionBox('account')">
+            <div class="nav-section-icon">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+            </div>
+            <span class="nsh-label student-only">Account</span>
+            <svg class="nsh-chevron" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="nav-section-body">
           <div class="nav-item student-only" data-page="profile" onclick="navigateTo('profile')">
             <div class="nav-icon-circle">
               <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -695,26 +760,22 @@
             </div>
             <span class="nav-text">Settings</span>
           </div>
-
-          <!-- USER PROFILE INSIDE SIDEBAR NAV (SCROLLS NATURALLY) -->
-          <div class="sidebar-user" style="margin-top: 6px; padding: 10px 8px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 10px;">
-            <div class="user-avatar" id="sidebarAvatar" style="width: 34px; height: 34px; font-size: 13px;">PS</div>
-            <div class="user-info">
-              <div class="u-name" id="sidebarName" style="font-size: 13px; font-weight: 700;">Priya Sharma</div>
-              <div class="u-dept" id="sidebarDept" style="font-size: 11px; color: var(--text-2);">CS Senior</div>
-            </div>
-          </div>
+          </div><!-- end nav-section-body -->
         </div>
 
       </nav>
-    </nav>
 
-    <!-- Floating Edge Scroll/Arrow Toggle Button (Unclipped) -->
-    <button class="sidebar-toggle-btn" onclick="toggleSidebar()" id="sidebarEdgeToggle" title="Toggle Sidebar">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-        <polyline points="15 18 9 12 15 6"></polyline>
-      </svg>
-    </button>
+      <!-- SIDEBAR SUPPORT CONTAINER (Bottom of sidebar) -->
+      <div class="sidebar-support-container">
+        <button class="support-btn" onclick="openSupportModal()" type="button">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+            <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+          </svg>
+          <span class="support-text">Need support</span>
+        </button>
+      </div>
+    </nav>
 
     <!-- Main Area -->
     <div class="app-main">
@@ -726,6 +787,112 @@
           <line x1="3" y1="18" x2="21" y2="18" />
         </svg>
       </button>
+
+      <!-- ── PAGE: INTERNSHIP REPORT (FINAL YEAR ONLY) ── -->
+      <div class="app-page fade-in" id="page-internship-report">
+        <div style="display: flex; align-items: flex-start; gap: 14px; margin-bottom: 24px;">
+          <div style="width: 5px; height: 38px; border-radius: 4px; background: linear-gradient(180deg, #c084fc 0%, #9333ea 100%); flex-shrink: 0; margin-top: 3px;"></div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <div style="width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #251b3e, #1a102f); border: 1px solid rgba(168, 85, 247, 0.4); display: flex; align-items: center; justify-content: center; color: #c084fc; flex-shrink: 0; box-shadow: 0 4px 12px rgba(147, 51, 234, 0.3);">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              </div>
+              <h2 style="font-size: 28px; font-weight: 900; color: var(--text, #1e1b4b); font-family: 'Rajdhani', sans-serif; margin: 0; letter-spacing: -0.01em;">
+                Internship Report Submission
+              </h2>
+            </div>
+            <p style="font-size: 14px; color: #a855f7; font-weight: 600; margin: 4px 0 0 0;">
+              Final Year Students Only — Submit your internship details, offer letter, and completion certificate for T&amp;P verification.
+            </p>
+          </div>
+        </div>
+
+        <!-- Submission Status Tracker -->
+        <div style="background: rgba(30, 27, 75, 0.4); border: 1px solid var(--border); border-radius: 20px; padding: 24px; margin-bottom: 28px; backdrop-filter: blur(10px);">
+          <h3 style="font-size: 16px; font-weight: 700; color: #c084fc; margin-bottom: 16px; font-family: 'Rajdhani', sans-serif;">Submission Status Tracker</h3>
+          <div style="display: flex; align-items: center; justify-content: space-between; position: relative;">
+            <!-- Step 1 -->
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 2;" id="irStep1">
+              <div style="width: 36px; height: 36px; border-radius: 50%; background: #9333ea; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px; box-shadow: 0 0 12px rgba(147, 51, 234, 0.5);">1</div>
+              <span style="font-size: 12px; font-weight: 700; color: var(--text);">Not Submitted</span>
+            </div>
+            <div style="flex: 1; height: 3px; background: var(--border); margin: 0 10px; position: relative; top: -12px;" id="irLine1"></div>
+
+            <!-- Step 2 -->
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 2;" id="irStep2">
+              <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--surface-2); border: 2px solid var(--border); color: var(--text-2); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px;" id="irStep2Badge">2</div>
+              <span style="font-size: 12px; font-weight: 700; color: var(--text-2);" id="irStep2Label">Submitted</span>
+            </div>
+            <div style="flex: 1; height: 3px; background: var(--border); margin: 0 10px; position: relative; top: -12px;" id="irLine2"></div>
+
+            <!-- Step 3 -->
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; z-index: 2;" id="irStep3">
+              <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--surface-2); border: 2px solid var(--border); color: var(--text-2); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 14px;" id="irStep3Badge">3</div>
+              <span style="font-size: 12px; font-weight: 700; color: var(--text-2);" id="irStep3Label">Verified by T&amp;P</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Card -->
+        <div style="background: rgba(30, 27, 75, 0.4); border: 1px solid var(--border); border-radius: 20px; padding: 28px; backdrop-filter: blur(10px);">
+          <form id="internshipReportForm" onsubmit="handleSubmitInternshipReport(event)">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+              <div>
+                <label style="display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px;">Company Name</label>
+                <input type="text" id="irCompany" placeholder="e.g. Microsoft / TCS / Amazon" required style="width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 13px; outline: none;" />
+              </div>
+              <div>
+                <label style="display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px;">Role / Designation</label>
+                <input type="text" id="irRole" placeholder="e.g. Software Engineer Intern" required style="width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 13px; outline: none;" />
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+              <div>
+                <label style="display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px;">Start Date</label>
+                <input type="date" id="irStartDate" required style="width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 13px; outline: none;" />
+              </div>
+              <div>
+                <label style="display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px;">End Date</label>
+                <input type="date" id="irEndDate" required style="width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 13px; outline: none;" />
+              </div>
+              <div>
+                <label style="display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px;">Internship Type</label>
+                <select id="irType" style="width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 13px; outline: none;">
+                  <option value="In-Person">In-Person</option>
+                  <option value="Remote">Remote</option>
+                  <option value="Hybrid">Hybrid</option>
+                </select>
+              </div>
+            </div>
+
+            <div style="margin-bottom: 16px;">
+              <label style="display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px;">Stipend (Optional)</label>
+              <input type="text" id="irStipend" placeholder="e.g. ₹25,000 / month" style="width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 13px; outline: none;" />
+            </div>
+
+            <div style="margin-bottom: 16px;">
+              <label style="display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px;">Key Learnings & Project Highlights</label>
+              <textarea id="irKeyLearnings" rows="3" placeholder="Describe the technical skills, projects, and domain experience gained during your internship..." required style="width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 13px; outline: none; resize: vertical;"></textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+              <div>
+                <label style="display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px;">Upload Offer Letter (PDF/Image)</label>
+                <input type="file" id="irOfferLetter" accept=".pdf,.png,.jpg,.jpeg" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 12px;" />
+              </div>
+              <div>
+                <label style="display: block; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px;">Upload Completion Certificate (PDF/Image)</label>
+                <input type="file" id="irCertificate" accept=".pdf,.png,.jpg,.jpeg" style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 12px;" />
+              </div>
+            </div>
+
+            <button type="submit" id="btnSubmitInternshipReport" class="btn-primary" style="width: 100%; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 8px;">
+              ⚡ Submit Internship Report for T&amp;P Verification
+            </button>
+          </form>
+        </div>
+      </div>
 
       <!-- ── PAGE: DASHBOARD ── -->
       <div class="app-page active fade-in" id="page-dashboard">
@@ -803,25 +970,27 @@
       <div class="bg-surface-dim rounded-2xl border border-outline-variant p-6 md:p-8 flex flex-col shadow-sm">
         <div class="flex justify-between items-center mb-6 pb-4 border-b border-outline-variant">
           <h4 class="font-headline font-bold text-on-surface text-lg flex items-center">Today's Tasks</h4>
-          <a class="text-sm font-bold text-primary hover:text-on-primary-fixed-variant flex items-center transition-colors font-label uppercase tracking-wide cursor-pointer" onclick="navigateTo('roadmap')">View Roadmap <i class="ph ph-arrow-right ml-1 font-bold"></i></a>
+          <a class="text-xs font-bold text-primary hover:text-on-primary-fixed-variant flex items-center transition-colors font-label uppercase tracking-wide cursor-pointer ml-1" onclick="navigateTo('roadmap')">View Roadmap <i class="ph ph-arrow-right ml-1 font-bold"></i></a>
         </div>
-        <ul class="space-y-5 flex-1" id="dashTaskList">
+        <ul class="space-y-4 flex-1 min-h-[190px]" id="dashTaskList">
           <!-- Populated dynamically via JS -->
         </ul>
-        <div class="flex gap-2 mt-6 pt-4 border-t border-outline-variant">
+        <div class="flex gap-2 mt-4 pt-4 border-t border-outline-variant">
           <input type="text" id="newTaskInput" placeholder="Add a custom task..." class="flex-1 px-3 py-2 text-sm bg-white rounded-lg border border-outline-variant text-on-surface" style="outline:none" onkeydown="if(event.key==='Enter')addNewTask()"/>
           <button onclick="addNewTask()" class="px-4 py-2 bg-primary text-white text-sm font-bold rounded-lg hover:bg-primary-hover shadow-sm transition-colors">Add</button>
         </div>
+        <div id="dashTasksPageNav" class="flex items-center justify-center gap-3 mt-3 pt-3 border-t border-outline-variant/60"></div>
       </div>
       <!-- Weak Skills -->
       <div class="bg-surface-dim rounded-2xl border border-outline-variant p-6 md:p-8 flex flex-col shadow-sm">
         <div class="flex justify-between items-center mb-6 pb-4 border-b border-outline-variant">
           <h4 class="font-headline font-bold text-on-surface text-lg flex items-center">Weak Skills Focus</h4>
-          <a class="text-sm font-bold text-primary hover:text-on-primary-fixed-variant flex items-center transition-colors font-label uppercase tracking-wide cursor-pointer" onclick="navigateTo('skill-report')">View Report <i class="ph ph-arrow-right ml-1 font-bold"></i></a>
+          <a class="text-xs font-bold text-primary hover:text-on-primary-fixed-variant flex items-center transition-colors font-label uppercase tracking-wide cursor-pointer ml-1" onclick="navigateTo('skill-report')">View Report <i class="ph ph-arrow-right ml-1 font-bold"></i></a>
         </div>
-        <div class="space-y-6 flex-1 flex flex-col justify-center" id="dashWeakSkills">
+        <div class="space-y-4 flex-1 flex flex-col justify-center min-h-[190px]" id="dashWeakSkills">
           <!-- Populated dynamically via JS -->
         </div>
+        <div id="dashWeakSkillsPageNav" class="flex items-center justify-center gap-3 mt-4 pt-3 border-t border-outline-variant/60"></div>
       </div>
     </div>
   </div>
@@ -3790,8 +3959,58 @@
     </div>
   </div>
 
-  <script src="/student/db.js"></script>
-  <script src="/student/app.js"></script>
+  <!-- ============================================================
+     HELP & SUPPORT MODAL
+     ============================================================ -->
+  <div class="modal-overlay" id="supportModalOverlay" style="z-index: 1000;" onclick="handleSupportModalOverlayClick(event)">
+    <div class="modal-box" style="max-width: 500px; padding: 28px; border-radius: var(--radius-lg);" onclick="event.stopPropagation()">
+      <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 18px;">
+        <div style="width: 44px; height: 44px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+            <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+          </svg>
+        </div>
+        <div>
+          <h3 style="color: var(--primary); margin: 0; font-family: 'Rajdhani', sans-serif; font-size: 22px; font-weight: 800;">Help & Support Center</h3>
+          <p style="font-size: 12px; color: var(--text-2); margin-top: 2px;">Need assistance with your portal or placement account? We're here to help.</p>
+        </div>
+      </div>
+
+      <div style="background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 20px;">
+        <h4 style="font-size: 12px; font-weight: 800; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px;">Direct Support Contacts</h4>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-2);">
+            <strong style="color: var(--text);">Email:</strong> support@elevate.ac.in
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-2);">
+            <strong style="color: var(--text);">Phone:</strong> +91 712 272 1911 (Ext. 404)
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-2);">
+            <strong style="color: var(--text);">Cell Office:</strong> Training & Placement Cell, First Floor, Block-A
+          </div>
+        </div>
+      </div>
+
+      <form id="supportForm" onsubmit="handleSupportSubmit(event)">
+        <div class="form-group" style="margin-bottom: 14px; text-align: left;">
+          <label class="form-label" style="color: var(--text); font-weight: 600; font-size: 12px; margin-bottom: 6px; display: block;">Query Subject</label>
+          <input type="text" id="supportSubject" class="form-input" style="border: 1px solid var(--border); color: var(--text); padding: 10px 12px; width: 100%; border-radius: 8px;" placeholder="e.g., Skill Report discrepancy, Resume builder issue" required />
+        </div>
+        <div class="form-group" style="margin-bottom: 16px; text-align: left;">
+          <label class="form-label" style="color: var(--text); font-weight: 600; font-size: 12px; margin-bottom: 6px; display: block;">Describe your query or issue</label>
+          <textarea id="supportMessage" rows="3" class="form-input" style="border: 1px solid var(--border); color: var(--text); padding: 10px 12px; width: 100%; border-radius: 8px; resize: none; font-family: inherit; font-size: 13px;" placeholder="Please describe the issue you are facing..." required></textarea>
+        </div>
+        <div class="modal-actions" style="margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="btn-outline" onclick="closeSupportModal()" style="padding: 10px 20px; border-radius: 8px;">Cancel</button>
+          <button type="submit" class="btn-primary" style="padding: 10px 20px; border-radius: 8px;">Submit Query</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="db.js"></script>
+  <script src="app.js"></script>
 </body>
 
 </html>

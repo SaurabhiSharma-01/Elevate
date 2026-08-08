@@ -29,7 +29,7 @@ const router = express.Router();
 
 // ─── DB Path ──────────────────────────────────────────────────────────────────
 
-const DB_FILE = path.join(__dirname, '../../database.json');
+const DB_FILE = path.join(__dirname, '../../data/database.json');
 
 function readDB() {
   try {
@@ -474,56 +474,244 @@ router.post('/import-students', requireAuth, requireRole('tnp'), upload.single('
   }
 });
 
+// ─── DATA/USERS.JSON STORAGE HELPERS ──────────────────────────────────────────
+
+const USERS_FILE = path.join(__dirname, '../../data/users.json');
+
+function readUsersDB() {
+  try {
+    return JSON.parse(fs.readFileSync(USERS_FILE, 'utf8'));
+  } catch {
+    return { admins: [], tnp_staff: [], incubation_staff: [], faculty: [], students: [] };
+  }
+}
+
+function writeUsersDB(data) {
+  fs.writeFileSync(USERS_FILE, JSON.stringify(data, null, 2), 'utf8');
+}
+
+// ─── UNIFIED RBAC LOGIN ───────────────────────────────────────────────────────
+
+router.post('/login', async (req, res) => {
+  try {
+    const { identifier, password, portalType, role: requestedRole } = req.body;
+
+    if (!identifier || !password) {
+      return res.status(400).json({ success: false, message: 'Identifier and password are required.' });
+    }
+
+    const usersData = readUsersDB();
+    const allUsers = [
+      ...(usersData.admins || []),
+      ...(usersData.tnp_staff || []),
+      ...(usersData.incubation_staff || []),
+      ...(usersData.faculty || []),
+      ...(usersData.students || [])
+    ];
+
+    const cleanId = identifier.trim().toLowerCase();
+    let foundUser = allUsers.find(u =>
+      (u.email && u.email.toLowerCase() === cleanId) ||
+      (u.prn && u.prn.toLowerCase() === cleanId) ||
+      (u.id && u.id.toLowerCase() === cleanId)
+    );
+
+    if (requestedRole && foundUser && foundUser.role !== requestedRole) {
+      const matchRoleUser = allUsers.find(u =>
+        ((u.email && u.email.toLowerCase() === cleanId) || (u.prn && u.prn.toLowerCase() === cleanId) || (u.id && u.id.toLowerCase() === cleanId)) &&
+        u.role === requestedRole
+      );
+      if (matchRoleUser) foundUser = matchRoleUser;
+    }
+
+    // Fallback: search existing studentAccounts / tnpOfficers / companyAccounts in database.json if not in users.json
+    if (!foundUser) {
+      const db = readDB();
+      if (db.studentAccounts) {
+        const sa = db.studentAccounts.find(s => (s.prn && s.prn.toLowerCase() === cleanId) || (s.email && s.email.toLowerCase() === cleanId));
+        if (sa) {
+          foundUser = {
+            id: sa.prn,
+            prn: sa.prn,
+            name: sa.name,
+            email: sa.email,
+            password: sa.passwordHash,
+            role: 'STUDENT',
+            yearOfStudy: sa.yearOfStudy || 'Final',
+            department: sa.department || 'CSE'
+          };
+        }
+      }
+      if (!foundUser && db.tnpOfficers) {
+        const tnp = db.tnpOfficers.find(t => t.email && t.email.toLowerCase() === cleanId);
+        if (tnp) {
+          foundUser = {
+            id: tnp.id,
+            name: tnp.name,
+            email: tnp.email,
+            password: tnp.passwordHash,
+            role: 'TNP_ADMIN'
+          };
+        }
+      }
+      if (!foundUser && db.companyAccounts) {
+        const comp = db.companyAccounts.find(c => c.email && c.email.toLowerCase() === cleanId);
+        if (comp) {
+          foundUser = {
+            id: comp.id,
+            name: comp.name,
+            email: comp.email,
+            password: comp.passwordHash,
+            role: 'COMPANY'
+          };
+        }
+      }
+    }
+
+    if (!foundUser) {
+      return res.status(401).json({ success: false, message: 'Invalid credentials. User not found.' });
+    }
+
+    const passwordHash = foundUser.password || foundUser.passwordHash;
+    const isValid = await verifyPassword(password, passwordHash);
+    if (!isValid) {
+      return res.status(401).json({ success: false, message: 'Incorrect password. Please try again.' });
+    }
+
+    const payload = {
+      userId: foundUser.id || foundUser.prn,
+      id: foundUser.id || foundUser.prn,
+      name: foundUser.name,
+      email: foundUser.email,
+      role: foundUser.role,
+      subRole: foundUser.subRole || foundUser.yearOfStudy || null,
+      yearOfStudy: foundUser.yearOfStudy || (foundUser.role === 'STUDENT' ? 'Final' : null),
+      portalType: portalType || (foundUser.role === 'STUDENT' ? 'student' : foundUser.role === 'COMPANY' ? 'industry' : 'institute')
+    };
+
+    const token = generateToken(payload);
+    const { password: _, passwordHash: __, ...safeUser } = foundUser;
+
+    let redirectUrl = '/institute/';
+    if (payload.role === 'STUDENT') redirectUrl = '/student/';
+    else if (payload.role === 'COMPANY' || payload.role === 'company') redirectUrl = '/industry/';
+
+    res.json({
+      success: true,
+      token,
+      user: safeUser,
+      role: payload.role,
+      subRole: payload.subRole,
+      yearOfStudy: payload.yearOfStudy,
+      redirect: redirectUrl
+    });
+  } catch (err) {
+    console.error('[Auth] Login error:', err);
+    res.status(500).json({ success: false, message: 'Login failed: ' + err.message });
+  }
+});
+
+// ─── T&P ADMIN — REGISTER STUDENT ─────────────────────────────────────────────
+
+router.post('/register-student', requireAuth(['TNP_ADMIN', 'SUPER_ADMIN', 'tnp']), async (req, res) => {
+  try {
+    const { prn, name, email, password, yearOfStudy, department, cgpa } = req.body;
+    if (!prn || !name || !email || !password || !yearOfStudy) {
+      return res.status(400).json({ success: false, message: 'PRN, name, email, password, and yearOfStudy are required.' });
+    }
+
+    const validYears = ['FY', 'SY', 'TY', 'Final'];
+    if (!validYears.includes(yearOfStudy)) {
+      return res.status(400).json({ success: false, message: `yearOfStudy must be one of: ${validYears.join(', ')}` });
+    }
+
+    const usersData = readUsersDB();
+    if (!usersData.students) usersData.students = [];
+
+    const existing = usersData.students.find(s => s.prn.toLowerCase() === prn.toLowerCase().trim() || s.email.toLowerCase() === email.toLowerCase().trim());
+    if (existing) {
+      return res.status(409).json({ success: false, message: 'Student with this PRN or email already exists.' });
+    }
+
+    const passwordHash = await hashPassword(password);
+    const newStudent = {
+      id: `STU_${Date.now()}`,
+      prn: prn.trim(),
+      name: name.trim(),
+      email: email.toLowerCase().trim(),
+      password: passwordHash,
+      role: 'STUDENT',
+      yearOfStudy,
+      department: department || 'CSE',
+      cgpa: parseFloat(cgpa) || 7.0
+    };
+
+    usersData.students.push(newStudent);
+    writeUsersDB(usersData);
+
+    const { password: _, ...safeStudent } = newStudent;
+    res.status(201).json({ success: true, message: 'Student registered successfully.', student: safeStudent });
+  } catch (err) {
+    console.error('[Auth] Register student error:', err);
+    res.status(500).json({ success: false, message: 'Student registration failed: ' + err.message });
+  }
+});
+
 // ─── VERIFY TOKEN — Current User ──────────────────────────────────────────────
 
-router.get('/me', requireAuth, async (req, res) => {
-  let user = null;
+router.get('/me', requireAuth(), async (req, res) => {
+  const usersData = readUsersDB();
+  const allUsers = [
+    ...(usersData.admins || []),
+    ...(usersData.tnp_staff || []),
+    ...(usersData.incubation_staff || []),
+    ...(usersData.faculty || []),
+    ...(usersData.students || [])
+  ];
 
-  if (isMySQLConnected()) {
-    if (req.user.role === 'tnp') {
-      const rows = await query('SELECT * FROM tnp_officers WHERE id = ?', [req.user.id]);
-      if (rows && rows.length > 0) user = rows[0];
-    } else if (req.user.role === 'student') {
-      const rows = await query('SELECT * FROM student_accounts WHERE prn = ?', [req.user.prn || req.user.id]);
-      if (rows && rows.length > 0) user = rows[0];
-    } else if (req.user.role === 'company') {
-      const rows = await query('SELECT * FROM company_accounts WHERE id = ?', [req.user.id]);
-      if (rows && rows.length > 0) user = rows[0];
-    }
-  }
+  let user = allUsers.find(u => (u.id === req.user.userId || u.prn === req.user.userId || u.id === req.user.id || u.email === req.user.email));
 
   if (!user) {
-    const db = ensureCollections(readDB());
-    if (req.user.role === 'tnp') {
-      user = db.tnpOfficers.find(o => o.id === req.user.id);
-    } else if (req.user.role === 'student') {
-      user = db.studentAccounts.find(s => s.prn === req.user.prn);
-    } else if (req.user.role === 'company') {
-      user = db.companyAccounts.find(c => c.id === req.user.id);
-    }
+    user = {
+      id: req.user.userId || req.user.id,
+      name: req.user.name,
+      email: req.user.email,
+      role: req.user.role,
+      yearOfStudy: req.user.yearOfStudy
+    };
   }
 
-  if (!user) {
-    return res.status(404).json({ success: false, message: 'User not found.' });
-  }
+  const { password: _, passwordHash: __, ...safeUser } = user;
 
-  const { passwordHash: _, ...safeUser } = user;
-  res.json({ success: true, user: safeUser, role: req.user.role });
+  const permissions = {
+    canRegisterStudents: ['TNP_ADMIN', 'SUPER_ADMIN'].includes(req.user.role),
+    canManageLearningMaterials: ['TNP_ADMIN', 'SUPER_ADMIN', 'FACULTY'].includes(req.user.role),
+    canManageHackathons: ['TNP_ADMIN', 'SUPER_ADMIN'].includes(req.user.role),
+    canViewHackathons: true,
+    canViewStartups: ['SUPER_ADMIN', 'INCUBATION_ADMIN', 'FACULTY'].includes(req.user.role),
+    canViewStartupAnalytics: ['SUPER_ADMIN', 'TNP_ADMIN', 'INCUBATION_ADMIN', 'FACULTY'].includes(req.user.role),
+    isFacultyViewOnly: req.user.role === 'FACULTY',
+    canSubmitInternshipReport: req.user.role === 'STUDENT' && req.user.yearOfStudy === 'Final',
+    canVerifyInternshipReport: ['TNP_ADMIN', 'SUPER_ADMIN'].includes(req.user.role)
+  };
+
+  res.json({
+    success: true,
+    user: safeUser,
+    role: req.user.role,
+    subRole: req.user.subRole || req.user.yearOfStudy || null,
+    yearOfStudy: req.user.yearOfStudy || (req.user.role === 'STUDENT' ? 'Final' : null),
+    permissions
+  });
 });
 
 // ─── GET imported students list (T&P only) ────────────────────────────────────
 
-router.get('/students', requireAuth, requireRole('tnp'), async (req, res) => {
-  if (isMySQLConnected()) {
-    const rows = await query('SELECT prn, name, email, dob, passingYear, role, firstLogin, importedBy, createdAt, lastLogin FROM student_accounts');
-    if (rows) {
-      return res.json({ success: true, students: rows, total: rows.length });
-    }
-  }
-
-  const db = ensureCollections(readDB());
-  const safeAccounts = db.studentAccounts.map(({ passwordHash: _, ...s }) => s);
-  res.json({ success: true, students: safeAccounts, total: safeAccounts.length });
+router.get('/students', requireAuth(), async (req, res) => {
+  const usersData = readUsersDB();
+  const safeStudents = (usersData.students || []).map(({ password: _, ...s }) => s);
+  res.json({ success: true, students: safeStudents, total: safeStudents.length });
 });
 
 module.exports = router;
+

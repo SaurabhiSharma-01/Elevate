@@ -444,15 +444,163 @@ ul { list-style: none; }
   flex: 1;
   padding: 16px 12px;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
-.nav-section-label {
+
+/* Sidebar Section Box Container Cards with Alternating Colors & Accordion */
+.sb-section-box {
+  border-radius: 16px;
+  padding: 10px;
+  transition: all var(--transition);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Alternating White / Purple / Dark Purple */
+.sb-section-box.main-box {
+  background: #FFFFFF;
+  border: 1.5px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+body.dark .sb-section-box.main-box {
+  background: #181c2b;
+  border: 1.5px solid #2e354f;
+}
+
+.sb-section-box.learning-box {
+  background: linear-gradient(135deg, #ede9f7 0%, #f3f0f8 100%);
+  border: 1.5px solid #b3a0d6;
+  box-shadow: 0 2px 8px rgba(91, 45, 144, 0.08);
+}
+body.dark .sb-section-box.learning-box {
+  background: #151226;
+  border: 1.5px solid #4a3475;
+}
+
+.sb-section-box.account-box {
+  background: #FFFFFF;
+  border: 1.5px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+body.dark .sb-section-box.account-box {
+  background: #181c2b;
+  border: 1.5px solid #2e354f;
+}
+
+/* ── Section Dropdown Header (clickable) ── */
+.nav-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-start;
+  padding: 6px 8px;
+  cursor: pointer;
+  user-select: none;
+  border-radius: 10px;
+  transition: background var(--transition);
+}
+.nav-section-header:hover {
+  background: rgba(91, 45, 144, 0.06);
+}
+.nav-section-header .nsh-label {
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--text-3);
-  padding: 12px 12px 6px;
+  color: var(--text-2);
+  flex: 1;
 }
+.nav-section-header .nsh-chevron {
+  transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+  color: var(--text-3);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+.sb-section-box.collapsed .nav-section-header .nsh-chevron {
+  transform: rotate(-90deg);
+}
+
+/* Section Icon Styles */
+.nav-section-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition);
+  border: 1px solid transparent;
+}
+/* White boxes (Recruitment Suite & Account) */
+.sb-section-box.main-box .nav-section-icon,
+.sb-section-box.account-box .nav-section-icon {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  color: var(--text-2);
+}
+/* Purple tint boxes (Ecosystem & Insights) */
+.sb-section-box.learning-box .nav-section-icon {
+  background: #f5f2fc;
+  border: 1px solid #dcd3f1;
+  color: var(--primary);
+}
+
+/* Hover States */
+.nav-section-header:hover .nav-section-icon {
+  background: var(--primary) !important;
+  color: #fff !important;
+  border-color: var(--primary) !important;
+}
+
+/* Center sidebar-nav vertically when collapsed - REMOVED justify-content: center */
+.app-sidebar.collapsed .sidebar-nav {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
+/* Hide account section box when collapsed to avoid redundancy with company avatar */
+.app-sidebar.collapsed #sectionBox-account {
+  display: none !important;
+}
+
+/* ── Section Body (collapsible items) ── */
+.nav-section-body {
+  overflow: hidden;
+  max-height: 500px;
+  transition: max-height 0.35s cubic-bezier(.4,0,.2,1), opacity 0.25s ease, padding 0.25s ease;
+  opacity: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 2px;
+}
+.sb-section-box.collapsed .nav-section-body {
+  max-height: 0 !important;
+  opacity: 0;
+  padding-top: 0;
+}
+
+/* Hide section body in collapsed sidebar */
+.app-sidebar.collapsed .nav-section-body {
+  display: none !important;
+}
+.app-sidebar.collapsed .nav-section-header .nsh-chevron {
+  display: none !important;
+}
+.app-sidebar.collapsed .nav-section-header .nsh-label {
+  display: none !important;
+}
+.app-sidebar.collapsed .nav-section-header {
+  padding: 4px 0 !important;
+  justify-content: center !important;
+  gap: 0 !important;
+}
+
 .nav-item {
   display: flex;
   align-items: center;

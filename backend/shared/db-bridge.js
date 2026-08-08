@@ -10,8 +10,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const DB_PATH = path.join(__dirname, '../../database.json');
-const AI_DATA_PATH = path.join(__dirname, '../../ai-data.json');
+const DB_PATH = path.join(__dirname, '../../data/database.json');
+const AI_DATA_PATH = path.join(__dirname, '../../data/ai-data.json');
 
 // ─── Core DB helpers ─────────────────────────────────────────────────────────
 

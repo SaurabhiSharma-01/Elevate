@@ -8,7 +8,7 @@ const mysql = require('mysql2/promise');
 const fs    = require('fs');
 const path  = require('path');
 
-const DB_FILE = path.join(__dirname, '../../database.json');
+const DB_FILE = path.join(__dirname, '../../data/database.json');
 
 // Configuration from environment variables
 const config = {

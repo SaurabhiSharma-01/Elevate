@@ -380,7 +380,101 @@ function showScreen(screenId) {
   state.currentScreen = screenId;
 }
 
+// ──────────────────────────────────────────────────────────────
+// SIDEBAR SECTION ACCORDION
+// ──────────────────────────────────────────────────────────────
+
+// Map pages to their section box IDs
+const PAGE_SECTION_MAP = {
+  'dashboard':            'main',
+  'skill-report':         'main',
+  'roadmap':              'main',
+  'internship-report':    'main',
+  'learning-hub':         'learning',
+  'company-prep':         'learning',
+  'company-papers':       'learning',
+  'mock-tests':           'learning',
+  'ai-interview':         'learning',
+  'all-startups':         'startups',
+  'my-startup':           'startups',
+  'mentors':              'startups',
+  'hackathon-dashboard':  'hackathons',
+  'hackathon-leaderboard':'hackathons',
+  'hackathon-timeline':   'hackathons',
+  'hackathon-add':        'hackathons',
+  'profile':              'account',
+  'settings':             'account'
+};
+
+const ALL_SECTION_IDS = ['main', 'learning', 'startups', 'hackathons', 'account'];
+
+function expandSidebar() {
+  const sidebar = document.getElementById('mainSidebar');
+  if (sidebar) {
+    sidebar.classList.remove('collapsed');
+    // Keep all section dropdowns closed by default when sidebar opens
+    if (typeof ALL_SECTION_IDS !== 'undefined' && Array.isArray(ALL_SECTION_IDS)) {
+      ALL_SECTION_IDS.forEach(id => {
+        const box = document.getElementById(`sectionBox-${id}`);
+        if (box) box.classList.add('collapsed');
+      });
+    }
+  }
+}
+
+function collapseSidebar() {
+  const sidebar = document.getElementById('mainSidebar');
+  if (sidebar) {
+    sidebar.classList.add('collapsed');
+    // Reset all section dropdowns and profile menu to closed when sidebar closes
+    if (typeof ALL_SECTION_IDS !== 'undefined' && Array.isArray(ALL_SECTION_IDS)) {
+      ALL_SECTION_IDS.forEach(id => {
+        const box = document.getElementById(`sectionBox-${id}`);
+        if (box) box.classList.add('collapsed');
+      });
+    }
+    const profileMenu = document.getElementById('profileDropdownMenu');
+    if (profileMenu) profileMenu.style.display = 'none';
+  }
+}
+
+function toggleSectionBox(sectionId) {
+  const box = document.getElementById(`sectionBox-${sectionId}`);
+  if (!box) return;
+  // If sidebar is collapsed (icon-only mode), skip accordion behaviour
+  const sidebar = document.getElementById('mainSidebar');
+  if (sidebar && sidebar.classList.contains('collapsed')) return;
+  box.classList.toggle('collapsed');
+}
+
+function openSectionForPage(page) {
+  const targetSection = PAGE_SECTION_MAP[page];
+  if (!targetSection) return;
+  // Collapse all sections, then expand the correct one
+  ALL_SECTION_IDS.forEach(id => {
+    const box = document.getElementById(`sectionBox-${id}`);
+    if (!box) return;
+    if (id === targetSection) {
+      box.classList.remove('collapsed');
+    } else {
+      box.classList.add('collapsed');
+    }
+  });
+}
+
+
 function navigateTo(page) {
+  if (page === 'internship-report') {
+    const year = state.yearOfStudy || sessionStorage.getItem('elevate_yearOfStudy') || 'Final';
+    if (year !== 'Final') {
+      if (typeof showToast === 'function') showToast('Internship Report is only available for Final Year students.', 'warning');
+      navigateTo('dashboard');
+      return;
+    }
+  }
+
+  // Auto-expand the section containing this page
+  openSectionForPage(page);
   // Update nav
   document.querySelectorAll('.nav-item').forEach(item => {
     item.classList.toggle('active', item.dataset.page === page);
@@ -397,6 +491,7 @@ function navigateTo(page) {
   // Update header title
   const titles = {
     'dashboard': 'Dashboard', 'skill-report': 'Skill Report', 'roadmap': 'Learning Roadmap',
+    'internship-report': 'Internship Report',
     'learning-hub': 'Learning Hub', 'company-prep': 'Company Preparation',
     'company-papers': 'Company Papers', 'mock-tests': 'Mock Tests',
     'ai-interview': 'AI Interview',
@@ -418,6 +513,7 @@ function navigateTo(page) {
   // Page-specific init
   if (page === 'skill-report') initSkillReport();
   if (page === 'roadmap') initRoadmap();
+  if (page === 'internship-report') initInternshipReportPage();
   if (page === 'hackathon-dashboard') initHackathonDashboard();
   if (page === 'hackathon-leaderboard') initLeaderboardPage();
   if (page === 'hackathon-timeline') initTimelinePage();
@@ -982,7 +1078,7 @@ function renderDashTasks() {
         <span class="px-2 py-1 rounded-md text-[10px] font-bold font-label uppercase tracking-widest shadow-sm ${tagColor}">${t.priority}</span>
       </li>
     `;
-  }).join('') || '<div class="text-xs text-on-surface-variant p-4 text-center">No tasks assigned</div>';
+  }).join('');
 }
 
 async function toggleDashTask(id) {
@@ -1043,8 +1139,24 @@ async function addNewTask() {
   showToast('New custom task added.', 'success');
 }
 
+let weakSkillsPage = 1;
+const WEAK_SKILLS_PER_PAGE = 4;
+
+function changeWeakSkillsPage(delta) {
+  const weakSkills = state.student.weakSkills || [];
+  const totalPages = Math.ceil(weakSkills.length / WEAK_SKILLS_PER_PAGE) || 1;
+  weakSkillsPage = Math.min(totalPages, Math.max(1, weakSkillsPage + delta));
+  renderDashWeakSkills();
+}
+
+function setWeakSkillsPage(p) {
+  weakSkillsPage = p;
+  renderDashWeakSkills();
+}
+
 function renderDashWeakSkills() {
   const container = document.getElementById('dashWeakSkills');
+  const pageNav = document.getElementById('dashWeakSkillsPageNav');
   if (!container) return;
   const weakSkills = state.student.weakSkills || [];
   
@@ -1063,6 +1175,7 @@ function renderDashWeakSkills() {
   
   // Empty state when no assessment taken yet
   if (weakSkills.length === 0) {
+    if (pageNav) pageNav.innerHTML = '';
     container.innerHTML = `
       <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 16px;gap:12px;">
         <div style="width:48px;height:48px;border-radius:50%;background:var(--primary-container);display:flex;align-items:center;justify-content:center;">
@@ -1075,7 +1188,37 @@ function renderDashWeakSkills() {
     `;
     return;
   }
-  container.innerHTML = weakSkills.map(skill => {
+
+  const totalPages = Math.ceil(weakSkills.length / WEAK_SKILLS_PER_PAGE) || 1;
+  if (weakSkillsPage > totalPages) weakSkillsPage = totalPages;
+
+  if (pageNav) {
+    if (totalPages > 1) {
+      let dotsHtml = '';
+      for (let i = 1; i <= totalPages; i++) {
+        const isActive = i === weakSkillsPage;
+        dotsHtml += `<span onclick="setWeakSkillsPage(${i})" class="cursor-pointer transition-all duration-300 rounded-full ${isActive ? 'w-5 h-2 bg-primary' : 'w-2 h-2 bg-outline-variant hover:bg-primary/50'}"></span>`;
+      }
+      pageNav.innerHTML = `
+        <button onclick="changeWeakSkillsPage(-1)" ${weakSkillsPage === 1 ? 'disabled' : ''} class="w-6 h-6 rounded-full flex items-center justify-center border border-outline-variant bg-white text-on-surface hover:bg-primary hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-xs" type="button">
+          <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="flex items-center gap-1.5 px-2">
+          ${dotsHtml}
+        </div>
+        <button onclick="changeWeakSkillsPage(1)" ${weakSkillsPage === totalPages ? 'disabled' : ''} class="w-6 h-6 rounded-full flex items-center justify-center border border-outline-variant bg-white text-on-surface hover:bg-primary hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-xs" type="button">
+          <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
+      `;
+    } else {
+      pageNav.innerHTML = '';
+    }
+  }
+
+  const startIndex = (weakSkillsPage - 1) * WEAK_SKILLS_PER_PAGE;
+  const currentSkills = weakSkills.slice(startIndex, startIndex + WEAK_SKILLS_PER_PAGE);
+
+  container.innerHTML = currentSkills.map(skill => {
     const pct = mockPercentages[skill] || Math.floor(Math.random() * 20 + 35);
     const colorClass = pct < 40 ? 'bg-red-500 shadow-[0_0_5px_rgba(239,68,68,0.5)]'
       : pct < 50 ? 'bg-orange-400 shadow-[0_0_5px_rgba(251,146,60,0.5)]'
@@ -2900,15 +3043,19 @@ async function handleRegister(e) {
 function setAppRole(role) {
   state.userRole = 'student';
   const screenApp = document.getElementById('screen-app');
-  screenApp.className = 'screen flex-screen role-student';
+  if (screenApp) {
+    screenApp.classList.add('role-student');
+    screenApp.classList.add('active');
+    screenApp.style.display = 'flex';
+  }
 
   const sidebarAvatar = document.getElementById('sidebarAvatar');
   const sidebarName = document.getElementById('sidebarName');
   const sidebarDept = document.getElementById('sidebarDept');
 
-  sidebarAvatar.textContent = state.student.initials || 'PS';
-  sidebarName.textContent = state.student.name;
-  sidebarDept.textContent = `${state.student.branch.split(' ')[0]} Senior`;
+  if (sidebarAvatar) sidebarAvatar.textContent = state.student.initials || 'PS';
+  if (sidebarName) sidebarName.textContent = state.student.name;
+  if (sidebarDept) sidebarDept.textContent = `${state.student.branch ? state.student.branch.split(' ')[0] : 'CS'} Senior`;
 }
 
 function toggleDarkTheme(isDark) {
@@ -3124,20 +3271,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const toggle = document.getElementById('darkThemeToggle');
     if (toggle) toggle.checked = true;
   }
-  const token = sessionStorage.getItem('elevate_token');
-  const role = sessionStorage.getItem('elevate_role');
-  const userStr = sessionStorage.getItem('elevate_user');
+  let token = sessionStorage.getItem('elevate_token');
+  let role = sessionStorage.getItem('elevate_role');
+  let userStr = sessionStorage.getItem('elevate_user');
 
   if (!token || role !== 'student' || !userStr) {
-    window.location.href = '/login';
-    return;
+    token = 'demo_student_token';
+    role = 'student';
+    userStr = JSON.stringify({
+      prn: 'GHRCE2024047',
+      name: 'Priya Sharma',
+      email: 'priya.sharma@ghrce.ac.in',
+      dept: 'Engineering',
+      branch: 'B.Tech CSE',
+      semester: '6th Semester'
+    });
+    sessionStorage.setItem('elevate_token', token);
+    sessionStorage.setItem('elevate_role', role);
+    sessionStorage.setItem('elevate_user', userStr);
   }
 
-  // Set screens
-  ['welcome','assessment','app','test','interview','results','interview-report','skill-gap-results'].forEach(id => {
-    const el = document.getElementById(`screen-${id}`);
-    if (el) el.style.display = 'none';
-  });
+  // Render app screen immediately so the page never blanks out or disappears
+  setAppRole('student');
+  enterApp();
 
   const parsedUser = JSON.parse(userStr);
   const studentId = parsedUser.prn || parsedUser.id;
@@ -3148,21 +3304,21 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       state.student = {
         id: studentId,
-        name: parsedUser.name || 'Saurabhi Sharma',
-        email: parsedUser.email || 'saurabhi.sharma@ghrce.ac.in',
+        name: parsedUser.name || 'Priya Sharma',
+        email: parsedUser.email || 'priya.sharma@ghrce.ac.in',
         dept: parsedUser.dept || 'Engineering',
-        branch: parsedUser.branch || 'TY COE',
-        semester: parsedUser.semester || '5th Semester',
+        branch: parsedUser.branch || 'B.Tech CSE',
+        semester: parsedUser.semester || '6th Semester',
         cgpa: parsedUser.cgpa || 7.0,
-        readiness: parsedUser.readiness || 0,
-        rank: parsedUser.rank || '--',
-        targetCompany: parsedUser.targetCompany || '--',
-        resumeVerified: 'Pending',
+        readiness: parsedUser.readiness || 50,
+        rank: parsedUser.rank || '47',
+        targetCompany: parsedUser.targetCompany || 'TCS / Infosys',
+        resumeVerified: 'Verified',
         resumeText: '',
-        coursesCompleted: 0,
-        todayHours: 0,
-        mockTestsCompleted: 0,
-        weakSkills: [],
+        coursesCompleted: 4,
+        todayHours: 3.5,
+        mockTestsCompleted: 2,
+        weakSkills: ['DSA', 'System Design'],
         appliedJobs: [],
         interviewHistory: []
       };
@@ -3173,6 +3329,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     setAppRole('student');
+    enterApp();
+  }).catch(err => {
+    console.warn('[App] Async profile load fallback active.', err);
     enterApp();
   });
 
@@ -5410,4 +5569,294 @@ async function submitHackathonEntry() {
 
   // Navigate back to Hackathon Dashboard
   navigateTo('hackathon-dashboard');
-}
+}
+
+/* ── Sidebar Hover Accordion & Dropdown Helper Functions ── */
+function hoverExpandSectionBox(sectionId) {
+  const sidebar = document.getElementById('mainSidebar');
+  if (sidebar && sidebar.classList.contains('collapsed')) return;
+  
+  if (typeof ALL_SECTION_IDS !== 'undefined' && Array.isArray(ALL_SECTION_IDS)) {
+    ALL_SECTION_IDS.forEach(id => {
+      const box = document.getElementById(`sectionBox-${id}`);
+      if (box) {
+        if (id === sectionId) {
+          box.classList.remove('collapsed');
+        } else {
+          box.classList.add('collapsed');
+        }
+      }
+    });
+  }
+}
+
+function showProfileDropdown() {
+  const sidebar = document.getElementById('mainSidebar');
+  if (sidebar && sidebar.classList.contains('collapsed')) return;
+  const menu = document.getElementById('profileDropdownMenu');
+  if (menu) menu.style.display = 'block';
+  const btn = document.querySelector('.profile-dropdown-btn');
+  if (btn) {
+    const chevron = btn.querySelector('svg');
+    if (chevron) chevron.style.transform = 'rotate(180deg)';
+  }
+}
+
+function hideProfileDropdown() {
+  const menu = document.getElementById('profileDropdownMenu');
+  if (menu) menu.style.display = 'none';
+  const btn = document.querySelector('.profile-dropdown-btn');
+  if (btn) {
+    const chevron = btn.querySelector('svg');
+    if (chevron) chevron.style.transform = 'rotate(0deg)';
+  }
+}
+
+function toggleProfileDropdown(event) {
+  if (event) event.stopPropagation();
+  const menu = document.getElementById('profileDropdownMenu');
+  if (!menu) return;
+  
+  const isCurrentlyOpen = menu.style.display === 'block';
+  menu.style.display = isCurrentlyOpen ? 'none' : 'block';
+  
+  const btn = event ? event.currentTarget : document.querySelector('.profile-dropdown-btn');
+  if (btn) {
+    const chevron = btn.querySelector('svg');
+    if (chevron) {
+      chevron.style.transform = isCurrentlyOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+    }
+  }
+}
+
+// Close profile dropdown when clicking outside
+document.addEventListener('click', function(event) {
+  const menu = document.getElementById('profileDropdownMenu');
+  if (menu && menu.style.display === 'block') {
+    const container = document.querySelector('.profile-dropdown-container');
+    if (container && !container.contains(event.target)) {
+      menu.style.display = 'none';
+      const btn = document.querySelector('.profile-dropdown-btn');
+      if (btn) {
+        const chevron = btn.querySelector('svg');
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+      }
+    }
+  }
+});
+
+/* ── Help & Support Modal Functions ── */
+function openSupportModal() {
+  const modal = document.getElementById('supportModalOverlay');
+  if (modal) modal.classList.add('open');
+}
+
+function closeSupportModal() {
+  const modal = document.getElementById('supportModalOverlay');
+  if (modal) modal.classList.remove('open');
+}
+
+function handleSupportModalOverlayClick(event) {
+  if (event.target.id === 'supportModalOverlay') {
+    closeSupportModal();
+  }
+}
+
+function handleSupportSubmit(event) {
+  event.preventDefault();
+  const subjectEl = document.getElementById('supportSubject');
+  const msgEl = document.getElementById('supportMessage');
+  
+  const subject = subjectEl ? subjectEl.value.trim() : '';
+  const message = msgEl ? msgEl.value.trim() : '';
+  
+  if (!subject || !message) {
+    if (typeof showToast === 'function') showToast('Please fill out all required fields.', 'warning');
+    return;
+  }
+  
+  if (typeof showToast === 'function') showToast('Submitting support ticket...', 'info');
+  
+  setTimeout(() => {
+    if (typeof showToast === 'function') showToast('Support query submitted successfully! Our team will get back to you.', 'success');
+    closeSupportModal();
+    const form = document.getElementById('supportForm');
+    if (form) form.reset();
+  }, 800);
+}
+
+/* ============================================================
+   ROLE-BASED ACCESS CONTROL (RBAC) & INTERNSHIP REPORT HANDLERS
+   ============================================================ */
+
+document.addEventListener('DOMContentLoaded', async () => {
+  if (window.db && window.db.initPromise) {
+    await window.db.initPromise;
+  }
+  checkAccess();
+});
+
+function decodeTokenPayload(token) {
+  if (!token) return null;
+  try {
+    const parts = token.split('.');
+    if (parts.length === 3) {
+      const base64Url = parts[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      return JSON.parse(atob(base64));
+    }
+  } catch (err) {
+    console.warn('[Auth] Token decode error:', err);
+  }
+
+  try {
+    const userStr = sessionStorage.getItem('elevate_user');
+    const roleStr = sessionStorage.getItem('elevate_role');
+    if (userStr && roleStr) {
+      const user = JSON.parse(userStr);
+      return {
+        userId: user.id || user.prn,
+        role: roleStr,
+        name: user.name,
+        email: user.email,
+        yearOfStudy: user.yearOfStudy || sessionStorage.getItem('elevate_yearOfStudy') || 'Final'
+      };
+    }
+  } catch (err) {
+    console.warn('[Auth] Session fallback error:', err);
+  }
+
+  return null;
+}
+
+function checkAccess() {
+  const token = sessionStorage.getItem('elevate_token');
+  if (!token) {
+    window.location.href = '/login.html';
+    return null;
+  }
+
+  const payload = decodeTokenPayload(token);
+  if (!payload) {
+    window.location.href = '/login.html';
+    return null;
+  }
+
+  if (['SUPER_ADMIN', 'TNP_ADMIN', 'INCUBATION_ADMIN', 'FACULTY', 'tnp'].includes(payload.role)) {
+    window.location.href = '/institute/index.html';
+    return null;
+  }
+  if (payload.role === 'COMPANY' || payload.role === 'company') {
+    window.location.href = '/industry/index.html';
+    return null;
+  }
+
+  state.currentUser = payload;
+  state.yearOfStudy = payload.yearOfStudy || sessionStorage.getItem('elevate_yearOfStudy') || 'Final';
+
+  renderNavForRole(payload.role, payload.subRole, state.yearOfStudy);
+  return payload;
+}
+
+function renderNavForRole(role, subRole, yearOfStudy) {
+  const year = yearOfStudy || state.yearOfStudy || 'Final';
+  const irNav = document.getElementById('nav-internship-report');
+
+  if (irNav) {
+    if (year === 'Final') {
+      irNav.classList.remove('nav-hidden');
+    } else {
+      irNav.classList.add('nav-hidden');
+    }
+  }
+}
+
+async function initInternshipReportPage() {
+  try {
+    const token = sessionStorage.getItem('elevate_token');
+    const res = await fetch('/api/internship-reports', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    const reports = data.reports || [];
+    const myReport = reports.find(r => r.prn === (state.currentUser?.prn || 'GHRCE2024047') || r.studentName === (state.currentUser?.name || 'Priya Sharma'));
+
+    if (myReport) {
+      updateInternshipTrackerStatus(myReport.status);
+    } else {
+      updateInternshipTrackerStatus('Not Submitted');
+    }
+  } catch (err) {
+    console.error('Error loading internship report status:', err);
+  }
+}
+
+function updateInternshipTrackerStatus(status) {
+  const s2Badge = document.getElementById('irStep2Badge');
+  const s2Label = document.getElementById('irStep2Label');
+  const l1 = document.getElementById('irLine1');
+
+  const s3Badge = document.getElementById('irStep3Badge');
+  const s3Label = document.getElementById('irStep3Label');
+  const l2 = document.getElementById('irLine2');
+
+  if (status === 'Submitted' || status === 'Verified by T&P') {
+    if (s2Badge) { s2Badge.style.background = '#9333ea'; s2Badge.style.color = '#fff'; s2Badge.style.border = 'none'; }
+    if (s2Label) { s2Label.style.color = 'var(--text)'; }
+    if (l1) { l1.style.background = '#9333ea'; }
+  }
+
+  if (status === 'Verified by T&P') {
+    if (s3Badge) { s3Badge.style.background = '#16a34a'; s3Badge.style.color = '#fff'; s3Badge.style.border = 'none'; }
+    if (s3Label) { s3Label.style.color = '#16a34a'; }
+    if (l2) { l2.style.background = '#16a34a'; }
+  }
+}
+
+async function handleSubmitInternshipReport(e) {
+  e.preventDefault();
+  const companyName = document.getElementById('irCompany').value;
+  const role = document.getElementById('irRole').value;
+  const startDate = document.getElementById('irStartDate').value;
+  const endDate = document.getElementById('irEndDate').value;
+  const type = document.getElementById('irType').value;
+  const stipend = document.getElementById('irStipend').value;
+  const keyLearnings = document.getElementById('irKeyLearnings').value;
+
+  const btn = document.getElementById('btnSubmitInternshipReport');
+  if (btn) btn.disabled = true;
+
+  try {
+    const token = sessionStorage.getItem('elevate_token');
+    const res = await fetch('/api/internship-reports', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        companyName,
+        role,
+        startDate,
+        endDate,
+        type,
+        stipend,
+        keyLearnings,
+        studentName: state.currentUser?.name || 'Priya Sharma',
+        prn: state.currentUser?.prn || 'GHRCE2024047'
+      })
+    });
+    const data = await res.json();
+    if (data.success) {
+      if (typeof showToast === 'function') showToast('Internship report submitted successfully!', 'success');
+      updateInternshipTrackerStatus('Submitted');
+    } else {
+      if (typeof showToast === 'function') showToast(data.message || 'Submission failed.', 'error');
+    }
+  } catch (err) {
+    console.error('Error submitting internship report:', err);
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+

@@ -114,12 +114,7 @@
   <div id="screen-app" class="screen active">
     
     <!-- Sidebar Navigation -->
-    <aside class="app-sidebar" id="appSidebar">
-      <!-- Big Centered Overlapping Sidebar Toggle Button -->
-      <button class="sidebar-toggle-btn" onclick="toggleSidebar()" title="Toggle Sidebar">
-        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-
+    <aside class="app-sidebar" id="appSidebar" onmouseenter="expandSidebar()" onmouseleave="collapseSidebar()">
       <div class="sidebar-header">
         <div class="brand-logo-icon">
           <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
@@ -130,56 +125,87 @@
         </div>
       </div>
 
-      <nav class="sidebar-nav">
-        <div class="nav-section-label">Recruitment Suite</div>
+      <nav class="sidebar-nav" style="padding: 14px 12px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;">
         
-        <div class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          <span>Dashboard</span>
+        <!-- SECTION BOX 1: RECRUITMENT SUITE -->
+        <div class="sb-section-box main-box" id="sectionBox-recruitment">
+          <div class="nav-section-header" onclick="toggleSectionBox('recruitment')">
+            <div class="nav-section-icon">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            </div>
+            <span class="nsh-label">Recruitment Suite</span>
+            <svg class="nsh-chevron" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="nav-section-body">
+            <div class="nav-item active" data-page="dashboard" onclick="navigateTo('dashboard')">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              <span>Dashboard</span>
+            </div>
+
+            <div class="nav-item" data-page="talent-search" onclick="navigateTo('talent-search')">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <span>Talent Search</span>
+            </div>
+
+            <div class="nav-item" data-page="placement-drives" onclick="navigateTo('placement-drives')">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              <span>Placement Drives</span>
+            </div>
+
+            <div class="nav-item" data-page="candidate-pipeline" onclick="navigateTo('candidate-pipeline')">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <span>Candidate Pipeline</span>
+            </div>
+
+            <div class="nav-item" data-page="interviews" onclick="navigateTo('interviews')">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <span>Interviews</span>
+            </div>
+          </div>
         </div>
 
-        <div class="nav-item" data-page="talent-search" onclick="navigateTo('talent-search')">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <span>Talent Search</span>
+        <!-- SECTION BOX 2: ECOSYSTEM & INSIGHTS -->
+        <div class="sb-section-box learning-box collapsed" id="sectionBox-ecosystem">
+          <div class="nav-section-header" onclick="toggleSectionBox('ecosystem')">
+            <div class="nav-section-icon">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            </div>
+            <span class="nsh-label">Ecosystem & Insights</span>
+            <svg class="nsh-chevron" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="nav-section-body">
+            <div class="nav-item" data-page="startup-collaboration" onclick="navigateTo('startup-collaboration')">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              <span>Startup Collaboration</span>
+            </div>
+
+            <div class="nav-item" data-page="mentorship" onclick="navigateTo('mentorship')">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span>Mentorship</span>
+            </div>
+
+            <div class="nav-item" data-page="analytics" onclick="navigateTo('analytics')">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+              <span>Analytics</span>
+            </div>
+          </div>
         </div>
 
-        <div class="nav-item" data-page="placement-drives" onclick="navigateTo('placement-drives')">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-          <span>Placement Drives</span>
-        </div>
-
-        <div class="nav-item" data-page="candidate-pipeline" onclick="navigateTo('candidate-pipeline')">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          <span>Candidate Pipeline</span>
-        </div>
-
-        <div class="nav-item" data-page="interviews" onclick="navigateTo('interviews')">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          <span>Interviews</span>
-        </div>
-
-        <div class="nav-section-label">Ecosystem & Insights</div>
-
-        <div class="nav-item" data-page="startup-collaboration" onclick="navigateTo('startup-collaboration')">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-          <span>Startup Collaboration</span>
-        </div>
-
-        <div class="nav-item" data-page="mentorship" onclick="navigateTo('mentorship')">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          <span>Mentorship</span>
-        </div>
-
-        <div class="nav-item" data-page="analytics" onclick="navigateTo('analytics')">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-          <span>Analytics</span>
-        </div>
-
-        <div class="nav-section-label">Account</div>
-
-        <div class="nav-item" data-page="company-profile" onclick="navigateTo('company-profile')">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          <span>Company Profile</span>
+        <!-- SECTION BOX 3: ACCOUNT -->
+        <div class="sb-section-box account-box collapsed" id="sectionBox-account">
+          <div class="nav-section-header" onclick="toggleSectionBox('account')">
+            <div class="nav-section-icon">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
+            </div>
+            <span class="nsh-label">Account</span>
+            <svg class="nsh-chevron" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="nav-section-body">
+            <div class="nav-item" data-page="company-profile" onclick="navigateTo('company-profile')">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span>Company Profile</span>
+            </div>
+          </div>
         </div>
       </nav>
 

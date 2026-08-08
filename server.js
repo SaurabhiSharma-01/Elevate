@@ -11,7 +11,7 @@ const authRoutes = require('./backend/auth/auth-routes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const DB_FILE = path.join(__dirname, 'database.json');
+const DB_FILE = path.join(__dirname, 'data', 'database.json');
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -714,6 +714,238 @@ app.post('/api/meetings', async (req, res) => {
   db.meetings.push(meeting);
   writeDatabase(db);
   res.json({ success: true, meeting });
+});
+
+// ─── LEARNING MATERIALS API ───────────────────────────────────────────────────
+
+const MATERIALS_FILE = path.join(__dirname, 'data', 'materials.json');
+function readMaterialsDB() {
+  try {
+    return JSON.parse(fs.readFileSync(MATERIALS_FILE, 'utf8'));
+  } catch {
+    return [
+      {
+        id: 'mat_101',
+        title: 'DSA Comprehensive Interview Prep Guide',
+        description: 'Complete notes on Arrays, Trees, Graphs, Dynamic Programming and system design patterns.',
+        link: 'https://example.com/dsa-guide.pdf',
+        targetBranch: 'ALL',
+        targetYear: 'Final',
+        uploadedBy: 'T&P Officer',
+        createdAt: '2026-08-01'
+      },
+      {
+        id: 'mat_102',
+        title: 'TCS NQT Verbal & Quantitative Problem Sets',
+        description: 'Selected 200 previous year practice questions with detailed video solutions.',
+        link: 'https://example.com/tcs-nqt-prep.pdf',
+        targetBranch: 'CSE',
+        targetYear: 'TY',
+        uploadedBy: 'HOD CSE',
+        createdAt: '2026-08-04'
+      }
+    ];
+  }
+}
+function writeMaterialsDB(data) {
+  const dataDir = path.join(__dirname, 'data');
+  if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+  fs.writeFileSync(MATERIALS_FILE, JSON.stringify(data, null, 2), 'utf8');
+}
+
+app.get('/api/learning-materials', (req, res) => {
+  res.json({ success: true, materials: readMaterialsDB() });
+});
+
+app.post('/api/learning-materials', (req, res) => {
+  const { title, description, link, targetBranch, targetYear } = req.body;
+  if (!title || !description || !link) {
+    return res.status(400).json({ success: false, message: 'Title, description, and link are required.' });
+  }
+
+  const materials = readMaterialsDB();
+  const newMaterial = {
+    id: `mat_${Date.now()}`,
+    title: title.trim(),
+    description: description.trim(),
+    link: link.trim(),
+    targetBranch: targetBranch || 'ALL',
+    targetYear: targetYear || 'ALL',
+    uploadedBy: req.body.uploadedBy || 'T&P Cell',
+    createdAt: new Date().toISOString().split('T')[0]
+  };
+
+  materials.unshift(newMaterial);
+  writeMaterialsDB(materials);
+  res.json({ success: true, material: newMaterial });
+});
+
+app.delete('/api/learning-materials/:id', (req, res) => {
+  let materials = readMaterialsDB();
+  const initialLen = materials.length;
+  materials = materials.filter(m => m.id !== req.params.id);
+  if (materials.length === initialLen) {
+    return res.status(404).json({ success: false, message: 'Material not found.' });
+  }
+  writeMaterialsDB(materials);
+  res.json({ success: true, message: 'Learning material deleted.' });
+});
+
+// ─── HACKATHONS API ───────────────────────────────────────────────────────────
+
+const HACKATHONS_FILE = path.join(__dirname, 'data', 'hackathons.json');
+function readHackathonsDB() {
+  try {
+    return JSON.parse(fs.readFileSync(HACKATHONS_FILE, 'utf8'));
+  } catch {
+    return [
+      {
+        id: 'h_101',
+        title: "FinSpark'26 National Hackathon",
+        organizer: 'National Fintech Innovation Forum',
+        date: '2026-03-15',
+        status: 'Active',
+        registeredCount: 42,
+        mode: 'Offline',
+        theme: 'FinTech & AI Solutions',
+        topPerformers: [
+          { rank: 1, name: 'Priya Sharma', team: 'CodeCrafters', score: 98 },
+          { rank: 2, name: 'Rohan Mehta', team: 'ByteBusters', score: 94 }
+        ]
+      },
+      {
+        id: 'h_102',
+        title: 'SIH Campus Internal Hackathon 2026',
+        organizer: 'GH Raisoni College T&P Cell',
+        date: '2026-01-20',
+        status: 'Completed',
+        registeredCount: 120,
+        mode: 'Offline',
+        theme: 'Smart Education & Campus AI',
+        topPerformers: [
+          { rank: 1, name: 'Sneha Patil', team: 'VisionAI', score: 99 },
+          { rank: 2, name: 'Aditya Sen', team: 'NeuralNet', score: 93 }
+        ]
+      }
+    ];
+  }
+}
+
+function writeHackathonsDB(data) {
+  const dataDir = path.join(__dirname, 'data');
+  if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+  fs.writeFileSync(HACKATHONS_FILE, JSON.stringify(data, null, 2), 'utf8');
+}
+
+app.get('/api/hackathons', (req, res) => {
+  res.json({ success: true, hackathons: readHackathonsDB() });
+});
+
+app.post('/api/hackathons', (req, res) => {
+  const { title, organizer, date, mode, theme } = req.body;
+  if (!title || !organizer) {
+    return res.status(400).json({ success: false, message: 'Title and organizer are required.' });
+  }
+
+  const hackathons = readHackathonsDB();
+  const newHackathon = {
+    id: `h_${Date.now()}`,
+    title: title.trim(),
+    organizer: organizer.trim(),
+    date: date || new Date().toISOString().split('T')[0],
+    status: 'Active',
+    registeredCount: 0,
+    mode: mode || 'Online',
+    theme: theme || 'General Tech',
+    topPerformers: []
+  };
+
+  hackathons.unshift(newHackathon);
+  writeHackathonsDB(hackathons);
+  res.json({ success: true, hackathon: newHackathon });
+});
+
+// ─── INTERNSHIP REPORTS API ───────────────────────────────────────────────────
+
+const INTERNSHIPS_FILE = path.join(__dirname, 'data', 'internships.json');
+function readInternshipsDB() {
+  try {
+    return JSON.parse(fs.readFileSync(INTERNSHIPS_FILE, 'utf8'));
+  } catch {
+    return [
+      {
+        id: 'int_001',
+        studentId: 'STU_001',
+        prn: 'GHRCE2024047',
+        studentName: 'Priya Sharma',
+        companyName: 'Microsoft',
+        startDate: '2026-05-01',
+        endDate: '2026-07-31',
+        type: 'Hybrid',
+        role: 'Software Engineer Intern',
+        stipend: '₹50,000 / month',
+        keyLearnings: 'Worked on Azure Microservices and Cloud Security pipelines. Integrated AI search components.',
+        offerLetter: 'offer_priya.pdf',
+        completionCertificate: 'cert_priya.pdf',
+        status: 'Verified by T&P',
+        submittedAt: '2026-08-01'
+      }
+    ];
+  }
+}
+
+function writeInternshipsDB(data) {
+  const dataDir = path.join(__dirname, 'data');
+  if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+  fs.writeFileSync(INTERNSHIPS_FILE, JSON.stringify(data, null, 2), 'utf8');
+}
+
+app.get('/api/internship-reports', (req, res) => {
+  res.json({ success: true, reports: readInternshipsDB() });
+});
+
+app.post('/api/internship-reports', (req, res) => {
+  const { companyName, startDate, endDate, type, role, stipend, keyLearnings, offerLetter, completionCertificate, studentName, prn } = req.body;
+
+  if (!companyName || !startDate || !endDate || !role) {
+    return res.status(400).json({ success: false, message: 'Company name, start date, end date, and role are required.' });
+  }
+
+  const reports = readInternshipsDB();
+  const newReport = {
+    id: `int_${Date.now()}`,
+    studentId: req.body.studentId || 'STU_001',
+    prn: prn || 'GHRCE2024047',
+    studentName: studentName || 'Priya Sharma',
+    companyName: companyName.trim(),
+    startDate,
+    endDate,
+    type: type || 'In-Person',
+    role: role.trim(),
+    stipend: stipend || '',
+    keyLearnings: keyLearnings || '',
+    offerLetter: offerLetter || 'offer_letter.pdf',
+    completionCertificate: completionCertificate || 'certificate.pdf',
+    status: 'Submitted',
+    submittedAt: new Date().toISOString().split('T')[0]
+  };
+
+  reports.unshift(newReport);
+  writeInternshipsDB(reports);
+  res.json({ success: true, report: newReport });
+});
+
+app.put('/api/internship-reports/:id/verify', (req, res) => {
+  const reports = readInternshipsDB();
+  const idx = reports.findIndex(r => r.id === req.params.id);
+  if (idx === -1) {
+    return res.status(404).json({ success: false, message: 'Report not found.' });
+  }
+
+  reports[idx].status = 'Verified by T&P';
+  reports[idx].verifiedAt = new Date().toISOString().split('T')[0];
+  writeInternshipsDB(reports);
+  res.json({ success: true, report: reports[idx] });
 });
 
 // Catch-all: serve index.html for portal sub-paths

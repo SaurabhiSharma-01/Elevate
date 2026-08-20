@@ -2988,11 +2988,14 @@ function toggleTask(el) {
 
 function handleLogout() {
   showModal('Logout?', 'Are you sure you want to logout from Elevate Portal?', () => {
-    state.isFirstLogin = true;
-    showScreen('login');
-    document.getElementById('studentId').value = '';
-    document.getElementById('password').value = '';
-    showToast('Logged out successfully.', 'success');
+    sessionStorage.removeItem('elevate_token');
+    sessionStorage.removeItem('elevate_user');
+    sessionStorage.removeItem('elevate_role');
+    sessionStorage.removeItem('elevate_yearOfStudy');
+    showToast('Logged out successfully. Redirecting to login...', 'success');
+    setTimeout(() => {
+      window.location.href = '/login.html';
+    }, 600);
   });
 }
 

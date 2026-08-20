@@ -107,9 +107,9 @@ function checkAccess() {
     'FACULTY':          'HOD / Faculty Member'
   };
 
-  const nameEl = document.getElementById('tnpOfficerName');
-  const initEl = document.getElementById('tnpOfficerInitials');
-  const roleEl = document.getElementById('tnpOfficerRoleText');
+  const nameEl = document.getElementById('sidebarName') || document.getElementById('tnpOfficerName');
+  const initEl = document.getElementById('sidebarAvatar') || document.getElementById('tnpOfficerInitials');
+  const roleEl = document.getElementById('sidebarRoleText') || document.getElementById('tnpOfficerRoleText');
   if (nameEl) nameEl.textContent = payload.name || 'Staff User';
   if (roleEl) roleEl.textContent = roleTitleMap[payload.role] || payload.role;
   if (initEl) {
@@ -194,7 +194,11 @@ function handleLogout() {
   sessionStorage.removeItem('elevate_token');
   sessionStorage.removeItem('elevate_user');
   sessionStorage.removeItem('elevate_role');
-  window.location.href = '/login.html';
+  sessionStorage.removeItem('elevate_yearOfStudy');
+  if (typeof showToast === 'function') showToast('Logged out of Institute Portal. Redirecting to login...', 'success');
+  setTimeout(() => {
+    window.location.href = '/login.html';
+  }, 600);
 }
 
 function setupEventListeners() {
@@ -258,18 +262,51 @@ function toggleSidebarPin() {
 
 function expandSidebar() {
   const sidebar = document.getElementById('appSidebar');
-  if (sidebar) sidebar.classList.remove('collapsed');
+  if (sidebar) {
+    sidebar.classList.remove('collapsed');
+    // Keep all section dropdowns closed by default when sidebar opens
+    if (typeof INST_ALL_SECTION_IDS !== 'undefined' && Array.isArray(INST_ALL_SECTION_IDS)) {
+      INST_ALL_SECTION_IDS.forEach(id => {
+        const box = document.getElementById(`sectionBox-${id}`);
+        if (box) box.classList.add('collapsed');
+      });
+    }
+  }
 }
 
 function collapseSidebar() {
   if (isSidebarPinned) return;
   const sidebar = document.getElementById('appSidebar');
-  if (sidebar) sidebar.classList.add('collapsed');
+  if (sidebar) {
+    sidebar.classList.add('collapsed');
+    // Reset all section dropdowns and profile menu to closed when sidebar closes
+    if (typeof INST_ALL_SECTION_IDS !== 'undefined' && Array.isArray(INST_ALL_SECTION_IDS)) {
+      INST_ALL_SECTION_IDS.forEach(id => {
+        const box = document.getElementById(`sectionBox-${id}`);
+        if (box) box.classList.add('collapsed');
+      });
+    }
+    const profileMenu = document.getElementById('profileDropdownMenu');
+    if (profileMenu) profileMenu.style.display = 'none';
+  }
 }
 
 function hoverExpandSectionBox(sectionId) {
-  expandSidebar();
-  toggleSectionBox(sectionId);
+  const sidebar = document.getElementById('appSidebar');
+  if (sidebar && sidebar.classList.contains('collapsed')) return;
+  
+  if (typeof INST_ALL_SECTION_IDS !== 'undefined' && Array.isArray(INST_ALL_SECTION_IDS)) {
+    INST_ALL_SECTION_IDS.forEach(id => {
+      const box = document.getElementById(`sectionBox-${id}`);
+      if (box) {
+        if (id === sectionId) {
+          box.classList.remove('collapsed');
+        } else {
+          box.classList.add('collapsed');
+        }
+      }
+    });
+  }
 }
 
 function toggleSectionBox(sectionId) {
@@ -292,6 +329,99 @@ function openSectionForPage(page) {
       box.classList.add('collapsed');
     }
   });
+}
+
+function showProfileDropdown() {
+  const sidebar = document.getElementById('appSidebar');
+  if (sidebar && sidebar.classList.contains('collapsed')) return;
+  const menu = document.getElementById('profileDropdownMenu');
+  if (menu) menu.style.display = 'block';
+  const btn = document.querySelector('.profile-dropdown-btn');
+  if (btn) {
+    const chevron = btn.querySelector('svg');
+    if (chevron) chevron.style.transform = 'rotate(180deg)';
+  }
+}
+
+function hideProfileDropdown() {
+  const menu = document.getElementById('profileDropdownMenu');
+  if (menu) menu.style.display = 'none';
+  const btn = document.querySelector('.profile-dropdown-btn');
+  if (btn) {
+    const chevron = btn.querySelector('svg');
+    if (chevron) chevron.style.transform = 'rotate(0deg)';
+  }
+}
+
+function toggleProfileDropdown(event) {
+  if (event) event.stopPropagation();
+  const menu = document.getElementById('profileDropdownMenu');
+  if (!menu) return;
+  
+  const isCurrentlyOpen = menu.style.display === 'block';
+  menu.style.display = isCurrentlyOpen ? 'none' : 'block';
+  
+  const btn = event ? event.currentTarget : document.querySelector('.profile-dropdown-btn');
+  if (btn) {
+    const chevron = btn.querySelector('svg');
+    if (chevron) {
+      chevron.style.transform = isCurrentlyOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+    }
+  }
+}
+
+// Close profile dropdown when clicking outside
+document.addEventListener('click', function(event) {
+  const menu = document.getElementById('profileDropdownMenu');
+  if (menu && menu.style.display === 'block') {
+    const container = document.querySelector('.profile-dropdown-container');
+    if (container && !container.contains(event.target)) {
+      menu.style.display = 'none';
+      const btn = document.querySelector('.profile-dropdown-btn');
+      if (btn) {
+        const chevron = btn.querySelector('svg');
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+      }
+    }
+  }
+});
+
+/* ── Help & Support Modal Functions ── */
+function openSupportModal() {
+  const modal = document.getElementById('supportModalOverlay');
+  if (modal) modal.classList.add('open');
+}
+
+function closeSupportModal() {
+  const modal = document.getElementById('supportModalOverlay');
+  if (modal) modal.classList.remove('open');
+}
+
+function handleSupportModalOverlayClick(event) {
+  if (event.target.id === 'supportModalOverlay') {
+    closeSupportModal();
+  }
+}
+
+function handleSupportSubmit(event) {
+  event.preventDefault();
+  const subjectEl = document.getElementById('supportSubject');
+  const msgEl = document.getElementById('supportMessage');
+  
+  const subject = subjectEl ? subjectEl.value.trim() : '';
+  const message = msgEl ? msgEl.value.trim() : '';
+  
+  if (!subject || !message) {
+    if (typeof showToast === 'function') showToast('Please fill out all required fields.', 'warning');
+    return;
+  }
+  
+  setTimeout(() => {
+    if (typeof showToast === 'function') showToast('Staff query submitted successfully! Support team notified.', 'success');
+    closeSupportModal();
+    const form = document.getElementById('supportForm');
+    if (form) form.reset();
+  }, 600);
 }
 
 // ──────────────────────────────────────────────────────────────

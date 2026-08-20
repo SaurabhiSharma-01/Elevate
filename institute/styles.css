@@ -5150,6 +5150,203 @@ body.dark .sb-section-box.learning-box {
   100% { background-position: -200% 0; }
 }
 
+/* ── Redesigned Sidebar Profile Card ── */
+.sidebar-profile-card {
+  margin: 14px 12px;
+  padding: 14px 12px;
+  background: var(--surface, #ffffff);
+  border: 1.5px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
+  flex-shrink: 0;
+}
+body.dark .sidebar-profile-card {
+  background: #181c2b;
+  border: 1.5px solid #2e354f;
+}
+.profile-card-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+.profile-card-inner #sidebarAvatar {
+  width: 52px;
+  height: 52px;
+  font-size: 18px;
+  font-weight: 800;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #5B2D90, #a855f7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 4px 14px rgba(91, 45, 144, 0.25);
+  border: 2px solid var(--surface, #ffffff);
+  transition: all var(--transition);
+}
+.profile-dropdown-container {
+  position: relative;
+  width: 100%;
+}
+.profile-dropdown-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 12px;
+  background: var(--surface-2, #f5f4f8);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  transition: all var(--transition);
+}
+.profile-dropdown-btn:hover {
+  border-color: #5B2D90;
+  background: rgba(91, 45, 144, 0.08);
+  color: #5B2D90;
+}
+body.dark .profile-dropdown-btn {
+  background: #131622;
+}
+body.dark .profile-dropdown-btn:hover {
+  background: rgba(91, 45, 144, 0.15);
+  color: #a855f7;
+}
+.profile-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--surface, #ffffff);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  margin-top: 6px;
+  z-index: 500;
+  overflow: hidden;
+  animation: pdmSlide 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes pdmSlide {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.pdm-item {
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  color: var(--text-2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pdm-item svg {
+  color: var(--text-3);
+  transition: color 0.2s;
+}
+.pdm-item:hover {
+  background: var(--surface-2, #f5f4f8);
+  color: #5B2D90;
+}
+.pdm-item:hover svg {
+  color: #5B2D90;
+}
+.pdm-item.logout {
+  border-top: 1px solid var(--border);
+  color: var(--error, #ef4444);
+}
+.pdm-item.logout:hover {
+  background: var(--error-light, #fee2e2);
+  color: var(--error, #ef4444);
+}
+.pdm-item.logout:hover svg {
+  color: var(--error, #ef4444);
+}
+
+/* ── Sidebar Support Button Container ── */
+.sidebar-support-container {
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--bg-sidebar, #ffffff);
+  transition: all var(--transition);
+}
+.support-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px;
+  background: var(--surface, #ffffff);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-2);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
+}
+.support-btn:hover {
+  background: rgba(91, 45, 144, 0.08);
+  color: #5B2D90;
+  border-color: #5B2D90;
+  transform: translateY(-1px);
+}
+.support-btn svg {
+  flex-shrink: 0;
+  color: var(--text-2);
+  transition: color var(--transition);
+}
+.support-btn:hover svg {
+  color: #5B2D90;
+}
+
+/* ── Collapsed Sidebar Overrides for Profile & Support ── */
+.sidebar.collapsed .sidebar-profile-card {
+  margin: 8px 4px !important;
+  padding: 6px 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.sidebar.collapsed .sidebar-profile-card .profile-dropdown-container {
+  display: none !important;
+}
+.sidebar.collapsed .sidebar-profile-card #sidebarAvatar {
+  width: 36px !important;
+  height: 36px !important;
+  font-size: 13px !important;
+  border-width: 1px !important;
+}
+.sidebar.collapsed .sidebar-support-container {
+  padding: 10px 0 !important;
+  display: flex !important;
+  justify-content: center !important;
+}
+.sidebar.collapsed .support-btn {
+  width: 36px !important;
+  height: 36px !important;
+  padding: 0 !important;
+  border-radius: 10px !important;
+}
+.sidebar.collapsed .support-btn .support-text {
+  display: none !important;
+}
+
+
 
 
 

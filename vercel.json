@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api/index.js" },
+    { "source": "/login", "destination": "/login.html" },
+    { "source": "/student", "destination": "/student/index.html" },
+    { "source": "/student/", "destination": "/student/index.html" },
+    { "source": "/institute", "destination": "/institute/index.html" },
+    { "source": "/institute/", "destination": "/institute/index.html" },
+    { "source": "/industry", "destination": "/industry/index.html" },
+    { "source": "/industry/", "destination": "/industry/index.html" },
+    { "source": "/", "destination": "/login.html" }
+  ]
+}

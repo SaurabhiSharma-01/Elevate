@@ -8,18 +8,23 @@ const fs         = require('fs');
 const path       = require('path');
 
 const authRoutes = require('./backend/auth/auth-routes');
+const aiRouter   = require('./backend/api/ai-router');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const DB_FILE = path.join(__dirname, 'data', 'database.json');
 
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname, { index: false })); // never auto-serve any index.html
 
 
 // ─── Auth Routes ──────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
+
+// ─── AI Ecosystem Routes ──────────────────────────────────────────────────────
+app.use('/api/ai', aiRouter);
 
 // ─── Login Page ───────────────────────────────────────────────────────────────
 app.get('/login', (req, res) => {
@@ -748,9 +753,15 @@ function readMaterialsDB() {
   }
 }
 function writeMaterialsDB(data) {
-  const dataDir = path.join(__dirname, 'data');
-  if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
-  fs.writeFileSync(MATERIALS_FILE, JSON.stringify(data, null, 2), 'utf8');
+  try {
+    const dataDir = path.join(__dirname, 'data');
+    if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+    fs.writeFileSync(MATERIALS_FILE, JSON.stringify(data, null, 2), 'utf8');
+    return true;
+  } catch (err) {
+    console.error('Error writing materials database:', err);
+    return false;
+  }
 }
 
 app.get('/api/learning-materials', (req, res) => {
@@ -776,7 +787,9 @@ app.post('/api/learning-materials', (req, res) => {
   };
 
   materials.unshift(newMaterial);
-  writeMaterialsDB(materials);
+  if (!writeMaterialsDB(materials)) {
+    return res.status(500).json({ success: false, message: 'Storage persistence failed. Storage is read-only.' });
+  }
   res.json({ success: true, material: newMaterial });
 });
 
@@ -787,7 +800,9 @@ app.delete('/api/learning-materials/:id', (req, res) => {
   if (materials.length === initialLen) {
     return res.status(404).json({ success: false, message: 'Material not found.' });
   }
-  writeMaterialsDB(materials);
+  if (!writeMaterialsDB(materials)) {
+    return res.status(500).json({ success: false, message: 'Storage persistence failed. Storage is read-only.' });
+  }
   res.json({ success: true, message: 'Learning material deleted.' });
 });
 
@@ -832,9 +847,15 @@ function readHackathonsDB() {
 }
 
 function writeHackathonsDB(data) {
-  const dataDir = path.join(__dirname, 'data');
-  if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
-  fs.writeFileSync(HACKATHONS_FILE, JSON.stringify(data, null, 2), 'utf8');
+  try {
+    const dataDir = path.join(__dirname, 'data');
+    if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+    fs.writeFileSync(HACKATHONS_FILE, JSON.stringify(data, null, 2), 'utf8');
+    return true;
+  } catch (err) {
+    console.error('Error writing hackathons database:', err);
+    return false;
+  }
 }
 
 app.get('/api/hackathons', (req, res) => {
@@ -861,7 +882,9 @@ app.post('/api/hackathons', (req, res) => {
   };
 
   hackathons.unshift(newHackathon);
-  writeHackathonsDB(hackathons);
+  if (!writeHackathonsDB(hackathons)) {
+    return res.status(500).json({ success: false, message: 'Storage persistence failed. Storage is read-only.' });
+  }
   res.json({ success: true, hackathon: newHackathon });
 });
 
@@ -895,9 +918,15 @@ function readInternshipsDB() {
 }
 
 function writeInternshipsDB(data) {
-  const dataDir = path.join(__dirname, 'data');
-  if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
-  fs.writeFileSync(INTERNSHIPS_FILE, JSON.stringify(data, null, 2), 'utf8');
+  try {
+    const dataDir = path.join(__dirname, 'data');
+    if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+    fs.writeFileSync(INTERNSHIPS_FILE, JSON.stringify(data, null, 2), 'utf8');
+    return true;
+  } catch (err) {
+    console.error('Error writing internships database:', err);
+    return false;
+  }
 }
 
 app.get('/api/internship-reports', (req, res) => {
@@ -931,7 +960,9 @@ app.post('/api/internship-reports', (req, res) => {
   };
 
   reports.unshift(newReport);
-  writeInternshipsDB(reports);
+  if (!writeInternshipsDB(reports)) {
+    return res.status(500).json({ success: false, message: 'Storage persistence failed. Storage is read-only.' });
+  }
   res.json({ success: true, report: newReport });
 });
 
@@ -944,7 +975,9 @@ app.put('/api/internship-reports/:id/verify', (req, res) => {
 
   reports[idx].status = 'Verified by T&P';
   reports[idx].verifiedAt = new Date().toISOString().split('T')[0];
-  writeInternshipsDB(reports);
+  if (!writeInternshipsDB(reports)) {
+    return res.status(500).json({ success: false, message: 'Storage persistence failed. Storage is read-only.' });
+  }
   res.json({ success: true, report: reports[idx] });
 });
 
@@ -953,9 +986,13 @@ app.get(/^\/(index\.html)?$/, (req, res) => {
   res.redirect('/login');
 });
 
-app.listen(PORT, () => {
-  console.log(`============================================================`);
-  console.log(`  ELEVATE PORTAL SERVER RUNNING AT http://localhost:${PORT}`);
-  console.log(`  Storage Mode: ${isMySQLConnected() ? 'MySQL Database' : 'File-based (' + DB_FILE + ')'}`);
-  console.log(`============================================================`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`============================================================`);
+    console.log(`  ELEVATE PORTAL SERVER RUNNING AT http://localhost:${PORT}`);
+    console.log(`  Storage Mode: ${isMySQLConnected() ? 'MySQL Database' : 'File-based (' + DB_FILE + ')'}`);
+    console.log(`============================================================`);
+  });
+}
+
+module.exports = app;

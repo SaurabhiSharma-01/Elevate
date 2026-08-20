@@ -790,7 +790,7 @@ async function submitAssessment() {
   showToast('AI is analyzing your skill gap report...', 'info');
 
   try {
-    const res = await fetch('http://localhost:5001/api/ai/skill-analysis', {
+    const res = await fetch('/api/ai/skill-analysis', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -835,7 +835,7 @@ async function submitAssessment() {
     }
   } catch (err) {
     console.error('Skill gap analysis error:', err);
-    showToast('Failed to connect to AI Server on port 5001. Using fallback analysis.', 'warning');
+    showToast('AI Server offline or busy. Using fallback analysis.', 'warning');
     
     const correctCount = formattedAnswers.filter(a => a.isCorrect).length;
     const totalQ = formattedAnswers.length || 30;
@@ -2432,7 +2432,7 @@ function startInterview() {
   
   showToast('Starting AI Interview session...', 'info');
   
-  fetch('http://localhost:5001/api/ai/interview/start', {
+  fetch('/api/ai/interview/start', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -2466,7 +2466,7 @@ function startInterview() {
     }
   })
   .catch(err => {
-    showToast('Failed to connect to AI Server on port 5001. Please run the AI backend.', 'error');
+    showToast('Failed to connect to AI Server. Please ensure the backend is running.', 'error');
     console.error(err);
   });
 }
@@ -2523,7 +2523,7 @@ async function ivSubmitResponse() {
   if (submitBtn) submitBtn.disabled = true;
   
   try {
-    const res = await fetch('http://localhost:5001/api/ai/interview/respond', {
+    const res = await fetch('/api/ai/interview/respond', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -2617,7 +2617,7 @@ async function confirmEndInterview() {
   
   try {
     // 1. Get final transcript
-    const endRes = await fetch('http://localhost:5001/api/ai/interview/end', {
+    const endRes = await fetch('/api/ai/interview/end', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sessionId: state.interview.sessionId })
@@ -2626,7 +2626,7 @@ async function confirmEndInterview() {
     const transcriptData = endData.success ? endData.result.transcript : [];
     
     // 2. Trigger analysis
-    const analyzeRes = await fetch('http://localhost:5001/api/ai/interview/analyze', {
+    const analyzeRes = await fetch('/api/ai/interview/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -2772,7 +2772,7 @@ async function analyzeResumeText() {
   showToast('Analyzing resume using Gemini AI ATS scanning agents...', 'info');
   
   try {
-    const res = await fetch('http://localhost:5001/api/ai/resume/analyze', {
+    const res = await fetch('/api/ai/resume/analyze', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
